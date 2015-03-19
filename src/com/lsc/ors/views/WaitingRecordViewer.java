@@ -7,16 +7,14 @@ import java.awt.Graphics;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.swing.JFrame;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -27,7 +25,6 @@ import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.util.TimeFormatter;
 import com.lsc.ors.views.widgets.DatePicker;
-import com.lsc.ors.views.widgets.DatePickerListener;
 import com.lsc.ors.views.widgets.WRVboard;
 import com.lsc.ors.src.StringSet;
 
@@ -44,7 +41,7 @@ public class WaitingRecordViewer extends ModelObject{
 	 */
 	private static final long serialVersionUID = -3891273426875938845L;
 	
-	private static final int BUTTON_HEIGHT = 50;
+	private static final int BUTTON_HEIGHT = 30;
 	private static final int BUTTON_WIDTH = 100;
 	
 	//view
@@ -54,6 +51,12 @@ public class WaitingRecordViewer extends ModelObject{
 	Button lastDay = null;
 	Button nextWeek = null;
 	Button lastWeek = null;
+	Button nextMonth = null;
+	Button lastMonth = null;
+	Button nextYear = null;
+	Button lastYear = null;
+	
+	JComboBox timeUnitChooser = null;
 	
 	//data
 	Date firstDate = null;
@@ -81,16 +84,31 @@ public class WaitingRecordViewer extends ModelObject{
 		nextDay = new Button(StringSet.NEXT_DAY);
 		lastWeek = new Button(StringSet.LAST_WEEK);
 		nextWeek = new Button(StringSet.NEXT_WEEK);
+		lastMonth = new Button(StringSet.LAST_MONTH);
+		nextMonth = new Button(StringSet.NEXT_MONTH);
+		lastYear = new Button(StringSet.LAST_YEAR);
+		nextYear = new Button(StringSet.NEXT_YEAR);
+		timeUnitChooser = new JComboBox(new String[]{
+				StringSet.TIME_UNIT_DAY,StringSet.TIME_UNIT_WEEK,
+				StringSet.TIME_UNIT_MONTH,StringSet.TIME_UNIT_YEAR});
 
 		//bounds
-		setBounds(100, 50, 930, 620);
+		int height = 620;
+		setBounds(100, 50, 930, height);
 		displayer.setBounds(10, 10, 600, 400);	//top left
 		analyzer.setBounds(620, 10, 300, 610);	//right
 		datePicker.setBounds(10, 420, 600, 80);	//bottom left
-		lastDay.setBounds(10, 520, BUTTON_WIDTH, BUTTON_HEIGHT);
-		nextDay.setBounds(10 + (BUTTON_WIDTH + 10), 520, BUTTON_WIDTH, BUTTON_HEIGHT);
-		lastWeek.setBounds(10 + (BUTTON_WIDTH + 10) * 2, 520, BUTTON_WIDTH, BUTTON_HEIGHT);
-		nextWeek.setBounds(10 + (BUTTON_WIDTH + 10) * 3, 520, BUTTON_WIDTH, BUTTON_HEIGHT);
+		int lineOfButtonsY = height - 3 * (BUTTON_HEIGHT + 10);
+		lastDay.setBounds(10, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		nextDay.setBounds(10 + (BUTTON_WIDTH + 10), lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		lastWeek.setBounds(10 + (BUTTON_WIDTH + 10) * 2, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		nextWeek.setBounds(10 + (BUTTON_WIDTH + 10) * 3, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		lineOfButtonsY += (BUTTON_HEIGHT + 10);
+		lastMonth.setBounds(10, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		nextMonth.setBounds(10 + (BUTTON_WIDTH + 10), lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		lastYear.setBounds(10 + (BUTTON_WIDTH + 10) * 2, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		nextYear.setBounds(10 + (BUTTON_WIDTH + 10) * 3, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
+		timeUnitChooser.setBounds(200, 50, 200, 20);
 		
 		//add views
 		add(displayer);
@@ -100,35 +118,71 @@ public class WaitingRecordViewer extends ModelObject{
 		add(nextDay);
 		add(lastWeek);
 		add(nextWeek);
+		add(lastMonth);
+		add(nextMonth);
+		add(lastYear);
+		add(nextYear);
 		displayer.add(board);
-		analyzer.add(department);
+		analyzer.add(timeUnitChooser);
 		
 		//listeners
 		lastDay.addActionListener(mocl);
 		nextDay.addActionListener(mocl);
 		lastWeek.addActionListener(mocl);
 		nextWeek.addActionListener(mocl);
+		lastMonth.addActionListener(mocl);
+		nextMonth.addActionListener(mocl);
+		lastYear.addActionListener(mocl);
+		nextYear.addActionListener(mocl);
+		timeUnitChooser.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				if(e.getStateChange() == ItemEvent.SELECTED){
+					String s=(String)timeUnitChooser.getSelectedItem();
+					Integer msg = StringSet.getInstance().getCommandIndex(s);
+					if(msg == null){
+						ConsoleOutput.pop("WaitingRecordViewer.itemStateChanged", "msg is null");
+						return;
+					}
+					switch(msg){
+					case StringSet.CMD_TIME_UNIT_DAY:
+						lastDay.setEnabled(true);
+						nextDay.setEnabled(true);
+					case StringSet.CMD_TIME_UNIT_WEEK:
+						lastWeek.setEnabled(true);
+						nextWeek.setEnabled(true);
+					case StringSet.CMD_TIME_UNIT_MONTH:
+						lastMonth.setEnabled(true);
+						nextMonth.setEnabled(true);
+					case StringSet.CMD_TIME_UNIT_YEAR:
+						board.setData(getDataByDateRange(currentDate, msg), msg);
+						setButtonsDisable(msg);
+						break;
+					default:break;
+					}
+	            }
+
+			}
+		});
 	}
 	
-	/**
-	 * 日期变更操作
-	 * @param dayAmount 变更的天数，正数表示向后，负数表示向以前
-	 */
-	private void increaseDate(int dayAmount){
-		if(currentDate == null) return;
-		long time = currentDate.getTime();
-		time += (dayAmount * 24 * 3600 * 1000);
-		currentDate.setTime(time);
-		updateViewsData();
+	private void setButtonsDisable(int msg){
+		switch (msg) {
+		case StringSet.CMD_TIME_UNIT_YEAR:
+			lastMonth.setEnabled(false);
+			nextMonth.setEnabled(false);
+		case StringSet.CMD_TIME_UNIT_MONTH:
+			lastWeek.setEnabled(false);
+			nextWeek.setEnabled(false);
+		case StringSet.CMD_TIME_UNIT_WEEK:
+			lastDay.setEnabled(false);
+			nextDay.setEnabled(false);
+		default:
+			break;
+		}
 	}
-
-	/**
-	 * 更新控件datePicker和board的数据
-	 */
-	private void updateViewsData(){
-		datePicker.setPickerDate(currentDate);
-		board.setData(getDataByDate(currentDate));
-	}
+	
 	
 	/**
 	 * 初始化数据
@@ -171,15 +225,21 @@ public class WaitingRecordViewer extends ModelObject{
 	 * @return
 	 */
 	private OutpatientLog[] getDataByDate(Date date){
+		if(board == null)
+			return getDataByDateRange(date, StringSet.CMD_TIME_UNIT_DAY);
+		return getDataByDateRange(date, board.getTimeUnitType());
+	}
+	
+	private OutpatientLog[] getDataByDateRange(Date date, int rangeFlag){
 		Object obj = null;
-		//get target date
+		//get target range start date
 		if(date == null){
 			obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_FIRST_DATE, null);
 			if(obj == null) return null;
 		}
 		else obj = date;
-		//get data by time stamp
-		obj = OutpatientLogDBO.getData(OutpatientLogDBO.RECORD_OF_DATE, obj);
+		//get data by time range
+		obj = OutpatientLogDBO.getData(rangeFlag, obj);
 		if(obj == null) return null;
 		else return (OutpatientLog[])obj;
 	}
@@ -221,23 +281,66 @@ public class WaitingRecordViewer extends ModelObject{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			Integer msg = StringSet.getInstance().getCommandIndex(e.getActionCommand());
+			
 			switch (msg) {
 			case StringSet.CMD_LAST_DAY:
-				increaseDate(-1);
+				increaseDate(Calendar.DAY_OF_YEAR, -1);
 				break;
 			case StringSet.CMD_NEXT_DAY:
-				increaseDate(1);
+				increaseDate(Calendar.DAY_OF_YEAR, 1);
 				break;
 			case StringSet.CMD_LAST_WEEK:
-				increaseDate(-7);
+				increaseDate(Calendar.DAY_OF_YEAR, -7);
 				break;
 			case StringSet.CMD_NEXT_WEEK:
-				increaseDate(7);
+				increaseDate(Calendar.DAY_OF_YEAR, 7);
+				break;
+			case StringSet.CMD_LAST_MONTH:
+				increaseDate(Calendar.MONTH, -1);
+				break;
+			case StringSet.CMD_NEXT_MONTH:
+				increaseDate(Calendar.MONTH, 1);
+				break;
+			case StringSet.CMD_LAST_YEAR:
+				increaseDate(Calendar.YEAR, -1);
+				break;
+			case StringSet.CMD_NEXT_YEAR:
+				increaseDate(Calendar.YEAR, 1);
 				break;
 			default:
 				break;
 			}
 		}
 		
+	}
+	
+	/**
+	 * 日期变更操作
+	 * @param dayAmount 变更的天数，正数表示向后，负数表示向以前
+	 */
+	private void increaseDate(int field, int amount){
+		if(currentDate == null) return;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currentDate);
+		cal.add(field, amount);
+		Date newDate = cal.getTime();
+		if(datePicker.withinRange(newDate)){
+			currentDate.setTime(newDate.getTime());
+			updateViewsData();
+		} else {
+			popDateNotWithinRangeAlert();
+		}
+	}
+	
+	private void popDateNotWithinRangeAlert(){
+		JOptionPane.showMessageDialog(null, "你查询的日期不在数据范围内");
+	}
+
+	/**
+	 * 更新控件datePicker和board的数据
+	 */
+	private void updateViewsData(){
+		datePicker.setPickerDate(currentDate);
+		board.setData(getDataByDate(currentDate));
 	}
 }

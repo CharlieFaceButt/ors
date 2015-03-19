@@ -2,6 +2,7 @@ package com.lsc.ors.beans;
 
 //import java.sql.Date;
 
+import java.awt.font.NumericShaper;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,6 +18,9 @@ import jxl.DateCell;
  */
 public class OutpatientLog implements BeanObject{
 
+	public static final int INDEX_DEPARTMENT = 1;
+	public static final int INDEX_OUTPATIENT_NUM = 2;
+	public static final int INDEX_PATIENT = 3;
 	public static final int INDEX_ARRIVAL = 12;
 	public static final int INDEX_ACCEPT = 11;
 	public static final int INDEX_WAIT = 13;
@@ -247,9 +251,10 @@ public class OutpatientLog implements BeanObject{
 		case 11:
 		case 12:
 			if(cell.getType() != CellType.DATE) return null;
-			Date d = ((DateCell)cell).getDate();
+			long time = ((DateCell)cell).getDate().getTime();
+			Date d = new Date(time);
 			set(key, d);
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			return format.format(d);
 		case 17:
 			set(key, cell.getContents());

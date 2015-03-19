@@ -22,8 +22,10 @@ import java.text.DecimalFormat;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import com.lsc.ors.applications.WRDModelListener;
+import com.lsc.ors.db.DBOpeListener;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
 import com.lsc.ors.debug.ConsoleOutput;
@@ -52,9 +54,10 @@ public class PlatformController {
 	Panel funcPanel = new Panel();
 	
 	//for menu
-	Menu file = new Menu(StringSet.MENU_FILE);
+	Menu file = new Menu(StringSet.MENU_DATA);
 	MenuItem menuItemImport = new MenuItem(StringSet.MENUITEM_IMPORT);
 	MenuItem menuItemExport = new MenuItem(StringSet.MENUITEM_EXPORT);
+	MenuItem menuItemTruncate = new MenuItem(StringSet.MENUITEM_TRUNCATE);
 	Menu func = new Menu(StringSet.MENU_FUNC);
 	MenuItem funcV = new MenuItem(StringSet.VISUALIZE);
 	MenuItem funcQ = new MenuItem(StringSet.ANALYZE);
@@ -80,12 +83,13 @@ public class PlatformController {
 		funcPanel.setBackground(Color.GRAY);
 		
 		//menu
-		file.add(menuItemImport);file.add(menuItemExport);
+		file.add(menuItemImport);file.add(menuItemExport);file.add(menuItemTruncate);
 		func.add(funcV);func.add(funcQ);func.add(funcS);
 		MenuBar mb = new MenuBar();
 		mb.add(file);mb.add(func);
 		menuItemImport.addActionListener(mal);
 		menuItemExport.addActionListener(mal);
+		menuItemTruncate.addActionListener(mal);
 		funcV.addActionListener(mal);
 		funcQ.addActionListener(mal);
 		funcS.addActionListener(mal);
@@ -98,10 +102,10 @@ public class PlatformController {
 		frame.add(processInfoArea,BorderLayout.CENTER);
 		frame.addWindowListener(mal);
 		
-		initData();
+		informCountToUser();
 	}
 	
-	private void initData(){
+	private void informCountToUser(){
 		OutpatientLogDBO.getCount(new OutpatientLogDBOpeListener() {
 			@Override
 			public void onTransactionStart() {
@@ -116,7 +120,6 @@ public class PlatformController {
 					addInfo("数据库链接错误");
 					return;
 				}
-				int count;
 				try {
 					rs.first();
 					waitingRecordCount = rs.getInt(1);
@@ -157,6 +160,7 @@ public class PlatformController {
 			}
 		}
 		processInfoArea.setText(processInfo);
+		processInfoArea.setCaretPosition(processInfo.length());
 //		System.out.println(rowsOfInfo);
 	}
 	
@@ -177,6 +181,7 @@ public class PlatformController {
 			processInfo += newInfo;
 		}
 		processInfoArea.setText(processInfo);
+		processInfoArea.setCaretPosition(processInfo.length());
 	}
 	
 	class MultipleActionListener implements WindowListener, ActionListener{
@@ -297,9 +302,38 @@ public class PlatformController {
 				break;
 			case StringSet.CMD_EXPORT:
 				break;
+			case StringSet.CMD_TRUNCATE:
+				popTruncateDialog();
+				break;
 			default:break;
 			}
 			
+		}
+	}
+	
+	/**
+	 * 弹出清空数据库对话框，以及对应响应
+	 */
+	private void popTruncateDialog(){
+		int r = JOptionPane.showOptionDialog(null, "即将删除所有数据库数据", "警告", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[]{"确定", "取消"}, JOptionPane.CANCEL_OPTION);
+		if(r == JOptionPane.OK_OPTION){
+			OutpatientLogDBO.truncate(new DBOpeListener() {
+				@Override
+				public void onTransactionStart() {
+					// TODO Auto-generated method stub
+					addInfo("正在处理");
+				}
+				
+				@Override
+				public void onTransactionCompletion(ResultSet rs) {
+					// TODO Auto-generated method stub
+					addInfo("完成");
+					informCountToUser();
+				}
+			});
+		}
+		else {
+			addInfo("用户取消操作");
 		}
 	}
 	
@@ -309,7 +343,7 @@ public class PlatformController {
 	private void popImportDialog(){
 		//chooser
 		JFileChooser chooser = new JFileChooser();
-		chooser.setDialogTitle(StringSet.MENU_FILE + StringSet.MENUITEM_IMPORT);
+		chooser.setDialogTitle(StringSet.MENU_DATA + StringSet.MENUITEM_IMPORT);
 		chooser.setMultiSelectionEnabled(true);
 		
 		//filter
@@ -322,7 +356,7 @@ public class PlatformController {
 		if(r == JFileChooser.APPROVE_OPTION){
 			// TODO file list to import
 			File[] fileList = chooser.getSelectedFiles();
-			addInfo("" + fileList.length + StringSet.MENU_FILE + ":");
+			addInfo("" + fileList.length + StringSet.MENU_DATA + ":");
 			for(int i=0 ; i<fileList.length ; i++){
 				addInfo("\t" + fileList[i].getName());
 			}
@@ -337,7 +371,8 @@ public class PlatformController {
 				@Override
 				public void onTransactionCompletion(ResultSet rs) {
 					// TODO Auto-generated method stub
-					addInfo("数据库导入文件结束，导入结束:");
+					addInfo("数据库导入文件结束，导入结束");
+					informCountToUser();
 					if(rs == null) return;
 					try {
 						for (int i = 0; i < rs.getRow(); i++) {

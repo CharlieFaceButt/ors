@@ -59,7 +59,7 @@ public class StringSet {
 	
 	
 	//menu command
-	public static final String MENU_FILE = "文件";
+	public static final String MENU_DATA = "数据";
 	public static final String MENU_FUNC = "任务";
 	
 	//menu file command
@@ -67,6 +67,8 @@ public class StringSet {
 	public static final int CMD_IMPORT = 16;
 	public static final String MENUITEM_EXPORT = "导出数据";
 	public static final int CMD_EXPORT = 17;
+	public static final String MENUITEM_TRUNCATE = "清空数据库";
+	public static final int CMD_TRUNCATE = 22;
 
 	//button command
 	public static final String NEXT_DAY = "之后一天";
@@ -77,6 +79,22 @@ public class StringSet {
 	public static final int CMD_NEXT_WEEK = 20;
 	public static final String LAST_WEEK = "之前一周";
 	public static final int CMD_LAST_WEEK = 21;
+	public static final String NEXT_MONTH = "之后一月";
+	public static final int CMD_NEXT_MONTH = 27;
+	public static final String LAST_MONTH = "之前一月";
+	public static final int CMD_LAST_MONTH = 28;
+	public static final String NEXT_YEAR = "之后一年";
+	public static final int CMD_NEXT_YEAR = 29;
+	public static final String LAST_YEAR = "之前一年";
+	public static final int CMD_LAST_YEAR = 30;
+	public static final String TIME_UNIT_DAY = "时间单位（天）";
+	public static final int CMD_TIME_UNIT_DAY = 23;
+	public static final String TIME_UNIT_WEEK = "时间单位（周）"; 
+	public static final int CMD_TIME_UNIT_WEEK = 24;
+	public static final String TIME_UNIT_MONTH = "时间单位（月）"; 
+	public static final int CMD_TIME_UNIT_MONTH = 25;
+	public static final String TIME_UNIT_YEAR = "时间单位（年）"; 
+	public static final int CMD_TIME_UNIT_YEAR = 26;
 	
 	public static final String INFO_START = "初始化搞定";
 	
@@ -100,11 +118,21 @@ public class StringSet {
 		
 		commandMap.put(MENUITEM_IMPORT, CMD_IMPORT);
 		commandMap.put(MENUITEM_EXPORT, CMD_EXPORT);
+		commandMap.put(MENUITEM_TRUNCATE, CMD_TRUNCATE);
 		
 		commandMap.put(LAST_DAY, CMD_LAST_DAY);
 		commandMap.put(NEXT_DAY, CMD_NEXT_DAY);
 		commandMap.put(LAST_WEEK, CMD_LAST_WEEK);
 		commandMap.put(NEXT_WEEK, CMD_NEXT_WEEK);
+		commandMap.put(LAST_MONTH, CMD_LAST_MONTH);
+		commandMap.put(NEXT_MONTH, CMD_NEXT_MONTH);
+		commandMap.put(LAST_YEAR, CMD_LAST_YEAR);
+		commandMap.put(NEXT_YEAR, CMD_NEXT_YEAR);
+		
+		commandMap.put(TIME_UNIT_DAY, CMD_TIME_UNIT_DAY);
+		commandMap.put(TIME_UNIT_WEEK, CMD_TIME_UNIT_WEEK);
+		commandMap.put(TIME_UNIT_MONTH, CMD_TIME_UNIT_MONTH);
+		commandMap.put(TIME_UNIT_YEAR, CMD_TIME_UNIT_YEAR);
 		
 	}
 	

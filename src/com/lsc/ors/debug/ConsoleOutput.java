@@ -7,7 +7,16 @@ package com.lsc.ors.debug;
  */
 public class ConsoleOutput {
 
+	private static boolean debug = true;
+	
 	public static void pop(String tag, String description){
-		System.out.println(tag + "\t\t\t: " + description);
+		if(debug)
+			System.out.println(tag + "\t\t\t: " + description);
+	}
+	public static void suspendDebug(){
+		debug = false;
+	}
+	public static void reopenDebug(){
+		debug = true;
 	}
 }

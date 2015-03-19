@@ -278,6 +278,9 @@ public class DBOperator{
 					else break;
 				}
 				
+				//callback
+				if(listener != null) listener.onTransactionStart();
+				
 				ConsoleOutput.pop("DBOperator.executeInAsync", "<sql>" + sql + "</sql>");
 				//execute
 				ResultSet rs = executeInSync(sql, connection);
@@ -351,7 +354,6 @@ public class DBOperator{
 		}
 		else
 			ConsoleOutput.pop("DBOperator.executeInSync", "characterEncoding error");
-		
 		return rs;
 	}
 	
@@ -398,4 +400,9 @@ public class DBOperator{
 			ConsoleOutput.pop("DBOperator.closeConnection", "close connection to database failed");
 		}
 	}
+	
+	protected static void truncateTable(String table, DBOpeListener listener){
+		executeInAsync("truncate " + table, listener);
+	}
+	
 }

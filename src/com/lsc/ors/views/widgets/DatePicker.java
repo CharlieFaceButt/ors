@@ -66,9 +66,7 @@ public class DatePicker extends JPanel {
 		this.beginDate = new Date(begin.getTime());
 		this.finishDate = new Date(finish.getTime());
 		this.cListener = listener;
-		if(date == null) 
-			setCurrentDate(begin);
-		else setCurrentDate(date);
+		setPickerDate(beginDate);
 		
 		//views
 		this.setLayout(null);
@@ -78,6 +76,7 @@ public class DatePicker extends JPanel {
 		Label sliderFinish = new Label(StringSet.FINISH_DATE);
 		sliderBegin.setBounds(5, 30, 50, 20);
 		sliderFinish.setBounds(DEFAULT_WIDTH - 40, 30, 50, 20);
+		updateLabels();
 		
 		//add views
 		add(dateSlider);
@@ -103,7 +102,7 @@ public class DatePicker extends JPanel {
 	 * @param date
 	 * @return
 	 */
-	private boolean withinRange(Date date){
+	public boolean withinRange(Date date){
 		if(date == null || !haveDateRange()){
 			ConsoleOutput.pop("DatePicker.withinRange", "false-null pointer");
 			return false;
@@ -175,7 +174,7 @@ public class DatePicker extends JPanel {
 		Date date = new Date((long)((1 - process) * beginDate.getTime() + process * finishDate.getTime()));
 		String text = TimeFormatter.format(date, null);
 		if(text == null) text = "null";
-		sliderCurrent.setBounds(30 + (int)(DEFAULT_WIDTH * process) , 30, 100, 40);
+		sliderCurrent.setBounds(70 + (int)((DEFAULT_WIDTH - 200) * process) , 20, 100, 40);
 		sliderCurrent.setText(text.substring(0,11));
 		ConsoleOutput.pop("DatePicker.updateLabels", "datepicker文字更新为" + text);
 	}

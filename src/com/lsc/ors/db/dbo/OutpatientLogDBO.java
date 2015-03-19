@@ -19,10 +19,12 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 import com.lsc.ors.beans.OutpatientLog;
+import com.lsc.ors.db.DBOpeListener;
 import com.lsc.ors.db.DBOperator;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.src.StringSet;
+import com.lsc.ors.util.TimeFormatter;
 
 /**
  * 对应Outpatient数据的数据库操作
@@ -36,8 +38,10 @@ public class OutpatientLogDBO extends DBOperator{
 
 	public static final int TIME_FIRST_DATE = 0;
 	public static final int TIME_LAST_DATE = 1;
-	public static final int RECORD_OF_DATE = 2;
-	
+	public static final int RECORD_OF_DATE = StringSet.CMD_TIME_UNIT_DAY;
+	public static final int RECORD_OF_WEEK = StringSet.CMD_TIME_UNIT_WEEK;
+	public static final int RECORD_OF_MONTH = StringSet.CMD_TIME_UNIT_MONTH;
+	public static final int RECORD_OF_YEAR = StringSet.CMD_TIME_UNIT_YEAR;
 	
 	
 	/**
@@ -46,6 +50,9 @@ public class OutpatientLogDBO extends DBOperator{
 	 * <br> - TIME_FIRST_DATE 获得数据第一天的日期
 	 * <br> - TIME_LAST_DATE 获得数据最后一天的日期
 	 * <br> - RECORD_OF_DATE 获得一个日期的记录
+	 * <br> - RECORD_OF_WEEK 获得一个星期的记录
+	 * <br> - RECORD_OF_MONTH 获得一个月的记录
+	 * <br> - RECORD_OF_YEAR 获得一年的记录
 	 * @param constraint
 	 * @return
 	 */
@@ -92,13 +99,16 @@ public class OutpatientLogDBO extends DBOperator{
 			}
 			break;
 		case RECORD_OF_DATE:
+		case RECORD_OF_WEEK:
+		case RECORD_OF_MONTH:
+		case RECORD_OF_YEAR:
 			//target date
 			Date targetDate = null;
 			if(constraint == null) return null;
 			else targetDate = (Date)constraint;
 			
 			//where clause
-			String whereClause = generateWhereClause(WHERE_DATE, targetDate);
+			String whereClause = generateWhereClause(flag, targetDate);
 			
 			//get result
 			rs = selectInSync(connection, null, table, whereClause);
@@ -172,7 +182,7 @@ public class OutpatientLogDBO extends DBOperator{
 		return list;
 	}
 	
-	private static final int WHERE_DATE = 0;
+	private static final int WHERE_EXIST = 1;
 	/**
 	 * 生成where子句
 	 * @param targetDate
@@ -181,7 +191,10 @@ public class OutpatientLogDBO extends DBOperator{
 	private static String generateWhereClause(int flag, Object obj){
 		String clause = null;
 		switch (flag) {
-		case WHERE_DATE:	//sql:(where) registration_time > "yyyy-MM-dd 00:00:00" and registration_time < "yyyy-MM-DD 00:00:00"
+		case RECORD_OF_DATE:	//sql:(where) registration_time > "yyyy-MM-dd 00:00:00" and registration_time < "yyyy-MM-DD 00:00:00"
+		case RECORD_OF_WEEK:
+		case RECORD_OF_MONTH:
+		case RECORD_OF_YEAR:
 			if(obj == null) return null;
 
 			Date targetDate = (Date)obj;
@@ -196,15 +209,51 @@ public class OutpatientLogDBO extends DBOperator{
 			clause = OutpatientLog.KEYS[OutpatientLog.INDEX_ARRIVAL] + " > \"" + format.format(targetDate) + "\" and ";
 			
 			cal.setTime(targetDate);
-			cal.add(Calendar.DAY_OF_MONTH, 1);
+			cal.add(Calendar.DAY_OF_MONTH, getRange(flag));
 			targetDate = cal.getTime();
 			
 			clause += OutpatientLog.KEYS[OutpatientLog.INDEX_ARRIVAL] + " < \"" + format.format(targetDate) + "\"";
 			break;
+		case WHERE_EXIST:
+			if(obj == null) return null;
+			
+			OutpatientLog ol = (OutpatientLog)obj;
+			String[] keys = ol.keySet();
+			String value = null;
+			clause = "";
+			
+			value = ol.get(OutpatientLog.INDEX_ARRIVAL);
+			clause += (keys[OutpatientLog.INDEX_ARRIVAL] + "=");
+			if(value == null) clause += "null";
+			else clause += ("\"" + value + "\"");
+
+			value = ol.get(OutpatientLog.INDEX_PATIENT);
+			clause += (" and " + keys[OutpatientLog.INDEX_PATIENT] + "=");
+			if(value == null) clause += "null";
+			else clause += ("'" + value + "'");
+
+			value = ol.get(OutpatientLog.INDEX_OUTPATIENT_NUM);
+			clause += (" and " + keys[OutpatientLog.INDEX_OUTPATIENT_NUM] + "=");
+			if(value == null) clause += "null";
+			else clause += ("'" + value + "'");
 		default:
 			break;
 		}
 		return clause;
+	}
+	private static int getRange(int flag){
+		switch (flag) {
+		case RECORD_OF_DATE:
+			return 1;
+		case RECORD_OF_WEEK:
+			return 7;
+		case RECORD_OF_MONTH:
+			return 30;
+		case RECORD_OF_YEAR:
+			return 365;
+		default:
+			return 0;
+		}
 	}
 	
 	/**
@@ -243,7 +292,7 @@ public class OutpatientLogDBO extends DBOperator{
 			}
 			
 			//loadData
-			System.out.println(StringSet.MENU_FILE + "\"" +
+			System.out.println(StringSet.MENU_DATA + "\"" +
 					fileList[i].getName() + "\"" + StringSet.MENUITEM_IMPORT + 
 					", " + StringSet.DEBUG_SAMPLE + ":");
 			Sheet sheet = book.getSheet(0);
@@ -270,7 +319,6 @@ public class OutpatientLogDBO extends DBOperator{
 		}
 		closeConnection(connection);
 		connection = null;
-		
 		listener.onTransactionCompletion(null);
 	}
 	
@@ -292,6 +340,29 @@ public class OutpatientLogDBO extends DBOperator{
 					"insert failed caused by invalid data input");
 			return;
 		}
+		//check for existance
+		String whereClause = generateWhereClause(WHERE_EXIST, values);
+		if(whereClause != null){
+			ConsoleOutput.suspendDebug();
+			ResultSet rs = selectInSync(connection, new String[]{"count(*)"}, table, whereClause);
+			ConsoleOutput.reopenDebug();
+			try {
+				rs.first();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				Integer exist = rs.getInt(1);
+				if(exist > 0){
+					ConsoleOutput.pop("OutpatientLogDBO.insertLog", "重复导入");
+					return;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		//iterator and keys
 		Object[] keys = null;
@@ -301,7 +372,7 @@ public class OutpatientLogDBO extends DBOperator{
 					"insert failed cause no key name input");
 		} 
 		
-		String valueStr = " values(";
+		String valueStr = "";
 		//generate statement
 		for (int i = 0; i < keys.length; i++) {
 			String value = values.get(i);
@@ -313,9 +384,9 @@ public class OutpatientLogDBO extends DBOperator{
 				statement += ",";
 				valueStr += ",";
 			}
-		}
+		}  
 		statement += ")";
-		valueStr += ")";
+		valueStr = (" values(" + valueStr + ")");
 		statement += valueStr;
 		
 		if(connection == null)
@@ -329,5 +400,21 @@ public class OutpatientLogDBO extends DBOperator{
 	 */
 	public static void getCount(OutpatientLogDBOpeListener listener){
 		selectInAsync(new String[]{"count(*)"}, table, null, listener);
+	}
+	
+	public static int getCount(Connection connection, String whereClause){
+		ResultSet rs = selectInSync(connection, new String[]{"count(*)"}, table, whereClause);
+		try {
+			rs.first();
+			return rs.getInt(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	public static void truncate(DBOpeListener listener){
+		truncateTable(table, listener);
 	}
 }
