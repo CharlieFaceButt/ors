@@ -49,6 +49,7 @@ public class StringSet {
 	
 	//universal
 	public static final String VACANT_CONTENT = "暂无内容";
+	public static final int CMD_VACANT_CONTENT = 8;
 	public static final String CONTROL_CLOSED = "界面关闭";
 	
 	//jargon
@@ -96,6 +97,10 @@ public class StringSet {
 	public static final String TIME_UNIT_YEAR = "时间单位（年）"; 
 	public static final int CMD_TIME_UNIT_YEAR = 26;
 	
+	//action command
+	public static final String MOUSE_CLICK = "鼠标点击";
+	public static final int CMD_MOUSE_CLICK = 64;
+	
 	public static final String INFO_START = "初始化搞定";
 	
 	public static Map<String , Integer> commandMap = new HashMap<String, Integer>();
@@ -133,6 +138,9 @@ public class StringSet {
 		commandMap.put(TIME_UNIT_WEEK, CMD_TIME_UNIT_WEEK);
 		commandMap.put(TIME_UNIT_MONTH, CMD_TIME_UNIT_MONTH);
 		commandMap.put(TIME_UNIT_YEAR, CMD_TIME_UNIT_YEAR);
+		
+		commandMap.put(MOUSE_CLICK, CMD_MOUSE_CLICK);
+		commandMap.put(VACANT_CONTENT, CMD_VACANT_CONTENT);
 		
 	}
 	

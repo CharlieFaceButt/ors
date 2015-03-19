@@ -5,6 +5,7 @@ package com.lsc.ors.beans;
 import java.awt.font.NumericShaper;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import jxl.Cell;
@@ -251,8 +252,11 @@ public class OutpatientLog implements BeanObject{
 		case 11:
 		case 12:
 			if(cell.getType() != CellType.DATE) return null;
-			long time = ((DateCell)cell).getDate().getTime();
-			Date d = new Date(time);
+			Date d = ((DateCell)cell).getDate();
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(d);
+			cal.add(Calendar.HOUR_OF_DAY, -8);
+			d = cal.getTime();
 			set(key, d);
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			return format.format(d);

@@ -43,6 +43,10 @@ public class WaitingRecordViewer extends ModelObject{
 	
 	private static final int BUTTON_HEIGHT = 30;
 	private static final int BUTTON_WIDTH = 100;
+	private static final int LABEL_LEFT_MARGIN = 20;
+	private static final int LABEL_GAP = 10;
+	private static final int LABEL_WIDTH = 150;
+	private static final int LABEL_HEIGHT = 20;
 	
 	//view
 	WRVboard board = null;
@@ -55,8 +59,8 @@ public class WaitingRecordViewer extends ModelObject{
 	Button lastMonth = null;
 	Button nextYear = null;
 	Button lastYear = null;
-	
 	JComboBox timeUnitChooser = null;
+	Label[] logInfos = null;
 	
 	//data
 	Date firstDate = null;
@@ -74,10 +78,10 @@ public class WaitingRecordViewer extends ModelObject{
 		
 		//initialize views
 		setLayout(null);
-		board = new WRVboard(getDataByDate(currentDate));
+		board = new WRVboard(getDataByDate(currentDate), mocl);
 		board.setBackground(Color.WHITE);
 		JPanel displayer = new JPanel(new BorderLayout());
-		JPanel analyzer = new JPanel();
+		JPanel analyzer = new JPanel(new BorderLayout());
 		Label department = new Label(StringSet.DEPARTMENT_NAME);
 		datePicker = new DatePicker(firstDate, lastDate, currentDate, new DatePickerListener());
 		lastDay = new Button(StringSet.LAST_DAY);
@@ -94,9 +98,9 @@ public class WaitingRecordViewer extends ModelObject{
 
 		//bounds
 		int height = 620;
-		setBounds(100, 50, 930, height);
+		setBounds(100, 50, 980, height);
 		displayer.setBounds(10, 10, 600, 400);	//top left
-		analyzer.setBounds(620, 10, 300, 610);	//right
+		analyzer.setBounds(620, 10, 350, 610);	//right
 		datePicker.setBounds(10, 420, 600, 80);	//bottom left
 		int lineOfButtonsY = height - 3 * (BUTTON_HEIGHT + 10);
 		lastDay.setBounds(10, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -108,7 +112,7 @@ public class WaitingRecordViewer extends ModelObject{
 		nextMonth.setBounds(10 + (BUTTON_WIDTH + 10), lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
 		lastYear.setBounds(10 + (BUTTON_WIDTH + 10) * 2, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
 		nextYear.setBounds(10 + (BUTTON_WIDTH + 10) * 3, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		timeUnitChooser.setBounds(200, 50, 200, 20);
+		timeUnitChooser.setBounds(10 + (BUTTON_WIDTH + 10) * 4, lineOfButtonsY, BUTTON_WIDTH, 20);
 		
 		//add views
 		add(displayer);
@@ -122,8 +126,22 @@ public class WaitingRecordViewer extends ModelObject{
 		add(nextMonth);
 		add(lastYear);
 		add(nextYear);
+		add(timeUnitChooser);
 		displayer.add(board);
-		analyzer.add(timeUnitChooser);
+		int i = 0;
+		logInfos = new Label[OutpatientLog.KEYS.length];
+		for(String key : OutpatientLog.KEYS){
+			Label label = new Label(key);
+			label.setBounds(LABEL_LEFT_MARGIN, LABEL_GAP + (LABEL_GAP + LABEL_HEIGHT) * i, LABEL_WIDTH, LABEL_HEIGHT);
+			analyzer.add(label);
+			
+			logInfos[i] = new Label(StringSet.VACANT_CONTENT);
+			logInfos[i].setBounds(LABEL_LEFT_MARGIN * 2 + LABEL_WIDTH, LABEL_GAP + (LABEL_GAP + LABEL_HEIGHT) * i, LABEL_WIDTH, LABEL_HEIGHT);
+			analyzer.add(logInfos[i]);
+			i ++;
+			ConsoleOutput.pop("WaitingRecordViewer.create", "label" + i + "added");
+		}
+		analyzer.add(new Label(""));
 		
 		//listeners
 		lastDay.addActionListener(mocl);
@@ -281,7 +299,6 @@ public class WaitingRecordViewer extends ModelObject{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			Integer msg = StringSet.getInstance().getCommandIndex(e.getActionCommand());
-			
 			switch (msg) {
 			case StringSet.CMD_LAST_DAY:
 				increaseDate(Calendar.DAY_OF_YEAR, -1);
@@ -306,6 +323,27 @@ public class WaitingRecordViewer extends ModelObject{
 				break;
 			case StringSet.CMD_NEXT_YEAR:
 				increaseDate(Calendar.YEAR, 1);
+				break;
+			case StringSet.CMD_MOUSE_CLICK:
+				if(e.getID() == (int)board.getSerialID()){
+					OutpatientLog ol = null;
+					if(e.getSource() != null)
+						ol = (OutpatientLog)e.getSource();
+					String text = null;
+					for (int i = 0; i < logInfos.length; i++) {
+						if(ol != null)
+							logInfos[i].setText(ol.get(i));
+						else
+							logInfos[i].setText(StringSet.VACANT_CONTENT);
+					}
+				}
+				break;
+			case StringSet.CMD_VACANT_CONTENT:
+				if(e.getID() == (int)board.getSerialID()){
+					for (int i = 0; i < logInfos.length; i++) {
+						logInfos[i].setText(StringSet.VACANT_CONTENT);
+					}
+				}
 				break;
 			default:
 				break;

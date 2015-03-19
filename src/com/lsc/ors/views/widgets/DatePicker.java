@@ -174,8 +174,8 @@ public class DatePicker extends JPanel {
 		Date date = new Date((long)((1 - process) * beginDate.getTime() + process * finishDate.getTime()));
 		String text = TimeFormatter.format(date, null);
 		if(text == null) text = "null";
-		sliderCurrent.setBounds(70 + (int)((DEFAULT_WIDTH - 200) * process) , 20, 100, 40);
-		sliderCurrent.setText(text.substring(0,11));
+		sliderCurrent.setBounds(70 + (int)((DEFAULT_WIDTH - 280) * process) , 20, 150, 40);
+		sliderCurrent.setText(text.substring(0,11) + "weekday No." + ((date.getDay() + 6) % 7 + 1));
 		ConsoleOutput.pop("DatePicker.updateLabels", "datepicker文字更新为" + text);
 	}
 	
