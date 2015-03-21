@@ -7,11 +7,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 import com.lsc.ors.beans.OutpatientLog;
+import com.lsc.ors.src.StringSet;
 
 public class QSVboard extends VisualizationBoard {
 
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 400;
+	
+	private int feature = StringSet.CMD_TIME_UNIT_DAY;
 	/**
 	 * generated serial ID
 	 */
@@ -26,6 +29,9 @@ public class QSVboard extends VisualizationBoard {
 	@Override
 	public void setData(OutpatientLog[] list, int type) {
 		// TODO Auto-generated method stub
+		setData(list, type, feature);
+	}
+	public void setData(OutpatientLog[] list, int type, int feature){
 		
 	}
 

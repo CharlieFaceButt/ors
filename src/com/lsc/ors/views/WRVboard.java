@@ -159,7 +159,6 @@ public class WRVboard extends VisualizationBoard{
 	@Override
 	protected void onPaint(Graphics g) {
 		// TODO Auto-generated method stub
-		super.paint(g);
 		autoAdjustOffset();
 		
 		if(dataList == null || dataList.length == 0) {

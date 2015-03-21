@@ -206,13 +206,13 @@ public class OutpatientLogDBO extends DBOperator{
 			targetDate.setSeconds(0);
 			
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			clause = OutpatientLog.KEYS[OutpatientLog.INDEX_ARRIVAL] + " > \"" + format.format(targetDate) + "\" and ";
+			clause = OutpatientLog.KEYS[OutpatientLog.INDEX_REGISTRATION] + " > \"" + format.format(targetDate) + "\" and ";
 			
 			cal.setTime(targetDate);
 			cal.add(Calendar.DAY_OF_MONTH, getRange(flag));
 			targetDate = cal.getTime();
 			
-			clause += OutpatientLog.KEYS[OutpatientLog.INDEX_ARRIVAL] + " < \"" + format.format(targetDate) + "\"";
+			clause += OutpatientLog.KEYS[OutpatientLog.INDEX_REGISTRATION] + " < \"" + format.format(targetDate) + "\"";
 			break;
 		case WHERE_EXIST:
 			if(obj == null) return null;
@@ -222,8 +222,8 @@ public class OutpatientLogDBO extends DBOperator{
 			String value = null;
 			clause = "";
 			
-			value = ol.get(OutpatientLog.INDEX_ARRIVAL);
-			clause += (keys[OutpatientLog.INDEX_ARRIVAL] + "=");
+			value = ol.get(OutpatientLog.INDEX_REGISTRATION);
+			clause += (keys[OutpatientLog.INDEX_REGISTRATION] + "=");
 			if(value == null) clause += "null";
 			else clause += ("\"" + value + "\"");
 

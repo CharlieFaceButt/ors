@@ -3,6 +3,7 @@ package com.lsc.ors.applications;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +22,7 @@ import com.lsc.ors.src.StringSet;
 import com.lsc.ors.views.QSVboard;
 import com.lsc.ors.views.WRVboard;
 import com.lsc.ors.views.widgets.DatePicker;
+import com.lsc.ors.views.widgets.TimeButtonGroup;
 
 /**
  * Reference of Model 2<br>
@@ -48,16 +50,8 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	
 	//view
 	QSVboard board = null;
-	Button nextDay = null;
-	Button lastDay = null;
-	Button nextWeek = null;
-	Button lastWeek = null;
-	Button nextMonth = null;
-	Button lastMonth = null;
-	Button nextYear = null;
-	Button lastYear = null;
-	JComboBox timeUnitChooser = null;
 	JComboBox featureChooser = null;
+	TimeButtonGroup timeBtns = null;
 	
 	//listener
 	MultipleOnClickListener mocl = new MultipleOnClickListener();
@@ -72,34 +66,32 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		JPanel displayer = new JPanel(new BorderLayout());
 		JPanel analyzer = new JPanel(new BorderLayout());
 		datePicker = new DatePicker(firstDate, lastDate, currentDate, new DatePickerListener());
-		lastDay = new Button(StringSet.LAST_DAY);
-		nextDay = new Button(StringSet.NEXT_DAY);
-		lastWeek = new Button(StringSet.LAST_WEEK);
-		nextWeek = new Button(StringSet.NEXT_WEEK);
-		lastMonth = new Button(StringSet.LAST_MONTH);
-		nextMonth = new Button(StringSet.NEXT_MONTH);
-		lastYear = new Button(StringSet.LAST_YEAR);
-		nextYear = new Button(StringSet.NEXT_YEAR);
-		timeUnitChooser = new JComboBox(new String[]{
-				StringSet.TIME_UNIT_DAY,StringSet.TIME_UNIT_WEEK,
-				StringSet.TIME_UNIT_MONTH,StringSet.TIME_UNIT_YEAR});
+		featureChooser = new JComboBox(new String[]{
+				OutpatientLog.KEYS[OutpatientLog.INDEX_DOCTOR],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_PATIENT_GENDER],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_PATIENT_AGE],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_DIAGNOSES],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_FURTHER_CONSULTATION]
+				});
 
+		//bounds
 		setBounds(100, 50, WIDTH, HEIGHT);
 		setResizable(false);
 		displayer.setBounds(MARGIN, MARGIN, BOARD_WIDTH, BOARD_HEIGHT);	//top left
 		analyzer.setBounds(MARGIN * 2 + BOARD_WIDTH, MARGIN, ANALYZER_WIDTH, ANALYZER_HEIGHT);	//right
-		datePicker.setBounds(10, 420, 600, 80);	//bottom left
-		int lineOfButtonsY = HEIGHT - 3 * (BUTTON_HEIGHT + 10);
-		lastDay.setBounds(10, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		nextDay.setBounds(10 + (BUTTON_WIDTH + 10), lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		lastWeek.setBounds(10 + (BUTTON_WIDTH + 10) * 2, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		nextWeek.setBounds(10 + (BUTTON_WIDTH + 10) * 3, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		lineOfButtonsY += (BUTTON_HEIGHT + 10);
-		lastMonth.setBounds(10, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		nextMonth.setBounds(10 + (BUTTON_WIDTH + 10), lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		lastYear.setBounds(10 + (BUTTON_WIDTH + 10) * 2, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		nextYear.setBounds(10 + (BUTTON_WIDTH + 10) * 3, lineOfButtonsY, BUTTON_WIDTH, BUTTON_HEIGHT);
-		timeUnitChooser.setBounds(10 + (BUTTON_WIDTH + 10) * 4, lineOfButtonsY, BUTTON_WIDTH, 20);
+		datePicker.setBounds(MARGIN, MARGIN * 2 + BOARD_HEIGHT, BOARD_WIDTH, 80);	//bottom left
+		timeBtns = new TimeButtonGroup(MARGIN * 2 + BOARD_HEIGHT + 80, MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT, mocl);
+		featureChooser.setBounds(MARGIN + (BUTTON_WIDTH + MARGIN) * 4, timeBtns.getTop(), BUTTON_WIDTH, 20);
+		
+		//add to the view
+		add(displayer);
+		displayer.add(board);
+		add(datePicker);
+		add(analyzer);
+		for(Component c : timeBtns.getAllComponents()){
+			add(c);
+		}
+		add(featureChooser);
 	}
 
 	class MultipleOnClickListener implements ActionListener{

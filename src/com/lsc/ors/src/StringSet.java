@@ -3,6 +3,8 @@ package com.lsc.ors.src;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.lsc.ors.beans.OutpatientLog;
+
 public class StringSet {
 	public static final String DEFAULT_DATA_PATH = "E://seme7/毕设/修复2科门诊日志统计11-13/11/11-1.xls";
 	
@@ -97,6 +99,10 @@ public class StringSet {
 	public static final String TIME_UNIT_YEAR = "时间单位（年）"; 
 	public static final int CMD_TIME_UNIT_YEAR = 26;
 	
+	public static enum CMD_FEATURE{;
+		public static final int OUTPATIENT_BASE = 31;//31-49
+	}
+	
 	//action command
 	public static final String MOUSE_CLICK = "鼠标点击";
 	public static final int CMD_MOUSE_CLICK = 64;
@@ -142,6 +148,9 @@ public class StringSet {
 		commandMap.put(MOUSE_CLICK, CMD_MOUSE_CLICK);
 		commandMap.put(VACANT_CONTENT, CMD_VACANT_CONTENT);
 		
+		for(int i = 0 ; i < OutpatientLog.KEYS.length ; i ++){
+			commandMap.put(OutpatientLog.KEYS[i], CMD_FEATURE.OUTPATIENT_BASE + i);
+		}
 	}
 	
 	public Integer getCommandIndex(String command){

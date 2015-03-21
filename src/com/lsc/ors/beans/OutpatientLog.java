@@ -22,11 +22,14 @@ public class OutpatientLog implements BeanObject{
 	public static final int INDEX_DEPARTMENT = 1;
 	public static final int INDEX_OUTPATIENT_NUM = 2;
 	public static final int INDEX_PATIENT = 3;
-	public static final int INDEX_ARRIVAL = 12;
-	public static final int INDEX_ACCEPT = 11;
-	public static final int INDEX_WAIT = 13;
-	public static final int INDEX_DOCTOR = 15;
+	public static final int INDEX_PATIENT_GENDER = 4;
+	public static final int INDEX_PATIENT_AGE = 5;
 	public static final int INDEX_DIAGNOSES = 10;
+	public static final int INDEX_RECEPTION = 11;
+	public static final int INDEX_REGISTRATION = 12;
+	public static final int INDEX_WAIT = 13;
+	public static final int INDEX_DOCTOR = 14;
+	public static final int INDEX_FURTHER_CONSULTATION = 17;
 	
 	/**
 	 * 对应数据库的18个属性，由于数据的index属性是自动生成的，插入操作时记得排除index
