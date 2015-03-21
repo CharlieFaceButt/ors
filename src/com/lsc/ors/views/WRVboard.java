@@ -44,13 +44,13 @@ public class WRVboard extends VisualizationBoard{
 		offsetY = RULER_WIDTH;
 		firstRegistLogIndex = 0;
 		firstRecepLogIndex = 0;
-		sortLogs();
+		setFirstIndex();
 		repaint();
 	}
 	
 	private int firstRegistLogIndex = 0;
 	private int firstRecepLogIndex = 0;
-	private void sortLogs(){
+	private void setFirstIndex(){
 		if(dataList == null) return;
 		int minutes = getMinutesAmountFromDate(dataList[0].getReception_time());
 		int temp = 0;
@@ -73,15 +73,6 @@ public class WRVboard extends VisualizationBoard{
 		ConsoleOutput.pop("WRVboard.sortLogs", "first reg:" + firstRegistLogIndex + "\tfirst recp:" + firstRecepLogIndex);
 	}
 	
-	/**
-	 * 根据时间确定鼠标对准线的x坐标
-	 * @param date
-	 * @return
-	 */
-	private int getMinutesAmountFromDate(Date date){
-		if(date == null) return 0;
-		return date.getHours() * 60 + date.getMinutes();
-	}
 
 
 
@@ -140,8 +131,6 @@ public class WRVboard extends VisualizationBoard{
 		offsetY = originalY + (e.getY() - firstY);
 	}
 
-
-
 	@Override
 	protected void onMouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -149,6 +138,12 @@ public class WRVboard extends VisualizationBoard{
 		alignY = e.getY();
 		mouseAlignEnabled = true;
 		repaint();
+	}
+
+	@Override
+	protected void onMouseWheel(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private static final int RECTHEIGHT = 10;
@@ -300,4 +295,9 @@ public class WRVboard extends VisualizationBoard{
 		if(offsetX <= RULER_WIDTH || offsetY <= RULER_WIDTH) isRepaintable = false;
 	}
 
+	@Override
+	protected void beforePaint() {
+		// TODO Auto-generated method stub
+		
+	}
 }

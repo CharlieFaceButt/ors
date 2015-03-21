@@ -91,6 +91,7 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		for(Component c : timeBtns.getAllComponents()){
 			add(c);
 		}
+		timeBtns.disableTimeUnitChooser();
 		add(featureChooser);
 	}
 

@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.Date;
 
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.src.StringSet;
@@ -46,6 +49,7 @@ public abstract class VisualizationBoard extends Canvas {
 		
 		addMouseListener(bml);
 		addMouseMotionListener(bml);
+		addMouseWheelListener(bml);
 		
 		new Thread(new AnimThread()).start();
 	}
@@ -77,7 +81,7 @@ public abstract class VisualizationBoard extends Canvas {
 	}
 	
 
-	class BoardMouseListener implements MouseListener,MouseMotionListener{
+	class BoardMouseListener implements MouseListener,MouseMotionListener,MouseWheelListener{
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -119,14 +123,31 @@ public abstract class VisualizationBoard extends Canvas {
 			// TODO Auto-generated method stub
 			onMouseMoved(e);
 		}
+
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			// TODO Auto-generated method stub
+			onMouseWheel(e);
+		}
 		
 	}
 	
 	@Override
 	public void paint(Graphics g) {
 		// TODO Auto-generated method stub
+		beforePaint();
 		super.paint(g);
 		onPaint(g);
+	}
+	
+	/**
+	 * 根据时间确定鼠标对准线的x坐标
+	 * @param date
+	 * @return
+	 */
+	protected int getMinutesAmountFromDate(Date date){
+		if(date == null) return 0;
+		return date.getHours() * 60 + date.getMinutes();
 	}
 
 	/**
@@ -139,5 +160,7 @@ public abstract class VisualizationBoard extends Canvas {
 	protected abstract void onMouseReleased(MouseEvent e);
 	protected abstract void onMouseDragged(MouseEvent e);
 	protected abstract void onMouseMoved(MouseEvent e);
+	protected abstract void onMouseWheel(MouseEvent e);
+	protected abstract void beforePaint();
 	protected abstract void onPaint(Graphics g);
 }

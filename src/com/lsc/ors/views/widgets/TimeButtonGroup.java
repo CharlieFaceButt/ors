@@ -108,11 +108,14 @@ public class TimeButtonGroup {
 		case StringSet.CMD_TIME_UNIT_WEEK:
 			lastDay.setEnabled(false);
 			nextDay.setEnabled(false);
+			break;
 		default:
 			break;
 		}
 	}
-	
+	public void disableTimeUnitChooser(){
+		timeUnitChooser.setEnabled(false);
+	}
 	public Component[] getAllComponents(){
 		Component[] group = new Component[]{
 				lastDay, nextDay, lastWeek, nextWeek,
