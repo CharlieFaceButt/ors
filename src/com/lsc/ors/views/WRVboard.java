@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
 import java.util.Date;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
@@ -141,7 +142,7 @@ public class WRVboard extends VisualizationBoard{
 	}
 
 	@Override
-	protected void onMouseWheel(MouseEvent e) {
+	protected void onMouseWheel(MouseWheelEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -149,12 +150,9 @@ public class WRVboard extends VisualizationBoard{
 	private static final int RECTHEIGHT = 10;
 	private static final int RECTGAP = 2;
 	private static final int RECTWIDTHUNIT = 1;
-	private static final int RULER_WIDTH = 20;
-	private int offsetX = RULER_WIDTH,offsetY = RULER_WIDTH;
 	@Override
 	protected void onPaint(Graphics g) {
 		// TODO Auto-generated method stub
-		autoAdjustOffset();
 		
 		if(dataList == null || dataList.length == 0) {
 			g.drawString(StringSet.VACANT_CONTENT, WIDTH / 2 - 20, HEIGHT / 2 -3);
@@ -283,7 +281,10 @@ public class WRVboard extends VisualizationBoard{
 	
 	private int adjustSpeed = 3;
 	private boolean isReleased = true; 
-	private void autoAdjustOffset(){
+	@Override
+	protected void beforePaint() {
+		// TODO Auto-generated method stub
+		//automatically adjust offsets
 		if(!isReleased) return;
 		
 		if(offsetX > (RULER_WIDTH + 5)) offsetX -= ((offsetX - RULER_WIDTH) / adjustSpeed);
@@ -293,11 +294,5 @@ public class WRVboard extends VisualizationBoard{
 		else if(offsetY > RULER_WIDTH) offsetY--;
 		
 		if(offsetX <= RULER_WIDTH || offsetY <= RULER_WIDTH) isRepaintable = false;
-	}
-
-	@Override
-	protected void beforePaint() {
-		// TODO Auto-generated method stub
-		
 	}
 }

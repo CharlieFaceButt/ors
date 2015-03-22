@@ -21,6 +21,9 @@ public abstract class VisualizationBoard extends Canvas {
 	 */
 	private static final long serialVersionUID = 2703670296950660542L;
 
+	/**
+	 * 判断是否需要重画
+	 */
 	boolean isRepaintable = false;
 	
 	protected int timeUnitType = StringSet.CMD_TIME_UNIT_DAY;
@@ -132,6 +135,9 @@ public abstract class VisualizationBoard extends Canvas {
 		
 	}
 	
+
+	protected static final int RULER_WIDTH = 20;
+	protected int offsetX = RULER_WIDTH,offsetY = RULER_WIDTH;
 	@Override
 	public void paint(Graphics g) {
 		// TODO Auto-generated method stub
@@ -160,7 +166,7 @@ public abstract class VisualizationBoard extends Canvas {
 	protected abstract void onMouseReleased(MouseEvent e);
 	protected abstract void onMouseDragged(MouseEvent e);
 	protected abstract void onMouseMoved(MouseEvent e);
-	protected abstract void onMouseWheel(MouseEvent e);
+	protected abstract void onMouseWheel(MouseWheelEvent e);
 	protected abstract void beforePaint();
 	protected abstract void onPaint(Graphics g);
 }
