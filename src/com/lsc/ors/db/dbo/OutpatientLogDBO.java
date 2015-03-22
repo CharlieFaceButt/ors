@@ -38,11 +38,12 @@ public class OutpatientLogDBO extends DBOperator{
 
 	public static final int TIME_FIRST_DATE = 0;
 	public static final int TIME_LAST_DATE = 1;
+	public static final int TIME_EARLIEST_OF_DAY = 2;
+	public static final int TIME_LATEST_OF_DAY = 3;
 	public static final int RECORD_OF_DATE = StringSet.CMD_TIME_UNIT_DAY;
 	public static final int RECORD_OF_WEEK = StringSet.CMD_TIME_UNIT_WEEK;
 	public static final int RECORD_OF_MONTH = StringSet.CMD_TIME_UNIT_MONTH;
 	public static final int RECORD_OF_YEAR = StringSet.CMD_TIME_UNIT_YEAR;
-	
 	
 	/**
 	 * 根据flag和constraint获得数据
@@ -70,7 +71,8 @@ public class OutpatientLogDBO extends DBOperator{
 		//result
 		Object result = null;
 		ResultSet rs = null;
-		
+		String whereClause = null;
+		Date targetDate = null;
 		switch(flag){
 		case TIME_FIRST_DATE:
 			rs = selectInSync(connection, new String[]{"min(registration_time)"}, table, null);
@@ -98,25 +100,57 @@ public class OutpatientLogDBO extends DBOperator{
 				}
 			}
 			break;
+		case TIME_EARLIEST_OF_DAY:
+			//target date
+			if(constraint == null) return null;
+			else targetDate = (Date)constraint;
+			//where clause
+			whereClause = generateWhereClause(flag, targetDate);
+			//get result
+			rs = selectInSync(connection, new String[]{"min(registration_time)"}, table, whereClause);
+			//deal with result
+			if(rs != null){
+				try {
+					rs.next();
+					result = rs.getObject(1);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
+		case TIME_LATEST_OF_DAY:
+			//target date
+			if(constraint == null) return null;
+			else targetDate = (Date)constraint;
+			//where clause
+			whereClause = generateWhereClause(flag, targetDate);
+			//get result
+			rs = selectInSync(connection, new String[]{"max(reception_time)"}, table, whereClause);
+			//deal with result
+			if(rs != null){
+				try {
+					rs.next();
+					result = rs.getObject(1);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
 		case RECORD_OF_DATE:
 		case RECORD_OF_WEEK:
 		case RECORD_OF_MONTH:
 		case RECORD_OF_YEAR:
 			//target date
-			Date targetDate = null;
 			if(constraint == null) return null;
 			else targetDate = (Date)constraint;
-			
 			//where clause
-			String whereClause = generateWhereClause(flag, targetDate);
-			
+			whereClause = generateWhereClause(flag, targetDate);
 			//get result
 			rs = selectInSync(connection, null, table, whereClause);
-			
 			//deal with result
-			OutpatientLog[] list = null;
-			list = extractLogsFromResultSet(rs);
-			result = list;
+			result = extractLogsFromResultSet(rs);
 			break;
 		default:break;
 		}
@@ -191,6 +225,8 @@ public class OutpatientLogDBO extends DBOperator{
 	private static String generateWhereClause(int flag, Object obj){
 		String clause = null;
 		switch (flag) {
+		case TIME_EARLIEST_OF_DAY:
+		case TIME_LATEST_OF_DAY:
 		case RECORD_OF_DATE:	//sql:(where) registration_time > "yyyy-MM-dd 00:00:00" and registration_time < "yyyy-MM-DD 00:00:00"
 		case RECORD_OF_WEEK:
 		case RECORD_OF_MONTH:
@@ -243,6 +279,8 @@ public class OutpatientLogDBO extends DBOperator{
 	}
 	private static int getRange(int flag){
 		switch (flag) {
+		case TIME_EARLIEST_OF_DAY:
+		case TIME_LATEST_OF_DAY:
 		case RECORD_OF_DATE:
 			return 1;
 		case RECORD_OF_WEEK:
