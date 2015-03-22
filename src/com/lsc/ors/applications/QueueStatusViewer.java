@@ -13,18 +13,17 @@ import java.util.Date;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
 import com.lsc.ors.applications.WaitingRecordViewer.MultipleOnClickListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.beans.OutpatientLog;
-import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.src.StringSet;
 import com.lsc.ors.views.QSVboard;
 import com.lsc.ors.views.WRVboard;
 import com.lsc.ors.views.widgets.DatePicker;
 import com.lsc.ors.views.widgets.TimeButtonGroup;
+import com.lsc.ors.views.widgets.TimePicker;
 
 /**
  * Reference of Model 2<br>
@@ -54,8 +53,7 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	QSVboard board = null;
 	JComboBox featureChooser = null;
 	TimeButtonGroup timeBtns = null;
-	JSlider timePicker = null;
-	Label timeLabel = null;
+	TimePicker timePicker = null;
 	
 	//listener
 	MultipleOnClickListener mocl = new MultipleOnClickListener();
@@ -68,7 +66,7 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		board = new QSVboard(getDataByDate(currentDate), mocl);
 		board.setBackground(Color.WHITE);
 		JPanel displayer = new JPanel(new BorderLayout());
-		JPanel analyzer = new JPanel(null);
+		JPanel analyzer = new JPanel(new BorderLayout());
 		featureChooser = new JComboBox(new String[]{
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DOCTOR],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_PATIENT_GENDER],
@@ -76,15 +74,8 @@ public class QueueStatusViewer extends VisualizationModelObject {
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DIAGNOSES],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_FURTHER_CONSULTATION]
 				});
-		Object obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_EARLIEST_OF_DAY, currentDate);
-		int min = 0;
-		if(obj != null)	min = QSVboard.getMinutesAmountFromDate((Date)obj);
-		obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_LATEST_OF_DAY, currentDate);
-		int max = 0;
-		if(obj != null) max = QSVboard.getMinutesAmountFromDate((Date)obj);
-		timePicker = new JSlider(min, max, min);
-		timeLabel = new Label(StringSet.CURRENT_DATE);
-		
+		timePicker = new TimePicker(currentDate, new DatePickerListener());
+
 		//bounds
 		setBounds(100, 50, WIDTH, HEIGHT);
 		setResizable(false);
@@ -93,8 +84,6 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		datePicker.setBounds(MARGIN, MARGIN * 2 + BOARD_HEIGHT, BOARD_WIDTH, 80);	//bottom left
 		timeBtns = new TimeButtonGroup(MARGIN * 2 + BOARD_HEIGHT + 80, MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT, mocl);
 		featureChooser.setBounds(MARGIN + (BUTTON_WIDTH + MARGIN) * 4, timeBtns.getTop(), BUTTON_WIDTH, 20);
-		timePicker.setBounds(MARGIN, MARGIN, ANALYZER_WIDTH - 2 * MARGIN, 40);
-		updateTimeLabel();
 		
 		//add to the view
 		add(displayer);
@@ -106,14 +95,6 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		}
 		timeBtns.disableTimeUnitChooser();
 		add(featureChooser);
-		analyzer.add(timePicker);
-		analyzer.add(timeLabel);
-	}
-	
-	private void updateTimeLabel(){
-		int minuteAmount = board.getCurrentTime();
-		timeLabel.setBounds(MARGIN, MARGIN + 40, ANALYZER_WIDTH - 2 * MARGIN, 40);
-		timeLabel.setText("" + minuteAmount / 60 + ":" + minuteAmount % 60);
 	}
 
 	class MultipleOnClickListener implements ActionListener{

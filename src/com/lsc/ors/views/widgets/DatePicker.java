@@ -27,7 +27,7 @@ public class DatePicker extends JPanel {
 	private static final long serialVersionUID = -8546855420509137118L;
 
 	private static final int DEFAULT_WIDTH = 580;
-	protected int width = DEFAULT_WIDTH;
+	
 	SliderMouseListener sml = new SliderMouseListener();
 	ChangeListener cListener = null;
 	
@@ -40,9 +40,10 @@ public class DatePicker extends JPanel {
 	
 	//view
 	protected JSlider dateSlider = new JSlider(JSlider.HORIZONTAL, 0, DEFAULT_WIDTH/2, DEFAULT_WIDTH/4-5);
-	Label sliderBegin = new Label(StringSet.BEGIN_DATE);
-	Label sliderFinish = new Label(StringSet.FINISH_DATE);
-	Label sliderCurrent = new Label(StringSet.CURRENT_DATE);
+	private TextField currentYear = new TextField(4);
+	private TextField currentMonth = new TextField(2);
+	private TextField currentDay = new TextField(2);
+	private Label sliderCurrent = new Label(StringSet.CURRENT_DATE);
 //	private DateEditor currentDateEditor = new DateEditor(
 //			new JSpinner(new SpinnerDateModel(
 //					currentDate, 
@@ -58,7 +59,6 @@ public class DatePicker extends JPanel {
 		super();
 		
 		//data
-		width = DEFAULT_WIDTH;
 		this.beginDate = new Date(begin.getTime());
 		this.finishDate = new Date(finish.getTime());
 		this.cListener = listener;
@@ -68,6 +68,8 @@ public class DatePicker extends JPanel {
 		this.setLayout(null);
 		dateSlider.setBounds(10, 10, DEFAULT_WIDTH, 20);
 		dateSlider.setPreferredSize(new Dimension( DEFAULT_WIDTH, 20));
+		Label sliderBegin = new Label(StringSet.BEGIN_DATE);
+		Label sliderFinish = new Label(StringSet.FINISH_DATE);
 		sliderBegin.setBounds(5, 30, 50, 20);
 		sliderFinish.setBounds(DEFAULT_WIDTH - 40, 30, 50, 20);
 		updateLabels();
@@ -134,7 +136,7 @@ public class DatePicker extends JPanel {
 	 * 设置current date
 	 * @param date
 	 */
-	protected void setCurrentDate(Date date){
+	private void setCurrentDate(Date date){
 		if(date == null) return;
 		currentDate = new Date(date.getTime());
 	}
@@ -143,7 +145,7 @@ public class DatePicker extends JPanel {
 	 * 通过输入时间日期设置process和slider
 	 * @param date
 	 */
-	protected void setSliderProcessByDate(Date date){
+	private void setSliderProcessByDate(Date date){
 		if(date == null) return;
 		float fraction = (float)(date.getTime() - beginDate.getTime());
 		ConsoleOutput.pop("portion fraction", "" + fraction);
@@ -164,16 +166,16 @@ public class DatePicker extends JPanel {
 	/**
 	 * 更新时间显示的文字,需要process提前设置
 	 */
-	protected void updateLabels(){
+	private void updateLabels(){
 		Date date = new Date((long)((1 - process) * beginDate.getTime() + process * finishDate.getTime()));
 		String text = TimeFormatter.format(date, null);
 		if(text == null) text = "null";
-		sliderCurrent.setBounds(100 + (int)((width - 350) * process), 40, 150, 40);
+		sliderCurrent.setBounds(70 + (int)((DEFAULT_WIDTH - 280) * process) , 20, 150, 40);
 		sliderCurrent.setText(text.substring(0,11) + "weekday No." + ((date.getDay() + 6) % 7 + 1));
 		ConsoleOutput.pop("DatePicker.updateLabels", "datepicker文字更新为" + text);
 	}
 	
-	protected class SliderMouseListener implements MouseListener, MouseMotionListener{
+	private class SliderMouseListener implements MouseListener, MouseMotionListener{
 
 		private boolean sliderDrag = false;
 		private int lastValue = 0;

@@ -151,7 +151,7 @@ public abstract class VisualizationBoard extends Canvas {
 	 * @param date
 	 * @return
 	 */
-	public static final int getMinutesAmountFromDate(Date date){
+	protected int getMinutesAmountFromDate(Date date){
 		if(date == null) return 0;
 		return date.getHours() * 60 + date.getMinutes();
 	}
