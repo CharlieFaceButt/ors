@@ -112,7 +112,7 @@ public abstract class VisualizationBoard extends Canvas {
 		@Override
 		public void mouseExited(MouseEvent e) {
 			// TODO Auto-generated method stub
-			repaint();
+			onMouseExit(e);
 		}
 
 		@Override
@@ -135,9 +135,9 @@ public abstract class VisualizationBoard extends Canvas {
 		
 	}
 	
-
 	protected static final int RULER_WIDTH = 20;
-	protected int offsetX = RULER_WIDTH,offsetY = RULER_WIDTH;
+	protected static final int SLASH_LENGTH = 10;
+	protected int offsetX = 0,offsetY = 0;
 	@Override
 	public void paint(Graphics g) {
 		// TODO Auto-generated method stub
@@ -164,6 +164,7 @@ public abstract class VisualizationBoard extends Canvas {
 	protected abstract void onMouseClicked(MouseEvent e);
 	protected abstract void onMousePressed(MouseEvent e);
 	protected abstract void onMouseReleased(MouseEvent e);
+	protected abstract void onMouseExit(MouseEvent e);
 	protected abstract void onMouseDragged(MouseEvent e);
 	protected abstract void onMouseMoved(MouseEvent e);
 	protected abstract void onMouseWheel(MouseWheelEvent e);

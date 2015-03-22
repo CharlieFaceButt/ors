@@ -74,6 +74,7 @@ public class QSVboard extends VisualizationBoard {
 	}
 	public void setData(OutpatientLog[] list, int type, int fType){
 		this.list = list;
+		offsetX = offsetY = 0;
 		waitingList = new LinkedList<OutpatientLog>();
 		receptList = new LinkedList<OutpatientLog>();
 		sortListByRegistrationTime();
@@ -151,7 +152,9 @@ public class QSVboard extends VisualizationBoard {
 	@Override
 	protected void onMouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		mouseY = e.getY();
+		mouseAlignEnabled = true;
+		repaint();
 	}
 
 	private int middleLineY = HEIGHT / 2;
@@ -202,6 +205,44 @@ public class QSVboard extends VisualizationBoard {
 					offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * i, 
 					offsetY + middleLineY + MARGIN / 2);
 			i ++;
+		}
+		paintMouseAlign(g);
+		paintRulers(g);
+	}
+	
+	private boolean mouseAlignEnabled = false;
+	private int mouseY = 0;
+	private void paintMouseAlign(Graphics g){
+		if(!mouseAlignEnabled) return;
+		int count = 0;
+		int upperBase = offsetY + middleLineY - MARGIN;
+		int lowerBase = offsetY + middleLineY + MARGIN;
+		if(mouseY < upperBase){
+			count = (upperBase - mouseY + rectHeightUnit / 2) / rectHeightUnit;
+			mouseY = upperBase - count * rectHeightUnit;
+		} else if(mouseY > lowerBase){
+			count = (mouseY - lowerBase + rectHeightUnit / 2) / rectHeightUnit;
+			mouseY = lowerBase + count * rectHeightUnit;
+		}
+		g.drawLine(RULER_WIDTH, mouseY, WIDTH, mouseY);
+		g.drawString("" + count, WIDTH - RULER_WIDTH, mouseY);
+		mouseAlignEnabled = false;
+	}
+	
+	private int slash = 10;
+	private void paintRulers(Graphics g){
+		g.drawLine(RULER_WIDTH, 0, RULER_WIDTH, HEIGHT);
+		int k = 0;
+		for (int i = offsetY + middleLineY - MARGIN; i > 0; i -= rectHeightUnit * slash) {
+			g.drawLine(RULER_WIDTH - 3, i, RULER_WIDTH, i);
+			g.drawString("" + k, 0, i + MARGIN / 2);
+			k += slash;
+		}
+		k = 0;
+		for (int j = offsetY + middleLineY + MARGIN; j < HEIGHT; j += rectHeightUnit * slash) {
+			g.drawLine(RULER_WIDTH - 3, j, RULER_WIDTH, j);
+			g.drawString("" + k, 0, j + MARGIN / 2);
+			k += slash;
 		}
 	}
 
@@ -261,13 +302,16 @@ public class QSVboard extends VisualizationBoard {
 		
 		//automatically adjust offsets
 		if(isReleased){
-			if(offsetX > (RULER_WIDTH + 5)) offsetX -= ((offsetX - RULER_WIDTH) / adjustSpeed);
-			else if(offsetX > RULER_WIDTH) offsetX--;
+			if(offsetX > 5) offsetX -= (offsetX / adjustSpeed);
+			else if(offsetX > 0) offsetX--;
+
+			if(offsetY > HEIGHT / 3 + 5) offsetY -= ((offsetY - HEIGHT / 3) / adjustSpeed);
+			else if(offsetY > HEIGHT / 3) offsetY--;
+
+			if(offsetY < -HEIGHT / 3 - 5) offsetY += ((-offsetY - HEIGHT / 3) / adjustSpeed);
+			else if(offsetY < -HEIGHT / 3) offsetY++;
 			
-			if(offsetY > (RULER_WIDTH + 5)) offsetY -= ((offsetY - RULER_WIDTH) / adjustSpeed);
-			else if(offsetY > RULER_WIDTH) offsetY--;
-			
-			if(offsetX <= RULER_WIDTH || offsetY <= RULER_WIDTH) isRepaintable = false;
+			if(offsetX <= 0 && offsetY <= HEIGHT / 3 && offsetY >= -HEIGHT / 3) isRepaintable = false;
 		}
 	}
 
@@ -277,5 +321,11 @@ public class QSVboard extends VisualizationBoard {
 		targetTime += e.getWheelRotation();
 		ConsoleOutput.pop("QSVboard.onMouseWheel", "targetTime:" + targetTime / 60 + ":" + targetTime % 60);
 		isRepaintable = true;
+	}
+
+	@Override
+	protected void onMouseExit(MouseEvent e) {
+		// TODO Auto-generated method stub
+		repaint();
 	}
 }

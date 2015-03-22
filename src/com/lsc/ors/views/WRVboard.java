@@ -239,7 +239,6 @@ public class WRVboard extends VisualizationBoard{
 		mouseAlignEnabled = false;
 	}
 	
-	private static final int SLASH_LENGTH = 10;
 	private void paintRulers(Graphics g){
 		
 		g.drawLine(0, RULER_WIDTH, WIDTH, RULER_WIDTH);
@@ -294,5 +293,13 @@ public class WRVboard extends VisualizationBoard{
 		else if(offsetY > RULER_WIDTH) offsetY--;
 		
 		if(offsetX <= RULER_WIDTH || offsetY <= RULER_WIDTH) isRepaintable = false;
+	}
+
+
+
+	@Override
+	protected void onMouseExit(MouseEvent e) {
+		// TODO Auto-generated method stub
+		repaint();
 	}
 }

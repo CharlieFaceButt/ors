@@ -24,6 +24,7 @@ public abstract class VisualizationModelObject extends ModelObject {
 		super(listener);
 		// TODO Auto-generated constructor stub
 		setCurrentDate(firstDate);
+		datePicker = new DatePicker(firstDate, lastDate, currentDate, new DatePickerListener());
 	}
 
 	/**

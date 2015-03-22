@@ -70,7 +70,6 @@ public class WaitingRecordViewer extends VisualizationModelObject{
 		board.setBackground(Color.WHITE);
 		JPanel displayer = new JPanel(new BorderLayout());
 		JPanel analyzer = new JPanel(new BorderLayout());
-		datePicker = new DatePicker(firstDate, lastDate, currentDate, new DatePickerListener());
 
 		//bounds
 		int height = 620;

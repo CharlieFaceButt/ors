@@ -65,7 +65,6 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		board.setBackground(Color.WHITE);
 		JPanel displayer = new JPanel(new BorderLayout());
 		JPanel analyzer = new JPanel(new BorderLayout());
-		datePicker = new DatePicker(firstDate, lastDate, currentDate, new DatePickerListener());
 		featureChooser = new JComboBox(new String[]{
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DOCTOR],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_PATIENT_GENDER],
