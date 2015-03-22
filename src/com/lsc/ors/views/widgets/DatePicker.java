@@ -33,17 +33,13 @@ public class DatePicker extends JPanel {
 	
 	//data
 //	private WRVboard board = null;
-	private Date currentDate = null;
-	private Date beginDate = null;
-	private Date finishDate = null;
-	private float process = 0.0f;
+	protected Date currentDate = null;
+	protected Date beginDate = null;
+	protected Date finishDate = null;
+	protected float process = 0.0f;
 	
 	//view
-	private JSlider dateSlider = new JSlider(
-										JSlider.HORIZONTAL, 
-										0, 
-										DEFAULT_WIDTH/2, 
-										DEFAULT_WIDTH/4-5);
+	protected JSlider dateSlider = new JSlider(JSlider.HORIZONTAL, 0, DEFAULT_WIDTH/2, DEFAULT_WIDTH/4-5);
 	private TextField currentYear = new TextField(4);
 	private TextField currentMonth = new TextField(2);
 	private TextField currentDay = new TextField(2);
@@ -224,7 +220,7 @@ public class DatePicker extends JPanel {
 			//set labels
 			updateLabels();
 			if(cListener != null)
-				cListener.stateChanged(null);
+				cListener.stateChanged(new ChangeEvent(getID()));
 			sliderDrag = false;
 			lastValue = 0;
 		}
@@ -241,5 +237,9 @@ public class DatePicker extends JPanel {
 			
 		}
 		
+	}
+	
+	public Long getID(){
+		return serialVersionUID;
 	}
 }

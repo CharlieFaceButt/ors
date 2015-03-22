@@ -23,6 +23,7 @@ import com.lsc.ors.views.QSVboard;
 import com.lsc.ors.views.WRVboard;
 import com.lsc.ors.views.widgets.DatePicker;
 import com.lsc.ors.views.widgets.TimeButtonGroup;
+import com.lsc.ors.views.widgets.TimePicker;
 
 /**
  * Reference of Model 2<br>
@@ -52,6 +53,7 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	QSVboard board = null;
 	JComboBox featureChooser = null;
 	TimeButtonGroup timeBtns = null;
+	TimePicker timePicker = null;
 	
 	//listener
 	MultipleOnClickListener mocl = new MultipleOnClickListener();
@@ -72,6 +74,7 @@ public class QueueStatusViewer extends VisualizationModelObject {
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DIAGNOSES],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_FURTHER_CONSULTATION]
 				});
+		timePicker = new TimePicker(currentDate, new DatePickerListener());
 
 		//bounds
 		setBounds(100, 50, WIDTH, HEIGHT);
@@ -153,6 +156,6 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	@Override
 	protected void onDatePickerChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-		
+		long id = (Long)e.getSource();
 	}
 }

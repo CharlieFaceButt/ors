@@ -16,10 +16,18 @@ import com.lsc.ors.views.widgets.DatePicker;
 
 public abstract class VisualizationModelObject extends ModelObject {
 
+	/**
+	 * generated version ID
+	 */
+	private static final long serialVersionUID = 3270627961643152768L;
 	//data
 	Date currentDate = null;
 	DatePicker datePicker = null;
 	
+	/**
+	 * set current date and init datePicker
+	 * @param listener
+	 */
 	public VisualizationModelObject(ModelListener listener) {
 		super(listener);
 		// TODO Auto-generated constructor stub
@@ -96,7 +104,7 @@ public abstract class VisualizationModelObject extends ModelObject {
 	 */
 	protected abstract void updateViewsData();
 	
-	class DatePickerListener implements ChangeListener{
+	protected class DatePickerListener implements ChangeListener{
 		@Override
 		public void stateChanged(ChangeEvent e) {
 			// TODO Auto-generated method stub
