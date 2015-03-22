@@ -113,6 +113,10 @@ public class QSVboard extends VisualizationBoard {
 			list[j + 1] = ol;
 		}
 	}
+	
+	public int getCurrentTime(){
+		return currentTime;
+	}
 
 	
 	private int startX = 0, startY = 0;

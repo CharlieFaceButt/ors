@@ -56,7 +56,8 @@ public class StringSet {
 	
 	//jargon
 	public static final String DEPARTMENT_NAME = "科室名称"; 
-	public static final String CURRENT_DATE = "当前时间";
+	public static final String CURRENT_DATE = "当前日期";
+	public static final String CURRENT_TIME = "当前时间";
 	public static final String BEGIN_DATE = "开始时间";
 	public static final String FINISH_DATE = "结束时间";
 	
