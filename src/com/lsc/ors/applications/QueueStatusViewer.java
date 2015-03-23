@@ -21,6 +21,7 @@ import com.lsc.ors.applications.WaitingRecordViewer.MultipleOnClickListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
+import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.src.StringSet;
 import com.lsc.ors.views.QSVboard;
 import com.lsc.ors.views.WRVboard;
@@ -77,13 +78,9 @@ public class QueueStatusViewer extends VisualizationModelObject {
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DIAGNOSES],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_FURTHER_CONSULTATION]
 				});
-		Object obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_EARLIEST_OF_DAY, currentDate);
-		int min = 0;
-		if(obj != null)	min = QSVboard.getMinutesAmountFromDate((Date)obj);
-		obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_LATEST_OF_DAY, currentDate);
-		int max = 0;
-		if(obj != null) max = QSVboard.getMinutesAmountFromDate((Date)obj);
-		timePicker = new JSlider(min, max + 5, min);
+		featureChooser.addActionListener(mocl);
+		timePicker = new JSlider(0, 100, 0);
+		initTimePicker(currentDate);
 		timePicker.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -123,6 +120,18 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		timeLabel.setBounds(MARGIN, MARGIN + 40, ANALYZER_WIDTH - 2 * MARGIN, 40);
 		timeLabel.setText("" + minuteAmount / 60 + ":" + minuteAmount % 60);
 	}
+	
+	private void initTimePicker(Date date){
+		Object obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_EARLIEST_OF_DAY, date);
+		int min = 0;
+		if(obj != null)	min = QSVboard.getMinutesAmountFromDate((Date)obj);
+		obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_LATEST_OF_DAY, date);
+		int max = 0;
+		if(obj != null) max = QSVboard.getMinutesAmountFromDate((Date)obj);
+		timePicker.setMinimum(min);
+		timePicker.setMaximum(max + 5);
+		timePicker.setValue(min);
+	}
 
 	class MultipleOnClickListener implements ActionListener{
 
@@ -159,6 +168,12 @@ public class QueueStatusViewer extends VisualizationModelObject {
 				if(e.getID() == board.getID())
 					timePicker.setValue(board.getTargetTime());
 				break;
+			case StringSet.CMD_COMBO_BOX_CHANGED:
+				msg = StringSet.getInstance().getCommandIndex(featureChooser.getSelectedItem().toString());
+				if(msg > StringSet.CMD_FEATURE.OUTPATIENT_BASE && msg < StringSet.CMD_FEATURE.OUTPATIENT_BASE + 18){
+					board.setFeatureType(msg - StringSet.CMD_FEATURE.OUTPATIENT_BASE);
+				}
+				break;
 			default:
 				break;
 			}
@@ -181,12 +196,20 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	@Override
 	protected void updateViewsData() {
 		// TODO Auto-generated method stub
-		
+		datePicker.setPickerDate(currentDate);
+		initTimePicker(currentDate);
+		board.setData(getDataByDate(currentDate));
 	}
 
 	@Override
 	protected void onDatePickerChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-		long id = (Long)e.getSource();
+		if(datePicker == e.getSource()){
+			ConsoleOutput.pop("QueueStatusViewer.onDatePickerChanged", "changed");
+			if(setCurrentDate(datePicker.getCurrentDate()))
+				board.setData(getDataByDate(currentDate));
+			initTimePicker(currentDate);
+			return;
+		}
 	}
 }

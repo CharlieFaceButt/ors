@@ -218,7 +218,7 @@ public class DatePicker extends JPanel {
 			//set labels
 			updateLabels();
 			if(cListener != null)
-				cListener.stateChanged(new ChangeEvent(getID()));
+				cListener.stateChanged(new ChangeEvent(getSelf()));
 			sliderDrag = false;
 			lastValue = 0;
 		}
@@ -237,7 +237,7 @@ public class DatePicker extends JPanel {
 		
 	}
 	
-	public Long getID(){
-		return serialVersionUID;
+	private DatePicker getSelf(){
+		return this;
 	}
 }

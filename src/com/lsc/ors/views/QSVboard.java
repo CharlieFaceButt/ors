@@ -71,6 +71,15 @@ public class QSVboard extends VisualizationBoard {
 		targetTime = time;
 		isRepaintable = true;
 	}
+	/**
+	 * 
+	 * @param type featureµÄ¶ÔÓ¦index£¬ 0-17
+	 */
+	public void setFeatureType(int fType){
+		featureType = fType;
+		initFeatureList(fType);
+		repaint();
+	}
 	@Override
 	public void setData(OutpatientLog[] list, int type) {
 		// TODO Auto-generated method stub
@@ -80,8 +89,6 @@ public class QSVboard extends VisualizationBoard {
 	public void setData(OutpatientLog[] list, int type, int fType){
 		this.list = list;
 		offsetX = offsetY = 0;
-		waitingList = new LinkedList<OutpatientLog>();
-		receptList = new LinkedList<OutpatientLog>();
 		sortListByRegistrationTime();
 		initFeatureList(fType);
 		baseTime = getMinutesAmountFromDate(list[0].getRegistration_time());
@@ -96,8 +103,12 @@ public class QSVboard extends VisualizationBoard {
 		this.featureType = fType;
 		featureWaitingCountList = new HashMap<String, Integer>();
 		featureReceptCountList = new HashMap<String, Integer>();
+		waitingList = new LinkedList<OutpatientLog>();
+		receptList = new LinkedList<OutpatientLog>();
+		if(list == null) return;
 		for(OutpatientLog ol : list){
 			String f = ol.get(featureType);
+			f = getFeatureValue(f);
 			if(!featureWaitingCountList.containsKey(f)){
 				featureWaitingCountList.put(f, 0);
 				featureReceptCountList.put(f, 0);
@@ -107,6 +118,7 @@ public class QSVboard extends VisualizationBoard {
 	}
 	private void sortListByRegistrationTime(){
 		int key = 0;
+		if(list == null) return;
 		for(int i = 1 ; i < list.length ; i ++){
 			OutpatientLog ol = list[i];
 			key = getMinutesAmountFromDate(ol.getRegistration_time());
@@ -175,26 +187,39 @@ public class QSVboard extends VisualizationBoard {
 	private int rectWidth = 40;
 	private int rectHeightUnit = 8;
 	private int rectMargin = MARGIN;
+	private int ageDivider = 4;
 	@Override
 	protected void onPaint(Graphics g) {
 		// TODO Auto-generated method stub
-		Set<String> keys = featureWaitingCountList.keySet();
+		Set<String> keySet = featureWaitingCountList.keySet();
+		String[] keys = new String[keySet.size()];
+		if(featureType == OutpatientLog.INDEX_PATIENT_AGE){
+			keys = new String[ageDivider + 1];
+			for(int i = 0 ; i < ageDivider ; i ++){
+				int quatient = 80 / ageDivider;
+				keys[i] = "" + (i * quatient) + "-" + ((i + 1) * quatient);
+			}
+			keys[ageDivider] = "80-";
+		}else{
+			keySet.toArray(keys);
+		}
 		g.drawLine(
 				offsetX + RULER_WIDTH, 
 				offsetY + middleLineY - MARGIN, 
-				offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * keys.size(),
+				offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * keys.length,
 				offsetY + middleLineY - MARGIN);
 		g.drawLine(
 				offsetX + RULER_WIDTH, 
 				offsetY + middleLineY + MARGIN,
-				offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * keys.size(),
+				offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * keys.length,
 				offsetY + middleLineY + MARGIN);
 		
-		int count = 0;
+		Integer count = 0;
 		int i = 0;
 		g.setColor(Color.YELLOW);
 		for(String key : keys){
 			count = featureWaitingCountList.get(key);
+			if(count == null) continue;
 			g.fillRect(
 					offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * i, 
 					offsetY + middleLineY - MARGIN - rectHeightUnit * count,
@@ -205,6 +230,7 @@ public class QSVboard extends VisualizationBoard {
 		g.setColor(Color.GREEN);
 		for(String key: keys){
 			count = featureReceptCountList.get(key);
+			if(count == null) continue;
 			g.fillRect(
 					offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * i, 
 					offsetY + middleLineY + MARGIN,
@@ -214,6 +240,11 @@ public class QSVboard extends VisualizationBoard {
 		g.setColor(Color.BLACK);
 		i = 0;
 		for(String key : keys){
+			count = featureReceptCountList.get(key);
+			if(count == null) continue;
+			if(key == null || key.length() == 0){
+				key = "null";
+			}
 			g.drawString(
 					key,
 					offsetX + RULER_WIDTH + rectMargin + (rectWidth + rectMargin) * i, 
@@ -272,6 +303,7 @@ public class QSVboard extends VisualizationBoard {
 			for (int i = 0; i < list.length; i++) {
 				ol = list[i];
 				f = ol.get(featureType);
+				f = getFeatureValue(f);
 				int count = 0;
 				//if reception time
 				if(currentTime > getMinutesAmountFromDate(ol.getReception_time())){
@@ -327,6 +359,27 @@ public class QSVboard extends VisualizationBoard {
 			
 			if(offsetX <= 0 && offsetY <= HEIGHT / 3 && offsetY >= -HEIGHT / 3) isRepaintable = false;
 		}
+		
+		//view details
+		if(featureType == OutpatientLog.INDEX_DIAGNOSES){
+			rectWidth = 80;
+		}
+		else rectWidth = 40;
+	}
+	private String getFeatureValue(String feature){
+		String newFeature = "null";
+		if(featureType == (OutpatientLog.INDEX_PATIENT_AGE)){
+			if(feature == null) return newFeature;
+			Integer age = Integer.parseInt(feature);
+			int quatient = 80 / ageDivider;
+			newFeature = "" + (quatient * (age / quatient)) + "-";
+			if(age < 80) newFeature += ("" + ((age / quatient + 1) * quatient));
+		} else if(feature == null || feature.length() == 0){
+			newFeature = "null";
+		} else{
+			newFeature = feature;
+		}
+		return newFeature;
 	}
 
 	@Override

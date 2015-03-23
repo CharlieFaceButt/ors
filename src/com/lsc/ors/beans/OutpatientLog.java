@@ -59,7 +59,7 @@ public class OutpatientLog implements BeanObject{
 	private String doctor_name;
 	private String patient_signiture;
 	private String medical_record_number;
-	private Boolean further_consultation;
+	private String further_consultation;
 	
 	
 	public OutpatientLog(int index, String department,
@@ -69,7 +69,7 @@ public class OutpatientLog implements BeanObject{
 			String patient_family_address, String diagnosis,
 			Date reception_time, Date registration_time, int waiting_time,
 			String doctor, String signiture, String medical_record_number,
-			boolean further_consultation) {
+			String further_consultation) {
 		super();
 		this.index = index;
 		this.department = department;
@@ -156,7 +156,7 @@ public class OutpatientLog implements BeanObject{
 	public String getMedical_record_number() {
 		return medical_record_number;
 	}
-	public boolean isFurther_consultation() {
+	public String getFurther_consultation() {
 		return further_consultation;
 	}
 	public void setIndex(int index) {
@@ -210,7 +210,7 @@ public class OutpatientLog implements BeanObject{
 	public void setMedical_record_number(String medical_record_number) {
 		this.medical_record_number = medical_record_number;
 	}
-	public void setFurther_consultation(boolean further_consultation) {
+	public void setFurther_consultation(String further_consultation) {
 		this.further_consultation = further_consultation;
 	}
 	
@@ -241,7 +241,7 @@ public class OutpatientLog implements BeanObject{
 		case 14:return doctor_name;
 		case 15:return patient_signiture;
 		case 16:return medical_record_number;
-		case 17:return further_consultation ? "Y" : "N";
+		case 17:return further_consultation;
 		default:return null;
 		}
 	}
@@ -264,8 +264,13 @@ public class OutpatientLog implements BeanObject{
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			return format.format(d);
 		case 17:
-			set(key, cell.getContents());
-			return (cell.getContents().equals("")) ? "N" : "Y";
+			String fc = cell.getContents();
+			if(!fc.equals("¡Ì")){
+				fc = "N";
+			}
+			else fc = "Y";
+			set(key, fc);
+			return fc;
 		default:break;
 		}
 		set(key, cell.getContents());
@@ -326,8 +331,7 @@ public class OutpatientLog implements BeanObject{
 			medical_record_number = value.toString();
 			break;
 		case 17:
-			if(value.equals("")) further_consultation = false;
-			else further_consultation = true;
+			further_consultation = value.toString();
 			break;
 		default:
 			break;

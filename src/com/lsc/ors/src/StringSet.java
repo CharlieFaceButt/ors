@@ -109,6 +109,8 @@ public class StringSet {
 	public static final int CMD_MOUSE_CLICK = 64;
 	public static final String MOUSE_WHEEL = "鼠标滚轮";
 	public static final int CMD_MOUSE_WHEEL = 65;
+	public static final String COMBO_BOX_CHANGED = "comboBoxChanged";
+	public static final int CMD_COMBO_BOX_CHANGED = 66;
 	
 	public static final String INFO_START = "初始化搞定";
 	
@@ -150,6 +152,7 @@ public class StringSet {
 		
 		commandMap.put(MOUSE_CLICK, CMD_MOUSE_CLICK);
 		commandMap.put(MOUSE_WHEEL, CMD_MOUSE_WHEEL);
+		commandMap.put(COMBO_BOX_CHANGED, CMD_COMBO_BOX_CHANGED);
 		commandMap.put(VACANT_CONTENT, CMD_VACANT_CONTENT);
 		
 		for(int i = 0 ; i < OutpatientLog.KEYS.length ; i ++){
