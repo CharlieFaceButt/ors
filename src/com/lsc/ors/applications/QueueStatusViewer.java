@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.lsc.ors.applications.WaitingRecordViewer.MultipleOnClickListener;
 import com.lsc.ors.applications.listener.QSModelListener;
@@ -82,7 +83,14 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		obj = OutpatientLogDBO.getData(OutpatientLogDBO.TIME_LATEST_OF_DAY, currentDate);
 		int max = 0;
 		if(obj != null) max = QSVboard.getMinutesAmountFromDate((Date)obj);
-		timePicker = new JSlider(min, max, min);
+		timePicker = new JSlider(min, max + 5, min);
+		timePicker.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				board.setTargetTime(timePicker.getValue());
+			}
+		});
 		timeLabel = new Label(StringSet.CURRENT_DATE);
 		
 		//bounds
@@ -146,6 +154,10 @@ public class QueueStatusViewer extends VisualizationModelObject {
 				break;
 			case StringSet.CMD_NEXT_YEAR:
 				increaseDate(Calendar.YEAR, 1);
+				break;
+			case StringSet.CMD_MOUSE_WHEEL:
+				if(e.getID() == board.getID())
+					timePicker.setValue(board.getTargetTime());
 				break;
 			default:
 				break;

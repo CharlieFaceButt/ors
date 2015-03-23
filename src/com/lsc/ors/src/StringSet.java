@@ -107,6 +107,8 @@ public class StringSet {
 	//action command
 	public static final String MOUSE_CLICK = "鼠标点击";
 	public static final int CMD_MOUSE_CLICK = 64;
+	public static final String MOUSE_WHEEL = "鼠标滚轮";
+	public static final int CMD_MOUSE_WHEEL = 65;
 	
 	public static final String INFO_START = "初始化搞定";
 	
@@ -147,6 +149,7 @@ public class StringSet {
 		commandMap.put(TIME_UNIT_YEAR, CMD_TIME_UNIT_YEAR);
 		
 		commandMap.put(MOUSE_CLICK, CMD_MOUSE_CLICK);
+		commandMap.put(MOUSE_WHEEL, CMD_MOUSE_WHEEL);
 		commandMap.put(VACANT_CONTENT, CMD_VACANT_CONTENT);
 		
 		for(int i = 0 ; i < OutpatientLog.KEYS.length ; i ++){

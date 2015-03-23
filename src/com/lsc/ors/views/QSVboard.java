@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -66,6 +67,10 @@ public class QSVboard extends VisualizationBoard {
 		setData(list);
 	}
 
+	public void setTargetTime(int time){
+		targetTime = time;
+		isRepaintable = true;
+	}
 	@Override
 	public void setData(OutpatientLog[] list, int type) {
 		// TODO Auto-generated method stub
@@ -117,7 +122,12 @@ public class QSVboard extends VisualizationBoard {
 	public int getCurrentTime(){
 		return currentTime;
 	}
-
+	public int getTargetTime(){
+		return targetTime;
+	}
+	public int getID(){
+		return (int)serialVersionUID;
+	}
 	
 	private int startX = 0, startY = 0;
 	private int originalX = 0, originalY = 0;
@@ -325,6 +335,7 @@ public class QSVboard extends VisualizationBoard {
 		targetTime += e.getWheelRotation();
 		ConsoleOutput.pop("QSVboard.onMouseWheel", "targetTime:" + targetTime / 60 + ":" + targetTime % 60);
 		isRepaintable = true;
+		al.actionPerformed(new ActionEvent(this, (int)serialVersionUID, StringSet.MOUSE_WHEEL));
 	}
 
 	@Override
