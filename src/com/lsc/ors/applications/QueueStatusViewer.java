@@ -1,7 +1,6 @@
 package com.lsc.ors.applications;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Label;
@@ -11,21 +10,17 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.lsc.ors.applications.WaitingRecordViewer.MultipleOnClickListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.src.StringSet;
 import com.lsc.ors.views.QSVboard;
-import com.lsc.ors.views.WRVboard;
-import com.lsc.ors.views.widgets.DatePicker;
 import com.lsc.ors.views.widgets.TimeButtonGroup;
 
 /**
@@ -41,16 +36,6 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	 * generated serial ID
 	 */
 	private static final long serialVersionUID = -7226527625633491877L;
-	
-	private static final int HEIGHT = 620;
-	private static final int WIDTH = 980;
-	private static final int MARGIN = 10;
-	private static final int BOARD_HEIGHT = 400;
-	private static final int BOARD_WIDTH = 600;
-	private static final int ANALYZER_WIDTH = 350;
-	private static final int ANALYZER_HEIGHT = 600;
-	private static final int BUTTON_HEIGHT = 30;
-	private static final int BUTTON_WIDTH = 100;
 	
 	//view
 	QSVboard board = null;

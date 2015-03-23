@@ -24,6 +24,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
+import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.applications.listener.WRDModelListener;
 import com.lsc.ors.db.DBOpeListener;
@@ -51,6 +52,11 @@ public class PlatformController {
 	 * waiting record queue status model for visualization
 	 */
 	QueueStatusViewer QSModel = null;
+	/**
+	 * population distribution model for visualization
+	 */
+	PopulationDistributionViewer PDModel = null;
+	
 	int waitingRecordCount = 0;
 	
 	
@@ -315,6 +321,25 @@ public class PlatformController {
 					JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
 					break;
 				}
+				if(PDModel == null){
+					PDModel = new PopulationDistributionViewer(new ModelListener() {
+						@Override
+						public void onViewDestroy() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"停止");
+							PDModel = null;
+						}
+						@Override
+						public void onViewCreate() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"打开");
+						}
+					});
+				}
+				else{
+					addInfo("" + StringSet.VSL_POPULATION_DISTRIBUTION + "后台已经运行");
+				}
+				PDModel.show();
 				break;
 			//打开等待时间分布图
 			case StringSet.CMD_VSL_WAITING_TIME_DISTRIBUTION:

@@ -10,7 +10,6 @@ import javax.swing.event.ChangeListener;
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
-import com.lsc.ors.src.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 import com.lsc.ors.views.widgets.DatePicker;
 
@@ -20,6 +19,17 @@ public abstract class VisualizationModelObject extends ModelObject {
 	 * generated version ID
 	 */
 	private static final long serialVersionUID = 3270627961643152768L;
+
+	protected static final int HEIGHT = 620;
+	protected static final int WIDTH = 980;
+	protected static final int MARGIN = 10;
+	protected static final int BOARD_HEIGHT = 400;
+	protected static final int BOARD_WIDTH = 600;
+	protected static final int ANALYZER_WIDTH = 350;
+	protected static final int ANALYZER_HEIGHT = 600;
+	protected static final int BUTTON_HEIGHT = 30;
+	protected static final int BUTTON_WIDTH = 100;
+	
 	//data
 	Date currentDate = null;
 	DatePicker datePicker = null;

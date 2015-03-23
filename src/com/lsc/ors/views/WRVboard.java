@@ -12,8 +12,6 @@ import com.lsc.ors.src.StringSet;
 
 public class WRVboard extends VisualizationBoard{
 
-	private static final int WIDTH = 600;
-	private static final int HEIGHT = 400;
 	/**
 	 * generated serial id
 	 */

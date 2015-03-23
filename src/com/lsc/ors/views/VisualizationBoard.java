@@ -20,6 +20,9 @@ public abstract class VisualizationBoard extends Canvas {
 	 * generated serial ID
 	 */
 	private static final long serialVersionUID = 2703670296950660542L;
+	
+	protected static final int WIDTH = 600;
+	protected static final int HEIGHT = 400;
 
 	/**
 	 * 判断是否需要重画
