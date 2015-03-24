@@ -31,10 +31,6 @@ public class QSVboard extends VisualizationBoard {
 	private Map<String, Integer> featureWaitingCountList = null;
 	private Map<String, Integer> featureReceptCountList = null;
 	/**
-	 * 全部数据
-	 */
-	private OutpatientLog[] list = null;
-	/**
 	 * 等待队列
 	 */
 	private LinkedList<OutpatientLog> waitingList = new LinkedList<OutpatientLog>();
@@ -85,13 +81,16 @@ public class QSVboard extends VisualizationBoard {
 		setData(list, type, featureType);
 	}
 	public void setData(OutpatientLog[] list, int type, int fType){
-		this.list = list;
+		this.dataList = list;
 		offsetX = offsetY = 0;
 		sortListByRegistrationTime();
 		initFeatureList(fType);
-		baseTime = getMinutesAmountFromDate(list[0].getRegistration_time());
+		if(list != null)
+			baseTime = getMinutesAmountFromDate(list[0].getRegistration_time());
+		else baseTime = 0;
 		currentTime = baseTime;
 		targetTime = baseTime;
+		
 	}
 	/**
 	 * 生成feature取值列表
@@ -103,8 +102,8 @@ public class QSVboard extends VisualizationBoard {
 		featureReceptCountList = new HashMap<String, Integer>();
 		waitingList = new LinkedList<OutpatientLog>();
 		receptList = new LinkedList<OutpatientLog>();
-		if(list == null) return;
-		for(OutpatientLog ol : list){
+		if(dataList == null) return;
+		for(OutpatientLog ol : dataList){
 			String f = ol.get(featureType);
 			f = getFeatureValue(f);
 			if(!featureWaitingCountList.containsKey(f)){
@@ -116,16 +115,16 @@ public class QSVboard extends VisualizationBoard {
 	}
 	private void sortListByRegistrationTime(){
 		int key = 0;
-		if(list == null) return;
-		for(int i = 1 ; i < list.length ; i ++){
-			OutpatientLog ol = list[i];
+		if(dataList == null) return;
+		for(int i = 1 ; i < dataList.length ; i ++){
+			OutpatientLog ol = dataList[i];
 			key = getMinutesAmountFromDate(ol.getRegistration_time());
 			int j = i - 1;
-			while(j >= 0 && getMinutesAmountFromDate(list[j].getRegistration_time()) > key){
-				list[j+1] = list[j];
+			while(j >= 0 && getMinutesAmountFromDate(dataList[j].getRegistration_time()) > key){
+				dataList[j+1] = dataList[j];
 				j --;
 			}
-			list[j + 1] = ol;
+			dataList[j + 1] = ol;
 		}
 	}
 	
@@ -185,6 +184,9 @@ public class QSVboard extends VisualizationBoard {
 	private int rectWidth = 40;
 	private int rectHeightUnit = 8;
 	private int rectMargin = MARGIN;
+	/**
+	 * 将年龄分成的段数
+	 */
 	private int ageDivider = 4;
 	@Override
 	protected void onPaint(Graphics g) {
@@ -298,8 +300,8 @@ public class QSVboard extends VisualizationBoard {
 			currentTime = targetTime;
 			OutpatientLog ol = null;
 			String f = null;
-			for (int i = 0; i < list.length; i++) {
-				ol = list[i];
+			for (int i = 0; i < dataList.length; i++) {
+				ol = dataList[i];
 				f = ol.get(featureType);
 				f = getFeatureValue(f);
 				int count = 0;
@@ -360,7 +362,8 @@ public class QSVboard extends VisualizationBoard {
 		
 		//view details
 		if(featureType == OutpatientLog.INDEX_DIAGNOSES){
-			rectWidth = 80;
+			rectWidth = 120;
+			rectMargin = 20;
 		}
 		else rectWidth = 40;
 	}

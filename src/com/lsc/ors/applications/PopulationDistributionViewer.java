@@ -42,7 +42,15 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		board.setBackground(Color.WHITE);
 		JPanel displayer = new JPanel(new BorderLayout());
 		JPanel analyzer = new JPanel(new BorderLayout());
-		featureChooser = new JComboBox(OutpatientLog.KEYS);
+		featureChooser = new JComboBox(new String[]{
+				OutpatientLog.KEYS[OutpatientLog.INDEX_DEPARTMENT],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_DOCTOR],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_PATIENT_GENDER],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_PATIENT_AGE],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_DIAGNOSES],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_WAIT],
+				OutpatientLog.KEYS[OutpatientLog.INDEX_FURTHER_CONSULTATION]
+				});
 		featureChooser.addActionListener(mocl);
 		
 		//bounds
