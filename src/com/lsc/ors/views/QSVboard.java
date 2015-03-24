@@ -58,7 +58,6 @@ public class QSVboard extends VisualizationBoard {
 	public QSVboard(OutpatientLog[] list, ActionListener listener){
 		super(listener, list);
 		setBounds(0, 0, WIDTH, HEIGHT);
-		setData(list);
 	}
 
 	public void setTargetTime(int time){
@@ -138,9 +137,6 @@ public class QSVboard extends VisualizationBoard {
 		return (int)serialVersionUID;
 	}
 	
-	private int startX = 0, startY = 0;
-	private int originalX = 0, originalY = 0;
-	private boolean isReleased = true; 
 	@Override
 	protected void onMouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -150,26 +146,16 @@ public class QSVboard extends VisualizationBoard {
 	@Override
 	protected void onMousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		startX = e.getX();
-		startY = e.getY();
-		originalX = offsetX;
-		originalY = offsetY;
-		isReleased =false;
-		isRepaintable = true;
 	}
 
 	@Override
 	protected void onMouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		isReleased = true;
 	}
 
 	@Override
 	protected void onMouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		offsetX = originalX + (e.getX() - startX);
-		offsetY = originalY + (e.getY() - startY);
-		isRepaintable = true;
 	}
 
 	@Override

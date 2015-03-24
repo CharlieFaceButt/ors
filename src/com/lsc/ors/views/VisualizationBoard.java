@@ -87,6 +87,9 @@ public abstract class VisualizationBoard extends Canvas {
 	}
 	
 
+	protected int startX = 0, startY = 0;
+	protected int originalX = 0, originalY = 0;
+	protected boolean isReleased = true; 
 	class BoardMouseListener implements MouseListener,MouseMotionListener,MouseWheelListener{
 		
 		@Override
@@ -98,12 +101,19 @@ public abstract class VisualizationBoard extends Canvas {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			// TODO Auto-generated method stub
+			startX = e.getX();
+			startY = e.getY();
+			originalX = offsetX;
+			originalY = offsetY;
+			isReleased =false;
+			isRepaintable = true;
 			onMousePressed(e);
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			// TODO Auto-generated method stub
+			isReleased = true;
 			onMouseReleased(e);
 		}
 
@@ -121,6 +131,9 @@ public abstract class VisualizationBoard extends Canvas {
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			// TODO Auto-generated method stub
+			offsetX = originalX + (e.getX() - startX);
+			offsetY = originalY + (e.getY() - startY);
+			isRepaintable = true;
 			onMouseDragged(e);
 		}
 

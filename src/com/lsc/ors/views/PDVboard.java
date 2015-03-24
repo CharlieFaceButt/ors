@@ -27,31 +27,25 @@ public class PDVboard extends VisualizationBoard {
 	/**
 	 * 记录可能的特征维度
 	 */
-	int[] featureList = new int[]{
-		OutpatientLog.INDEX_DEPARTMENT, OutpatientLog.INDEX_DOCTOR,
-		OutpatientLog.INDEX_PATIENT_GENDER, OutpatientLog.INDEX_PATIENT_AGE,
-		OutpatientLog.INDEX_REGISTRATION, OutpatientLog.INDEX_RECEPTION,
-		OutpatientLog.INDEX_DIAGNOSES, OutpatientLog.INDEX_FURTHER_CONSULTATION
-	};
+	LinkedList<Integer> featureList;
 	/**
-	 * 当前特征维度的可能取值
+	 * 当前特征维度的可能取值,以及该取值是否被显示
 	 */
-	String[] featureValues = null;
+	Map<String, Boolean> featureValues;
 	/**
 	 * 二维数据存储：等待人数=countLists（特征取值，等待时间）
 	 */
-	Map<String,Map<String, Integer>> countLists = new HashMap<String, Map<String,Integer>>();
+	Map<String,Map<String, Integer>> countLists;
 	/**
 	 * 每段的范围
 	 */
-	int waitingTimeDivider = 10;
+	private int waitingTimeDivider = 10;
 	
 	public PDVboard(ActionListener listener, OutpatientLog[] dataList) {
 		super(listener, dataList);
 		// TODO Auto-generated constructor stub
 		
 		setBounds(0, 0, WIDTH, HEIGHT);
-		setData(dataList);
 	}
 
 	@Override
@@ -63,7 +57,8 @@ public class PDVboard extends VisualizationBoard {
 		this.dataList = list;
 		offsetX = offsetY = 0;
 		sortListByRegistrationTime();
-		initFeatureList(fType);
+		if(waitingTimeDivider == 0) waitingTimeDivider = 10;
+		setFeature(fType);
 		
 		//init lists
 		OutpatientLog ol = null;
@@ -79,11 +74,31 @@ public class PDVboard extends VisualizationBoard {
 			//set feature list
 		}
 	}
-	private void initFeatureList(Integer fType){
-		if(featureType.equals(fType))
+	private void setFeature(Integer fType){
+		//init feature list
+		if(featureList == null || featureList.size() == 0){
+			featureList = new LinkedList<Integer>();
+			featureList.add(OutpatientLog.INDEX_DEPARTMENT);
+			featureList.add(OutpatientLog.INDEX_DOCTOR);
+			featureList.add(OutpatientLog.INDEX_PATIENT_GENDER);
+			featureList.add(OutpatientLog.INDEX_PATIENT_AGE);
+			featureList.add(OutpatientLog.INDEX_REGISTRATION);
+			featureList.add(OutpatientLog.INDEX_RECEPTION);
+			featureList.add(OutpatientLog.INDEX_DIAGNOSES);
+			featureList.add(OutpatientLog.INDEX_FURTHER_CONSULTATION);
+		}
+		//if feature type not change then don't do anything
+		if(featureType != null && featureType.equals(fType))
 			return;
+		//set feature type
 		featureType = fType;
+		//make sure feature type is legal
+		if(featureType == null || !featureList.contains(featureType)) 
+			featureType = featureList.get(0);
+		
 		//remove old keys
+		if(countLists == null)
+			countLists = new HashMap<String, Map<String,Integer>>();
 		for(String f : countLists.keySet()){
 			if(f != null && !f.equals("all")){
 				countLists.remove(f);
@@ -108,20 +123,22 @@ public class PDVboard extends VisualizationBoard {
 				if(!countLists.containsKey(key)){
 					map = new HashMap<String, Integer>();
 					countLists.put(key, map);
-					if(!map.containsKey(countStr))
-						map.put(countStr, 0);
 				}else{
 					map = countLists.get(key);
 				}
 				//add waiting count
+				if(!map.containsKey(countStr))
+					map.put(countStr, 0);
 				count = map.get(countStr);
-				map.put(key, count + 1);
+				map.put(countStr, count + 1);
 			}
 		}
 		//set feature list
-		Set<String> featureValueKeys = countLists.keySet();
-		featureValues = new String[featureValueKeys.size()];
-		featureValueKeys.toArray(featureValues);
+		if(featureValues == null)
+			featureValues = new HashMap<String, Boolean>();
+		for(String featureValueKey : countLists.keySet()){
+			featureValues.put(featureValueKey, true);
+		}
 	}
 	/**
 	 * 根据等待时间生成对应的取值范围key
@@ -150,7 +167,7 @@ public class PDVboard extends VisualizationBoard {
 		case OutpatientLog.INDEX_RECEPTION:
 		case OutpatientLog.INDEX_REGISTRATION:
 			Date date = new Date(key);
-			getMinutesAmountFromDate(date);
+			newKey = "" + getMinutesAmountFromDate(date);
 			break;
 		default:
 			newKey = key;
@@ -215,16 +232,53 @@ public class PDVboard extends VisualizationBoard {
 
 	}
 
+	private int adjustSpeed = 3;
 	@Override
 	protected void beforePaint() {
 		// TODO Auto-generated method stub
-
+		if(!isReleased) return;
+		
+		if(offsetX > 5) offsetX -= (offsetX / adjustSpeed);
+		else if(offsetX > 0) offsetX--;
+		
+		if(offsetY > 5) offsetY -= (offsetY / adjustSpeed);
+		else if(offsetY > 0) offsetY--;
+		
+		if(offsetX <= 0 || offsetY <= 0) isRepaintable = false;
 	}
 
+	private int rectGap = 10;
+	private int rectWidth = 10;
+	private int rectHeightUnit = 10;
 	@Override
 	protected void onPaint(Graphics g) {
 		// TODO Auto-generated method stub
-
+		HashMap<String, Integer> map = null;
+		int bottom = HEIGHT - RULER_WIDTH;
+		for(String featureKey : countLists.keySet()){
+			if(!featureValues.get(featureKey)) continue;
+			
+			map = (HashMap<String, Integer>)countLists.get(featureKey);
+			String[] split = null; 
+			for(String waitStr : map.keySet()){
+				if(waitStr.equals("null")){
+					g.drawRect(
+							offsetX + RULER_WIDTH + rectGap,  
+							bottom - map.get(waitStr) * rectHeightUnit , 
+							rectWidth, 
+							map.get(waitStr) * rectHeightUnit);
+				} else {
+					split = waitStr.split("-");
+					Integer wait = Integer.parseInt(split[0]);
+					if(wait == null) continue;
+					g.drawRect(
+							offsetX + RULER_WIDTH + rectGap + (rectWidth + rectGap) * (wait / waitingTimeDivider),  
+							bottom - map.get(waitStr) * rectHeightUnit, 
+							rectWidth, 
+							map.get(waitStr) * rectHeightUnit);
+				}
+			}
+		}
 	}
 
 }

@@ -69,12 +69,6 @@ public class WRVboard extends VisualizationBoard{
 	
 
 
-
-
-	private int firstX = 0,firstY = 0;
-	
-	private int originalX = 0, originalY = 0;
-
 	@Override
 	protected void onMouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -95,17 +89,6 @@ public class WRVboard extends VisualizationBoard{
 	@Override
 	protected void onMousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		isReleased = false;
-		isRepaintable = true;
-		///debug
-//		System.out.println("first:(" + e.getX() + ", " + e.getY() + ")");
-		//set start point
-		firstX = e.getX();
-		firstY = e.getY();
-		
-		//save original offset
-		originalX = offsetX;
-		originalY = offsetY;
 	}
 
 
@@ -113,7 +96,6 @@ public class WRVboard extends VisualizationBoard{
 	@Override
 	protected void onMouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		isReleased = true;
 	}
 
 
@@ -121,8 +103,6 @@ public class WRVboard extends VisualizationBoard{
 	@Override
 	protected void onMouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		offsetX = originalX + (e.getX() - firstX);
-		offsetY = originalY + (e.getY() - firstY);
 	}
 
 	@Override
@@ -272,7 +252,6 @@ public class WRVboard extends VisualizationBoard{
 	}
 	
 	private int adjustSpeed = 3;
-	private boolean isReleased = true; 
 	@Override
 	protected void beforePaint() {
 		// TODO Auto-generated method stub
