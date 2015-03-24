@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseWheelEvent;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -39,39 +40,21 @@ public class WaitingRecordViewer extends VisualizationModelObject{
 	private static final int LABEL_HEIGHT = 20;
 	
 	//view
-	WRVboard board = null;
 	Label[] logInfos = null;
-	TimeButtonGroup timeBtns = null;
-	
-	//listener
-	MultipleOnClickListener mocl = new MultipleOnClickListener();
 
 	public WaitingRecordViewer(WRDModelListener listener) {
 		super(listener);
 		// TODO Auto-generated constructor stub
 		
 		//initialize views
-		setLayout(null);
 		board = new WRVboard(getDataByDate(currentDate), mocl);
 		board.setBackground(Color.WHITE);
-		JPanel displayer = new JPanel(new BorderLayout());
-		JPanel analyzer = new JPanel(new BorderLayout());
 
 		//bounds
 		setBounds(100, 50, WIDTH, HEIGHT);
 		setResizable(false);
-		displayer.setBounds(10, 10, 600, 400);	//top left
-		analyzer.setBounds(620, 10, ANALYZER_WIDTH, ANALYZER_HEIGHT);	//right
-		datePicker.setBounds(10, 420, 600, 80);	//bottom left
-		timeBtns = new TimeButtonGroup(500, 10, BUTTON_WIDTH, BUTTON_HEIGHT, mocl);
 		
 		//add views
-		add(displayer);
-		add(analyzer);
-		for(Component c : timeBtns.getAllComponents()){
-			add(c);
-		}
-		add(datePicker);
 		displayer.add(board);
 		int i = 0;
 		logInfos = new Label[OutpatientLog.KEYS.length];
@@ -90,18 +73,6 @@ public class WaitingRecordViewer extends VisualizationModelObject{
 		
 	}
 	
-
-	/**
-	 * 根据时间获得数据集合
-	 * @param date
-	 * @return
-	 */
-	private OutpatientLog[] getDataByDate(Date date){
-		if(board == null)
-			return getDataByDateRange(date, StringSet.CMD_TIME_UNIT_DAY);
-		return getDataByDateRange(date, board.getTimeUnitType());
-	}
-	
 	@Override
 	public void paint(Graphics g) {
 		// TODO Auto-generated method stub
@@ -109,84 +80,42 @@ public class WaitingRecordViewer extends VisualizationModelObject{
 		g.drawLine(619, 0, 619, 620);
 	}
 
-	
-
-	class MultipleOnClickListener implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			Integer msg = StringSet.getInstance().getCommandIndex(e.getActionCommand());
-			switch (msg) {
-			case StringSet.CMD_LAST_DAY:
-				increaseDate(Calendar.DAY_OF_YEAR, -1);
-				break;
-			case StringSet.CMD_NEXT_DAY:
-				increaseDate(Calendar.DAY_OF_YEAR, 1);
-				break;
-			case StringSet.CMD_LAST_WEEK:
-				increaseDate(Calendar.DAY_OF_YEAR, -7);
-				break;
-			case StringSet.CMD_NEXT_WEEK:
-				increaseDate(Calendar.DAY_OF_YEAR, 7);
-				break;
-			case StringSet.CMD_LAST_MONTH:
-				increaseDate(Calendar.MONTH, -1);
-				break;
-			case StringSet.CMD_NEXT_MONTH:
-				increaseDate(Calendar.MONTH, 1);
-				break;
-			case StringSet.CMD_LAST_YEAR:
-				increaseDate(Calendar.YEAR, -1);
-				break;
-			case StringSet.CMD_NEXT_YEAR:
-				increaseDate(Calendar.YEAR, 1);
-				break;
-			case StringSet.CMD_TIME_UNIT_DAY:
-			case StringSet.CMD_TIME_UNIT_WEEK:
-			case StringSet.CMD_TIME_UNIT_MONTH:
-			case StringSet.CMD_TIME_UNIT_YEAR:
-				board.setData(getDataByDateRange(currentDate, msg), msg);
-				break;
-			case StringSet.CMD_MOUSE_CLICK:
-				if(e.getID() == (int)WRVboard.getSerialID()){
-					OutpatientLog ol = null;
-					if(e.getSource() != null)
-						ol = (OutpatientLog)e.getSource();
-					for (int i = 0; i < logInfos.length; i++) {
-						if(ol != null)
-							logInfos[i].setText(ol.get(i));
-						else
-							logInfos[i].setText(StringSet.VACANT_CONTENT);
-					}
-				}
-				break;
-			case StringSet.CMD_VACANT_CONTENT:
-				if(e.getID() == (int)WRVboard.getSerialID()){
-					for (int i = 0; i < logInfos.length; i++) {
-						logInfos[i].setText(StringSet.VACANT_CONTENT);
-					}
-				}
-				break;
-			default:
-				break;
-			}
-		}
-		
-	}
-
-
-	@Override
-	protected void updateViewsData() {
-		datePicker.setPickerDate(currentDate);
-		board.setData(getDataByDate(currentDate));
-	}
-
 	@Override
 	protected void onDatePickerChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-		if(setCurrentDate(datePicker.getCurrentDate()))
-			board.setData(getDataByDate(currentDate));
+	}
+
+	@Override
+	protected void onDateChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onMouseWheelOnBoard(MouseWheelEvent e) {
+		// TODO Auto-generated method stub
+		if(board.getTimeUnitType() == StringSet.CMD_TIME_UNIT_DAY)
+			increaseDate(Calendar.DAY_OF_YEAR, e.getWheelRotation());
+	}
+
+	@Override
+	protected void onMouseClickOnBoard(Object source) {
+		// TODO Auto-generated method stub
+		if(source != null && StringSet.VACANT_CONTENT.equals(source.toString())){
+			for (int i = 0; i < logInfos.length; i++) {
+				logInfos[i].setText(StringSet.VACANT_CONTENT);
+			}
+		} else{
+			OutpatientLog ol = null;
+			if(source != null)
+				ol = (OutpatientLog)source;
+			for (int i = 0; i < logInfos.length; i++) {
+				if(ol != null)
+					logInfos[i].setText(ol.get(i));
+				else
+					logInfos[i].setText(StringSet.VACANT_CONTENT);
+			}
+		}
 	}
 	
 }

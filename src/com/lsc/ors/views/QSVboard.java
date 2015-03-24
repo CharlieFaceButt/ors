@@ -133,9 +133,6 @@ public class QSVboard extends VisualizationBoard {
 	public int getTargetTime(){
 		return targetTime;
 	}
-	public int getID(){
-		return (int)serialVersionUID;
-	}
 	
 	@Override
 	protected void onMouseClicked(MouseEvent e) {
@@ -373,9 +370,9 @@ public class QSVboard extends VisualizationBoard {
 	protected void onMouseWheel(MouseWheelEvent e) {
 		// TODO Auto-generated method stub
 		targetTime += e.getWheelRotation();
+		if(targetTime < baseTime) targetTime = baseTime;
 		ConsoleOutput.pop("QSVboard.onMouseWheel", "targetTime:" + targetTime / 60 + ":" + targetTime % 60);
 		isRepaintable = true;
-		al.actionPerformed(new ActionEvent(this, (int)serialVersionUID, StringSet.MOUSE_WHEEL));
 	}
 
 	@Override

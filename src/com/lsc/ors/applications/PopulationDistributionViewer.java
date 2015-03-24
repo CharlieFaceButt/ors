@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseWheelEvent;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,22 +27,15 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 	 */
 	private static final long serialVersionUID = -1625390664392395884L;
 	
-	PDVboard board = null;
-	TimeButtonGroup timeBtns = null;
 	JComboBox featureChooser = null;
-	
-	MultipleOnClickListener mocl = new MultipleOnClickListener();
 
 	public PopulationDistributionViewer(ModelListener listener) {
 		super(listener);
 		// TODO Auto-generated constructor stub
 		
 		//initialize views
-		setLayout(null);
 		board = new PDVboard(mocl, getDataByDate(currentDate));
 		board.setBackground(Color.WHITE);
-		JPanel displayer = new JPanel(new BorderLayout());
-		JPanel analyzer = new JPanel(new BorderLayout());
 		featureChooser = new JComboBox(new String[]{
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DEPARTMENT],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DOCTOR],
@@ -54,39 +48,17 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		featureChooser.addActionListener(mocl);
 		
 		//bounds
-		setBounds(100, 50, WIDTH, HEIGHT);
-		setResizable(false);
-		displayer.setBounds(10, 10, 600, 400);	//top left
-		analyzer.setBounds(620, 10, ANALYZER_WIDTH, ANALYZER_HEIGHT);	//right
-		datePicker.setBounds(10, 420, 600, 80);	//bottom left
-		timeBtns = new TimeButtonGroup(500, 10, BUTTON_WIDTH, BUTTON_HEIGHT, mocl);
 		featureChooser.setBounds(MARGIN + (BUTTON_WIDTH + MARGIN) * 4, timeBtns.getTop(), 150, 20);
 		
 		//add views
-		add(displayer);
-		add(analyzer);
-		for(Component c : timeBtns.getAllComponents()){
-			add(c);
-		}
 		add(featureChooser);
-		add(datePicker);
 		displayer.add(board);
-	}
-	
-	/**
-	 * 根据时间获得数据集合
-	 * @param date
-	 * @return
-	 */
-	private OutpatientLog[] getDataByDate(Date date){
-		if(board == null)
-			return getDataByDateRange(date, StringSet.CMD_TIME_UNIT_DAY);
-		return getDataByDateRange(date, board.getTimeUnitType());
 	}
 
 	@Override
-	protected void updateViewsData() {
+	protected void onDateChanged() {
 		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -135,6 +107,18 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 			default:break;
 			}
 		}
+		
+	}
+
+	@Override
+	protected void onMouseWheelOnBoard(MouseWheelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onMouseClickOnBoard(Object source) {
+		// TODO Auto-generated method stub
 		
 	}
 }

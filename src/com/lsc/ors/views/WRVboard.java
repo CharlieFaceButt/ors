@@ -80,9 +80,9 @@ public class WRVboard extends VisualizationBoard{
 			index = -1;
 		if(al != null){
 			if(index < 0 || index >= dataList.length)
-				al.actionPerformed(new ActionEvent(StringSet.VACANT_CONTENT, (int)serialVersionUID, StringSet.VACANT_CONTENT));
+				al.actionPerformed(new ActionEvent(StringSet.VACANT_CONTENT, getID(), StringSet.MOUSE_CLICK));
 			else
-				al.actionPerformed(new ActionEvent(dataList[index], (int)serialVersionUID, StringSet.MOUSE_CLICK));
+				al.actionPerformed(new ActionEvent(dataList[index], getID(), StringSet.MOUSE_CLICK));
 		}
 	}
 	
@@ -117,7 +117,6 @@ public class WRVboard extends VisualizationBoard{
 	@Override
 	protected void onMouseWheel(MouseWheelEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	private static final int RECTHEIGHT = 10;

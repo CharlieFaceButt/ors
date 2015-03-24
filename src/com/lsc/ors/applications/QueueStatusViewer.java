@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseWheelEvent;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,24 +39,17 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	private static final long serialVersionUID = -7226527625633491877L;
 	
 	//view
-	QSVboard board = null;
 	JComboBox featureChooser = null;
-	TimeButtonGroup timeBtns = null;
 	JSlider timePicker = null;
 	Label timeLabel = null;
 	
-	//listener
-	MultipleOnClickListener mocl = new MultipleOnClickListener();
 	public QueueStatusViewer(QSModelListener listener) {
 		super(listener);
 		// TODO Auto-generated constructor stub
 		
 		//initialize views
-		setLayout(null);
 		board = new QSVboard(getDataByDate(currentDate), mocl);
 		board.setBackground(Color.WHITE);
-		JPanel displayer = new JPanel(new BorderLayout());
-		JPanel analyzer = new JPanel(null);
 		featureChooser = new JComboBox(new String[]{
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DOCTOR],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_PATIENT_GENDER],
@@ -63,37 +57,35 @@ public class QueueStatusViewer extends VisualizationModelObject {
 				OutpatientLog.KEYS[OutpatientLog.INDEX_DIAGNOSES],
 				OutpatientLog.KEYS[OutpatientLog.INDEX_FURTHER_CONSULTATION]
 				});
-		featureChooser.addActionListener(mocl);
+		featureChooser.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Integer msg = StringSet.getInstance().getCommandIndex(featureChooser.getSelectedItem().toString());
+				if(msg > StringSet.CMD_FEATURE.OUTPATIENT_BASE && msg < StringSet.CMD_FEATURE.OUTPATIENT_BASE + 18){
+					((QSVboard)board).setFeatureType(msg - StringSet.CMD_FEATURE.OUTPATIENT_BASE);
+				}
+			}
+		});
 		timePicker = new JSlider(0, 100, 0);
 		initTimePicker(currentDate);
 		timePicker.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				board.setTargetTime(timePicker.getValue());
+				((QSVboard)board).setTargetTime(timePicker.getValue());
+				updateTimeLabel();
 			}
 		});
 		timeLabel = new Label(StringSet.CURRENT_DATE);
 		
 		//bounds
-		setBounds(100, 50, WIDTH, HEIGHT);
-		setResizable(false);
-		displayer.setBounds(MARGIN, MARGIN, BOARD_WIDTH, BOARD_HEIGHT);	//top left
-		analyzer.setBounds(MARGIN * 2 + BOARD_WIDTH, MARGIN, ANALYZER_WIDTH, ANALYZER_HEIGHT);	//right
-		datePicker.setBounds(MARGIN, MARGIN * 2 + BOARD_HEIGHT, BOARD_WIDTH, 80);	//bottom left
-		timeBtns = new TimeButtonGroup(MARGIN * 2 + BOARD_HEIGHT + 80, MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT, mocl);
 		featureChooser.setBounds(MARGIN + (BUTTON_WIDTH + MARGIN) * 4, timeBtns.getTop(), BUTTON_WIDTH, 20);
 		timePicker.setBounds(MARGIN, MARGIN, ANALYZER_WIDTH - 2 * MARGIN, 40);
 		updateTimeLabel();
 		
 		//add to the view
-		add(displayer);
 		displayer.add(board);
-		add(datePicker);
-		add(analyzer);
-		for(Component c : timeBtns.getAllComponents()){
-			add(c);
-		}
 		timeBtns.disableTimeUnitChooser();
 		add(featureChooser);
 		analyzer.add(timePicker);
@@ -101,7 +93,7 @@ public class QueueStatusViewer extends VisualizationModelObject {
 	}
 	
 	private void updateTimeLabel(){
-		int minuteAmount = board.getCurrentTime();
+		int minuteAmount = ((QSVboard)board).getTargetTime();
 		timeLabel.setBounds(MARGIN, MARGIN + 40, ANALYZER_WIDTH - 2 * MARGIN, 40);
 		timeLabel.setText("" + minuteAmount / 60 + ":" + minuteAmount % 60);
 	}
@@ -118,83 +110,27 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		timePicker.setValue(min);
 	}
 
-	class MultipleOnClickListener implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			Integer msg = StringSet.getInstance().getCommandIndex(e.getActionCommand());
-			switch (msg) {
-			case StringSet.CMD_LAST_DAY:
-				increaseDate(Calendar.DAY_OF_YEAR, -1);
-				break;
-			case StringSet.CMD_NEXT_DAY:
-				increaseDate(Calendar.DAY_OF_YEAR, 1);
-				break;
-			case StringSet.CMD_LAST_WEEK:
-				increaseDate(Calendar.DAY_OF_YEAR, -7);
-				break;
-			case StringSet.CMD_NEXT_WEEK:
-				increaseDate(Calendar.DAY_OF_YEAR, 7);
-				break;
-			case StringSet.CMD_LAST_MONTH:
-				increaseDate(Calendar.MONTH, -1);
-				break;
-			case StringSet.CMD_NEXT_MONTH:
-				increaseDate(Calendar.MONTH, 1);
-				break;
-			case StringSet.CMD_LAST_YEAR:
-				increaseDate(Calendar.YEAR, -1);
-				break;
-			case StringSet.CMD_NEXT_YEAR:
-				increaseDate(Calendar.YEAR, 1);
-				break;
-			case StringSet.CMD_MOUSE_WHEEL:
-				if(e.getID() == board.getID())
-					timePicker.setValue(board.getTargetTime());
-				break;
-			case StringSet.CMD_COMBO_BOX_CHANGED:
-				msg = StringSet.getInstance().getCommandIndex(featureChooser.getSelectedItem().toString());
-				if(msg > StringSet.CMD_FEATURE.OUTPATIENT_BASE && msg < StringSet.CMD_FEATURE.OUTPATIENT_BASE + 18){
-					board.setFeatureType(msg - StringSet.CMD_FEATURE.OUTPATIENT_BASE);
-				}
-				break;
-			default:
-				break;
-			}
-		}
-		
-	}
-	
-	/**
-	 * 根据时间获得数据集合
-	 * @param date
-	 * @return
-	 */
-	private OutpatientLog[] getDataByDate(Date date){
-		if(board == null)
-			return getDataByDateRange(date, StringSet.CMD_TIME_UNIT_DAY);
-		return getDataByDateRange(date, board.getTimeUnitType());
-	}
-
-
-	@Override
-	protected void updateViewsData() {
-		// TODO Auto-generated method stub
-		datePicker.setPickerDate(currentDate);
-		initTimePicker(currentDate);
-		board.setData(getDataByDate(currentDate));
-	}
-
 	@Override
 	protected void onDatePickerChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-		if(datePicker == e.getSource()){
-			ConsoleOutput.pop("QueueStatusViewer.onDatePickerChanged", "changed");
-			if(setCurrentDate(datePicker.getCurrentDate()))
-				board.setData(getDataByDate(currentDate));
-			initTimePicker(currentDate);
-			return;
-		}
+		initTimePicker(currentDate);
+	}
+
+	@Override
+	protected void onDateChanged() {
+		// TODO Auto-generated method stub
+		initTimePicker(currentDate);
+	}
+
+	@Override
+	protected void onMouseWheelOnBoard(MouseWheelEvent e) {
+		// TODO Auto-generated method stub
+		timePicker.setValue(((QSVboard)board).getTargetTime());
+	}
+
+	@Override
+	protected void onMouseClickOnBoard(Object source) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -3,6 +3,7 @@ package com.lsc.ors.views;
 import java.awt.Canvas;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -20,6 +21,9 @@ public abstract class VisualizationBoard extends Canvas {
 	 * generated serial ID
 	 */
 	private static final long serialVersionUID = 2703670296950660542L;
+	public int getID(){
+		return (int)serialVersionUID;
+	}
 	
 	protected static final int WIDTH = 600;
 	protected static final int HEIGHT = 400;
@@ -28,7 +32,13 @@ public abstract class VisualizationBoard extends Canvas {
 	 * 判断是否需要重画
 	 */
 	boolean isRepaintable = false;
-	
+	/**
+	 * 可能取值：<br>
+	 * StringSet.CMD_TIME_UNIT_DAY<br>
+	 * StringSet.CMD_TIME_UNIT_WEEK<br>
+	 * StringSet.CMD_TIME_UNIT_MONTH<br>
+	 * StringSet.CMD_TIME_UNIT_YEAR<br>
+	 */
 	protected int timeUnitType = StringSet.CMD_TIME_UNIT_DAY;
 	
 	/**
@@ -59,13 +69,21 @@ public abstract class VisualizationBoard extends Canvas {
 		
 		new Thread(new AnimThread()).start();
 	}
-
+	/**
+	 * 
+	 * @return 可能取值:<br>
+	 * StringSet.CMD_TIME_UNIT_DAY<br>
+	 * StringSet.CMD_TIME_UNIT_WEEK<br>
+	 * StringSet.CMD_TIME_UNIT_MONTH<br>
+	 * StringSet.CMD_TIME_UNIT_YEAR<br>
+	 */
 	public int getTimeUnitType(){
 		return timeUnitType;
 	}
 
 	public void setData(OutpatientLog[] list){
 		setData(list, timeUnitType);
+		isRepaintable = true;
 	}
 	
 	class AnimThread implements Runnable{
@@ -147,6 +165,7 @@ public abstract class VisualizationBoard extends Canvas {
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			// TODO Auto-generated method stub
 			onMouseWheel(e);
+			al.actionPerformed(new ActionEvent(e, getID(), StringSet.MOUSE_WHEEL));
 		}
 		
 	}
@@ -159,7 +178,11 @@ public abstract class VisualizationBoard extends Canvas {
 		// TODO Auto-generated method stub
 		beforePaint();
 		super.paint(g);
-		onPaint(g);
+		if(dataList == null){
+			g.drawString(StringSet.VACANT_CONTENT, WIDTH / 2 - 10, HEIGHT / 2);
+		}else{
+			onPaint(g);
+		}
 	}
 	
 	/**

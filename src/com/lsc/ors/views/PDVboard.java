@@ -60,8 +60,10 @@ public class PDVboard extends VisualizationBoard {
 		offsetX = offsetY = 0;
 		sortListByRegistrationTime();
 		setFeature(fType, 30);
+		setCountLists();
 		
 		//init lists
+		if(dataList == null) return;
 		OutpatientLog ol = null;
 		int wait = 0;
 		int quotient = 0;
@@ -74,10 +76,9 @@ public class PDVboard extends VisualizationBoard {
 			if(wait > maxWaitingTime) maxWaitingTime = wait;
 			quotient = wait / waitingTimeDivider;
 			key = "" + (quotient * waitingTimeDivider) + "-" + ((quotient + 1)* waitingTimeDivider);
-			//set feature list
 		}
 	}
-	private void setFeature(Integer fType, int divider){
+	private synchronized void setFeature(Integer fType, int divider){
 		waitingTimeDivider = divider;
 		//init feature list
 		if(featureList == null || featureList.size() == 0){
@@ -96,6 +97,8 @@ public class PDVboard extends VisualizationBoard {
 			return;
 		//set feature type
 		featureType = fType;
+	}
+	private void setCountLists(){
 		//make sure feature type is legal
 		if(featureType == null || !featureList.contains(featureType)) 
 			featureType = featureList.get(0);
@@ -104,12 +107,15 @@ public class PDVboard extends VisualizationBoard {
 		//remove old keys
 		if(countLists == null)
 			countLists = new HashMap<String, Map<String,Integer>>();
-		for(String f : countLists.keySet()){
+		String[] fKeys = new String[countLists.keySet().size()];
+		countLists.keySet().toArray(fKeys);
+		for(String f : fKeys){
 			if(f != null && !f.equals("all")){
 				countLists.remove(f);
 			}
 		}
 		//initiate key: all
+		if(dataList == null) return;
 		if(!countLists.containsKey("all")) 
 			countLists.put("all", new HashMap<String, Integer>());
 		//initiate other keys for all feature values
@@ -270,7 +276,7 @@ public class PDVboard extends VisualizationBoard {
 		HashMap<String, Integer> map = null;
 		int bottom = HEIGHT - RULER_WIDTH;
 		g.setColor(Color.GREEN);
-		int nPoints = maxWaitingTime / waitingTimeDivider + 1;
+		int nPoints = maxWaitingTime / waitingTimeDivider + 2;
 		int[] xPoints = null;
 		int[] yPoints = null;
 		for(String featureKey : countLists.keySet()){
