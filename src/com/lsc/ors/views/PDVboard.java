@@ -237,7 +237,10 @@ public class PDVboard extends VisualizationBoard {
 	@Override
 	protected void onMouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		mouseY = e.getY();
+		mouseX = e.getX();
+		mouseAlignEnabled = true;
+		isRepaintable = true;
 	}
 
 	@Override
@@ -296,8 +299,8 @@ public class PDVboard extends VisualizationBoard {
 		
 		g.setColor(Color.BLACK);
 		paintRulers(g);
+		paintMouseAlign(g);
 	}
-	
 	private int ySlash = 1;
 	private void paintRulers(Graphics g){
 		//draw axisX
@@ -313,6 +316,17 @@ public class PDVboard extends VisualizationBoard {
 			g.drawLine(RULER_WIDTH - SLASH_LENGTH, i, RULER_WIDTH, i);
 			g.drawString("" + j, 0, i);
 		}
+	}
+	private boolean mouseAlignEnabled = false;
+	private int mouseX = 0, mouseY = 0;
+	private void paintMouseAlign(Graphics g){
+		if(!mouseAlignEnabled) return;
+		if(mouseY < HEIGHT - RULER_WIDTH && mouseX > RULER_WIDTH){
+			mouseY = (HEIGHT - RULER_WIDTH - mouseY + rectHeightUnit / 2) / rectHeightUnit;
+			mouseY = HEIGHT - RULER_WIDTH - rectHeightUnit * mouseY;
+			g.drawLine(RULER_WIDTH, mouseY, WIDTH, mouseY);
+		}
+		mouseAlignEnabled = false;
 	}
 
 }
