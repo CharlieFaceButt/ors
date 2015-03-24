@@ -3,13 +3,20 @@ package com.lsc.ors.applications;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 
@@ -53,6 +60,49 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		//add views
 		add(featureChooser);
 		displayer.add(board);
+		
+		initAnalyzer();
+	}
+	
+	ArrayList<JComponent> analyzerChangableComponent;
+	Label featureTitle;
+	JComboBox recordTypeChooser;
+	private void initAnalyzer(){
+		if(analyzerChangableComponent == null)
+			analyzerChangableComponent = new ArrayList<JComponent>();
+		//feature value label
+		String label = OutpatientLog.KEYS[((PDVboard)board).getFeatureType()];
+		featureTitle = new Label();
+		featureTitle.setBounds(MARGIN, MARGIN, BUTTON_WIDTH, 20);
+		analyzer.add(featureTitle);
+		featureTitle.setText(label);
+		//feature values
+		Map<String, Boolean> mfv = ((PDVboard)board).getFeatureValues();
+		int i = 1;
+		for(String text : mfv.keySet()){
+			JCheckBox jcb = new JCheckBox(text, mfv.get(text));
+			jcb.setBounds(MARGIN * 2, MARGIN + (20 + MARGIN) * i, BUTTON_WIDTH, 20);
+			analyzer.add(jcb);
+			analyzerChangableComponent.add(jcb);
+			i ++;
+		}
+		//record type chooser
+		recordTypeChooser = new JComboBox(new String[]{
+				"等待人数", "已就诊人数"
+		});
+		recordTypeChooser.setBounds(MARGIN * 2, ANALYZER_HEIGHT - 6 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
+		recordTypeChooser.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		analyzer.add(recordTypeChooser);
+	}
+	private void updateAnalyzer(){
+		
 	}
 
 	@Override
@@ -120,5 +170,14 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 	protected void onMouseClickOnBoard(Object source) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void paint(Graphics g) {
+		// TODO Auto-generated method stub
+		super.paint(g);
+		g.drawLine(BOARD_WIDTH + MARGIN * 2, 0, BOARD_WIDTH + MARGIN * 2, HEIGHT);
+		g.drawLine(BOARD_WIDTH + MARGIN * 2, HEIGHT - 6 * MARGIN, WIDTH, HEIGHT - 6 * MARGIN);
+		g.drawLine(BOARD_WIDTH + MARGIN * 2, HEIGHT - 18 * MARGIN, WIDTH, HEIGHT - 18 * MARGIN);
 	}
 }

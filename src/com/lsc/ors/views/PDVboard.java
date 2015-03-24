@@ -24,7 +24,7 @@ public class PDVboard extends VisualizationBoard {
 	/**
 	 * 当前特征维度
 	 */
-	Integer featureType = null;
+	Integer featureType;
 	/**
 	 * 记录可能的特征维度
 	 */
@@ -42,6 +42,13 @@ public class PDVboard extends VisualizationBoard {
 	 */
 	private int waitingTimeDivider;
 	private int maxWaitingTime;
+	
+	public Map<String, Boolean> getFeatureValues(){
+		return featureValues;
+	}
+	public Integer getFeatureType(){
+		return featureType;
+	}
 	
 	public PDVboard(ActionListener listener, OutpatientLog[] dataList) {
 		super(listener, dataList);
@@ -97,12 +104,12 @@ public class PDVboard extends VisualizationBoard {
 			return;
 		//set feature type
 		featureType = fType;
-	}
-	private void setCountLists(){
 		//make sure feature type is legal
 		if(featureType == null || !featureList.contains(featureType)) 
 			featureType = featureList.get(0);
 		ConsoleOutput.pop("PDVboard.setFeature", "" + OutpatientLog.KEYS[featureType]);
+	}
+	private void setCountLists(){
 		
 		//remove old keys
 		if(countLists == null)
