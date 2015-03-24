@@ -28,16 +28,16 @@ public class QSVboard extends VisualizationBoard {
 	/**
 	 * 当前特征可能取值,以及各取值对应的数量
 	 */
-	private Map<String, Integer> featureWaitingCountList = null;
-	private Map<String, Integer> featureReceptCountList = null;
+	private Map<String, Integer> featureWaitingCountList;
+	private Map<String, Integer> featureReceptCountList;
 	/**
 	 * 等待队列
 	 */
-	private LinkedList<OutpatientLog> waitingList = new LinkedList<OutpatientLog>();
+	private LinkedList<OutpatientLog> waitingList;
 	/**
 	 * 已就诊列表
 	 */
-	private LinkedList<OutpatientLog> receptList = new LinkedList<OutpatientLog>();
+	private LinkedList<OutpatientLog> receptList;
 	/**
 	 * 当前数据显示的对应时刻
 	 */
