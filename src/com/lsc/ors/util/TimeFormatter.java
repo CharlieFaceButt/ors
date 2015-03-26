@@ -1,6 +1,7 @@
 package com.lsc.ors.util;
 
 import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,6 +25,21 @@ public class TimeFormatter {
 		if(time != null)
 			result = fm.format(time);
 		return result;
+	}
+	
+	public static Date deformat(String source, String pattern){
+		Date date = null;
+		if(pattern == null)
+			pattern = timePattern;
+		Format fm = new SimpleDateFormat(pattern);
+		if(source != null)
+			try {
+				date = (Date)fm.parseObject(source);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return date;
 	}
 	
 	/**

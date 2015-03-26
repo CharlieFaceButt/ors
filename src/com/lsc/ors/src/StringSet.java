@@ -61,7 +61,6 @@ public class StringSet {
 	public static final String BEGIN_DATE = "开始时间";
 	public static final String FINISH_DATE = "结束时间";
 	
-	
 	//menu command
 	public static final String MENU_DATA = "数据";
 	public static final String MENU_FUNC = "任务";
@@ -99,10 +98,14 @@ public class StringSet {
 	public static final int CMD_TIME_UNIT_MONTH = 25;
 	public static final String TIME_UNIT_YEAR = "时间单位（年）"; 
 	public static final int CMD_TIME_UNIT_YEAR = 26;
+	public static final String SELECT_ALL = "全选";
+	public static final int CMD_SELECT_ALL = 50;
 	
 	public static enum CMD_FEATURE{;
 		public static final int OUTPATIENT_BASE = 31;//31-49
 	}
+	public static final String TOTAL = "总计";
+	public static final int CMD_TOTAL = 51;
 	
 	//action command
 	public static final String MOUSE_CLICK = "鼠标点击";
@@ -158,6 +161,7 @@ public class StringSet {
 		for(int i = 0 ; i < OutpatientLog.KEYS.length ; i ++){
 			commandMap.put(OutpatientLog.KEYS[i], CMD_FEATURE.OUTPATIENT_BASE + i);
 		}
+		commandMap.put(SELECT_ALL, CMD_SELECT_ALL);
 	}
 	
 	public Integer getCommandIndex(String command){

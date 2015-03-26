@@ -7,12 +7,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.src.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 
 public class PDVboard extends VisualizationBoard {
@@ -26,10 +24,6 @@ public class PDVboard extends VisualizationBoard {
 	 */
 	Integer featureType;
 	/**
-	 * 记录可能的特征维度
-	 */
-	LinkedList<Integer> featureList;
-	/**
 	 * 当前特征维度的可能取值,以及该取值是否被显示
 	 */
 	Map<String, Boolean> featureValues;
@@ -42,6 +36,7 @@ public class PDVboard extends VisualizationBoard {
 	 */
 	private int waitingTimeDivider;
 	private int maxWaitingTime;
+	private int registTimeDivider;
 	
 	public Map<String, Boolean> getFeatureValues(){
 		return featureValues;
@@ -64,49 +59,36 @@ public class PDVboard extends VisualizationBoard {
 	}
 	public void setData(OutpatientLog[] list, int type, Integer fType){
 		this.dataList = list;
+		timeUnitType = type;
 		offsetX = offsetY = 0;
+		waitingTimeDivider = 30;
+		registTimeDivider = 120;
+		
 		sortListByRegistrationTime();
-		setFeature(fType, 30);
+		setFeature(fType);
 		setCountLists();
 		
-		//init lists
+		//generate max waiting time
 		if(dataList == null) return;
 		OutpatientLog ol = null;
 		int wait = 0;
-		int quotient = 0;
-		String key = null;
 		maxWaitingTime = 0;
 		for (int i = 0; i < dataList.length; i++) {
 			ol = dataList[i];
 			//set count list
 			wait = ol.getWaiting_time();
 			if(wait > maxWaitingTime) maxWaitingTime = wait;
-			quotient = wait / waitingTimeDivider;
-			key = "" + (quotient * waitingTimeDivider) + "-" + ((quotient + 1)* waitingTimeDivider);
 		}
+		isRepaintable = true;
 	}
-	private synchronized void setFeature(Integer fType, int divider){
-		waitingTimeDivider = divider;
-		//init feature list
-		if(featureList == null || featureList.size() == 0){
-			featureList = new LinkedList<Integer>();
-			featureList.add(OutpatientLog.INDEX_DEPARTMENT);
-			featureList.add(OutpatientLog.INDEX_DOCTOR);
-			featureList.add(OutpatientLog.INDEX_PATIENT_GENDER);
-			featureList.add(OutpatientLog.INDEX_PATIENT_AGE);
-			featureList.add(OutpatientLog.INDEX_REGISTRATION);
-			featureList.add(OutpatientLog.INDEX_RECEPTION);
-			featureList.add(OutpatientLog.INDEX_DIAGNOSES);
-			featureList.add(OutpatientLog.INDEX_FURTHER_CONSULTATION);
-		}
+	private synchronized void setFeature(Integer fType){
 		//if feature type not change then don't do anything
 		if(featureType != null && featureType.equals(fType))
 			return;
 		//set feature type
 		featureType = fType;
-		//make sure feature type is legal
-		if(featureType == null || !featureList.contains(featureType)) 
-			featureType = featureList.get(0);
+		if(featureType == null)
+			featureType = OutpatientLog.INDEX_DEPARTMENT;
 		ConsoleOutput.pop("PDVboard.setFeature", "" + OutpatientLog.KEYS[featureType]);
 	}
 	private void setCountLists(){
@@ -114,29 +96,25 @@ public class PDVboard extends VisualizationBoard {
 		//remove old keys
 		if(countLists == null)
 			countLists = new HashMap<String, Map<String,Integer>>();
-		String[] fKeys = new String[countLists.keySet().size()];
-		countLists.keySet().toArray(fKeys);
-		for(String f : fKeys){
-			if(f != null && !f.equals("all")){
-				countLists.remove(f);
-			}
-		}
-		//initiate key: all
+		else countLists.clear();
+		Map<String, Integer> total = new HashMap<String, Integer>();
+		countLists.put(StringSet.TOTAL, total);
+		
+		//initiate keys for all feature values
 		if(dataList == null) return;
-		if(!countLists.containsKey("all")) 
-			countLists.put("all", new HashMap<String, Integer>());
-		//initiate other keys for all feature values
 		if(featureType != null){
 			OutpatientLog ol = null;
 			String featureKey = null;
 			Map<String, Integer> map = null;
 			int count = 0;
 			String countStr = null;
+			
 			for (int i = 0; i < dataList.length; i++) {
 				ol = dataList[i];
 				featureKey = ol.get(featureType);
 				featureKey = generateKeyValue(featureKey);
 				countStr = generateCountStr(ol.getWaiting_time());
+				
 				//locate feature value
 				if(!countLists.containsKey(featureKey)){
 					map = new HashMap<String, Integer>();
@@ -144,19 +122,27 @@ public class PDVboard extends VisualizationBoard {
 				}else{
 					map = countLists.get(featureKey);
 				}
+				
 				//add waiting count
 				if(countStr.equals("null")){
+					ConsoleOutput.pop("PDVboard.setCountLists", "waiting time is null");
 					continue;
 				}
 				if(!map.containsKey(countStr))
 					map.put(countStr, 0);
 				count = map.get(countStr);
 				map.put(countStr, count + 1);
+				if(!total.containsKey(countStr))
+					total.put(countStr, 0);
+				count = total.get(countStr);
+				total.put(countStr, count +1);
 			}
 		}
+		
 		//set feature list
 		if(featureValues == null)
 			featureValues = new HashMap<String, Boolean>();
+		else featureValues.clear();
 		for(String featureValueKey : countLists.keySet()){
 			featureValues.put(featureValueKey, true);
 		}
@@ -172,6 +158,12 @@ public class PDVboard extends VisualizationBoard {
 	private String generateKeyStrByDividingValue(int value, int divider){
 		int quotient = value / divider;
 		return "" + (quotient * divider) + "-" + ((quotient + 1) * divider);
+	}
+	private String generateKeyStrByDividingMinutes(int value, int divider){
+		int quotient = value / divider;
+		int minutesAmount = quotient * divider;
+		return "" + (minutesAmount / 60) + ":" + (minutesAmount % 60) + "-" +
+				((minutesAmount + divider) / 60) + ":" +((minutesAmount +divider) % 60);
 	}
 	int ageDivider = 20;
 	int timeDivider = 30;
@@ -193,8 +185,9 @@ public class PDVboard extends VisualizationBoard {
 			break;
 		case OutpatientLog.INDEX_RECEPTION:
 		case OutpatientLog.INDEX_REGISTRATION:
-			Date date = new Date(key);
-			newKey = "" + getMinutesAmountFromDate(date);
+			Date date = TimeFormatter.deformat(key, null);
+			int minuteAmount = getMinutesAmountFromDate(date);
+			newKey = generateKeyStrByDividingMinutes(minuteAmount, registTimeDivider);
 			break;
 		default:
 			newKey = key;
@@ -341,5 +334,28 @@ public class PDVboard extends VisualizationBoard {
 		}
 		mouseAlignEnabled = false;
 	}
-
+	
+	public boolean changeFeatureType(int fType){
+		setFeature(fType);
+		//reset count lists
+		setCountLists();
+		isRepaintable = true;
+		return true;
+	}
+	
+	public void changeAllFeatureValue(boolean isSelected){
+		for(String key : featureValues.keySet()){
+			featureValues.put(key, false);
+		}
+		for(String value : featureValues.keySet()){
+			featureValues.put(value, isSelected);
+		}
+		isRepaintable = true;
+	}
+	public void changeFeatureValue(String value, boolean isSelected){
+		if(featureValues.containsKey(value)){
+			featureValues.put(value, isSelected);
+		}
+		isRepaintable = true;
+	}
 }
