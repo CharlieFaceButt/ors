@@ -56,6 +56,10 @@ public class PlatformController {
 	 * population distribution model for visualization
 	 */
 	PopulationDistributionViewer PDModel = null;
+	/**
+	 * waiting time distribution model for visualization
+	 */
+	WaitingTimeDistributionViewer WTDModel = null;
 	
 	int waitingRecordCount = 0;
 	
@@ -348,6 +352,25 @@ public class PlatformController {
 					JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
 					break;
 				}
+				if(WTDModel == null){
+					WTDModel = new WaitingTimeDistributionViewer(new ModelListener() {
+						@Override
+						public void onViewDestroy() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"停止");
+							WTDModel = null;
+						}
+						@Override
+						public void onViewCreate() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"打开");
+						}
+					});
+				}
+				else{
+					addInfo("" + StringSet.VSL_POPULATION_DISTRIBUTION + "后台已经运行");
+				}
+				WTDModel.show();
 				break;
 			case StringSet.CMD_IMPORT:
 				popImportDialog();
