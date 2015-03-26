@@ -15,6 +15,9 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
@@ -95,16 +98,29 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		//statistic section
 		outpatientAmount = new Label();
 		averageWaitingTime = new Label();
-		outpatientAmount.setBounds(MARGIN * 2, ANALYZER_HEIGHT - 18 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
-		averageWaitingTime.setBounds(MARGIN * 2, ANALYZER_HEIGHT - 15 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
+		outpatientAmount.setBounds(MARGIN * 2, statisticTop, ANALYZER_WIDTH - 4 * MARGIN, 20);
+		averageWaitingTime.setBounds(MARGIN * 2, statisticTop + 3 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
 		outpatientAmount.setText("总看病人数:\t" + board.getTotalOutpatientNumber());
 		averageWaitingTime.setText("人均等待时间:\t" + ((PDVboard)board).getAverageWaitingTime());
 		analyzer.add(outpatientAmount);
 		analyzer.add(averageWaitingTime);
 		
 		//feature values
+		featureJP = new JPanel();
+		featureJP.setBounds(MARGIN, 0, ANALYZER_WIDTH, ANALYZER_HEIGHT);
+		featureJP.setLayout(null);
+//		JScrollPane jsp = new JScrollPane();
+//		jsp.setBounds(0, 3 * MARGIN, ANALYZER_WIDTH, 100);
+//		jsp.setViewportView(featureJP);
+//		jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+//		jsp.setWheelScrollingEnabled(true);
+//		jsp.setVerticalScrollBar(new JScrollBar(JScrollBar.VERTICAL));
+		analyzer.add(featureJP);
+		
 		updateAnalyzer();
 	}
+	
+	JPanel featureJP;
 	/**
 	 * 更新分析器显示
 	 */
@@ -114,7 +130,7 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		JComponent jc = null;
 		for(int i = 0 ; i < analyzerChangableComponent.size() ; i ++){
 			jc = analyzerChangableComponent.get(i);
-			analyzer.remove(jc);
+			featureJP.remove(jc);
 		}
 		analyzerChangableComponent.clear();
 		
@@ -127,10 +143,14 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 			if(text.equals(StringSet.TOTAL))
 				continue;
 			jcb = new JCheckBox(text, mfv.get(text));
-			jcb.setBounds(MARGIN * 2, MARGIN + (20 + MARGIN) * i, ANALYZER_WIDTH - 4 * MARGIN, 20);
+			if(i % 2 == 1){
+				jcb.setBounds(MARGIN * 2, MARGIN + (20 + MARGIN) * ((i + 1) / 2), ANALYZER_WIDTH / 2 - MARGIN, 20);
+			} else{
+				jcb.setBounds(ANALYZER_WIDTH / 2 + MARGIN, MARGIN + (20 + MARGIN) * ((i + 1) / 2), ANALYZER_WIDTH / 2 - MARGIN, 20);
+			}
 			jcb.addActionListener(fvl);
 			jcb.setSelected(mfv.get(text));
-			analyzer.add(jcb);
+			featureJP.add(jcb);
 			analyzerChangableComponent.add(jcb);
 			if(!mfv.get(text)) allSelected = false;
 			i ++;
@@ -139,14 +159,14 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		jcb.setBounds(MARGIN * 2, MARGIN + (20 + MARGIN) * i, ANALYZER_WIDTH - 4 * MARGIN, 20);
 		jcb.addActionListener(fvl);
 		jcb.setSelected(mfv.get(StringSet.TOTAL));
-		analyzer.add(jcb);
+		featureJP.add(jcb);
 		analyzerChangableComponent.add(jcb);
 		if(!mfv.get(StringSet.TOTAL)) allSelected = false;
 
 		//select-all check box
 		selectAll.setSelected(allSelected);
 		repaint();
-		
+		featureJP.repaint();
 	}
 
 	@Override
@@ -174,13 +194,13 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		
 	}
 	
+	private int statisticTop = HEIGHT - 12 * MARGIN;
 	@Override
 	public void paint(Graphics g) {
 		// TODO Auto-generated method stub
 		super.paint(g);
 		g.drawLine(BOARD_WIDTH + MARGIN * 2, 0, BOARD_WIDTH + MARGIN * 2, HEIGHT);
-		g.drawLine(BOARD_WIDTH + MARGIN * 2, HEIGHT - 6 * MARGIN, WIDTH, HEIGHT - 6 * MARGIN);
-		g.drawLine(BOARD_WIDTH + MARGIN * 2, HEIGHT - 18 * MARGIN, WIDTH, HEIGHT - 18 * MARGIN);
+		g.drawLine(BOARD_WIDTH + MARGIN * 2, statisticTop, WIDTH, statisticTop);
 	}
 	
 	class FeatureChooserListener implements ItemListener{
@@ -215,6 +235,7 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 	protected void onTimeUnitChanged() {
 		// TODO Auto-generated method stub
 		updateStatistics();
+		featureChooser.setSelectedIndex(0);
 	}
 	
 	private void updateStatistics(){

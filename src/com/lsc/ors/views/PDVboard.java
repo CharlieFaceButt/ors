@@ -283,7 +283,7 @@ public class PDVboard extends VisualizationBoard {
 		//set y unit
 		if(maxWaitingAmount > YSLASH_NUM){
 			ySlash = maxWaitingAmount / YSLASH_NUM + 1;
-			rectHeightUnit = (float)(HEIGHT - RULER_WIDTH) / (ySlash * YSLASH_NUM);
+			rectHeightUnit = (float)(HEIGHT - RULER_WIDTH) / (ySlash * (YSLASH_NUM + 1));
 		}
 		
 		//auto adjust
