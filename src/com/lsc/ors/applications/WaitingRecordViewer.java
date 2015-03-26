@@ -117,5 +117,11 @@ public class WaitingRecordViewer extends VisualizationModelObject{
 			}
 		}
 	}
+
+	@Override
+	protected void onTimeUnitChanged() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

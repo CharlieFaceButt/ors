@@ -194,6 +194,15 @@ public abstract class VisualizationBoard extends Canvas {
 		if(date == null) return 0;
 		return date.getHours() * 60 + date.getMinutes();
 	}
+	
+	/**
+	 * 获得总看病人数
+	 * @return
+	 */
+	public int getTotalOutpatientNumber(){
+		if(dataList == null) return -1;
+		return dataList.length;
+	}
 
 	/**
 	 * Set the date of the displaying part of data set

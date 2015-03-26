@@ -224,6 +224,7 @@ public abstract class VisualizationModelObject extends ModelObject {
 			case StringSet.CMD_TIME_UNIT_MONTH:
 			case StringSet.CMD_TIME_UNIT_YEAR:
 				board.setData(getDataByDateRange(currentDate, msg), msg);
+				onTimeUnitChanged();
 				break;
 			default:
 				break;
@@ -234,5 +235,6 @@ public abstract class VisualizationModelObject extends ModelObject {
 	
 	protected abstract void onMouseWheelOnBoard(MouseWheelEvent e);
 	protected abstract void onMouseClickOnBoard(Object source);
+	protected abstract void onTimeUnitChanged();
 
 }

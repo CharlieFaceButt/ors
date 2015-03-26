@@ -1,8 +1,6 @@
 package com.lsc.ors.applications;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
@@ -12,25 +10,17 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.src.StringSet;
 import com.lsc.ors.views.PDVboard;
-import com.lsc.ors.views.WRVboard;
-import com.lsc.ors.views.widgets.TimeButtonGroup;
 
 public class PopulationDistributionViewer extends VisualizationModelObject {
 
@@ -72,41 +62,62 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 	
 	ArrayList<JComponent> analyzerChangableComponent;
 	Label featureTitle;
-	JComboBox recordTypeChooser;
-	JCheckBox featureAll;
+	JCheckBox selectAll;
+	Label outpatientAmount;
+	Label averageWaitingTime;
 	private void initAnalyzer(){
 		if(analyzerChangableComponent == null)
 			analyzerChangableComponent = new ArrayList<JComponent>();
+		
 		//feature value label
 		String label = OutpatientLog.KEYS[((PDVboard)board).getFeatureType()];
 		featureTitle = new Label();
 		featureTitle.setBounds(MARGIN, MARGIN, BUTTON_WIDTH, 20);
 		analyzer.add(featureTitle);
 		featureTitle.setText(label);
+		
+		//select-all check box
+		if(selectAll == null){
+			selectAll = new JCheckBox(StringSet.SELECT_ALL,true);
+			selectAll.setBounds(ANALYZER_WIDTH - 2 * MARGIN - BUTTON_WIDTH, MARGIN, BUTTON_WIDTH, 20);
+			selectAll.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					selectAll.setSelected(selectAll.isSelected());
+					((PDVboard)board).changeAllFeatureValue(selectAll.isSelected());
+					updateAnalyzer();
+				}
+			});
+			analyzer.add(selectAll);
+		}
+		
+		//statistic section
+		outpatientAmount = new Label();
+		averageWaitingTime = new Label();
+		outpatientAmount.setBounds(MARGIN * 2, ANALYZER_HEIGHT - 18 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
+		averageWaitingTime.setBounds(MARGIN * 2, ANALYZER_HEIGHT - 15 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
+		outpatientAmount.setText("总看病人数:\t" + board.getTotalOutpatientNumber());
+		averageWaitingTime.setText("人均等待时间:\t" + ((PDVboard)board).getAverageWaitingTime());
+		analyzer.add(outpatientAmount);
+		analyzer.add(averageWaitingTime);
+		
 		//feature values
 		updateAnalyzer();
-		//record type chooser
-		recordTypeChooser = new JComboBox(new String[]{
-				"等待人数", "已就诊人数"
-		});
-		recordTypeChooser.setBounds(MARGIN * 2, ANALYZER_HEIGHT - 6 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
-		recordTypeChooser.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		analyzer.add(recordTypeChooser);
 	}
+	/**
+	 * 更新分析器显示
+	 */
 	private void updateAnalyzer(){
+		
+		//delete old feature values
 		JComponent jc = null;
 		for(int i = 0 ; i < analyzerChangableComponent.size() ; i ++){
 			jc = analyzerChangableComponent.get(i);
 			analyzer.remove(jc);
 		}
 		analyzerChangableComponent.clear();
+		
 		//feature values
 		Map<String, Boolean> mfv = ((PDVboard)board).getFeatureValues();
 		int i = 1;
@@ -132,35 +143,22 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 		analyzerChangableComponent.add(jcb);
 		if(!mfv.get(StringSet.TOTAL)) allSelected = false;
 
-		//select all check box
-		if(featureAll == null){
-			featureAll = new JCheckBox(StringSet.SELECT_ALL,allSelected);
-			featureAll.setBounds(MARGIN * 2, ANALYZER_HEIGHT - 24 * MARGIN, ANALYZER_WIDTH - 4 * MARGIN, 20);
-			featureAll.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					featureAll.setSelected(featureAll.isSelected());
-					((PDVboard)board).changeAllFeatureValue(featureAll.isSelected());
-					updateAnalyzer();
-				}
-			});
-			analyzer.add(featureAll);
-		}
-		featureAll.setSelected(allSelected);
+		//select-all check box
+		selectAll.setSelected(allSelected);
 		repaint();
+		
 	}
 
 	@Override
 	protected void onDateChanged() {
 		// TODO Auto-generated method stub
-		
+		updateStatistics();
 	}
 
 	@Override
 	protected void onDatePickerChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-
+		updateStatistics();
 	}
 
 	@Override
@@ -212,5 +210,15 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 			updateAnalyzer();
 		}
 		
+	}
+	@Override
+	protected void onTimeUnitChanged() {
+		// TODO Auto-generated method stub
+		updateStatistics();
+	}
+	
+	private void updateStatistics(){
+		outpatientAmount.setText("总看病人数:\t" + board.getTotalOutpatientNumber());
+		averageWaitingTime.setText("人均等待时间:\t" + ((PDVboard)board).getAverageWaitingTime());
 	}
 }

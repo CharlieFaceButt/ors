@@ -8,6 +8,9 @@ import java.awt.event.MouseWheelEvent;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.plaf.basic.BasicBorders.MarginBorder;
+
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.src.StringSet;
@@ -36,13 +39,19 @@ public class PDVboard extends VisualizationBoard {
 	 */
 	private int waitingTimeDivider;
 	private int maxWaitingTime;
+	private int maxWaitingAmount;
 	private int registTimeDivider;
+	private long totalWaitingTime = 0;
 	
 	public Map<String, Boolean> getFeatureValues(){
 		return featureValues;
 	}
 	public Integer getFeatureType(){
 		return featureType;
+	}
+	public float getAverageWaitingTime(){
+		if(dataList == null) return 0.0f;
+		return (float)totalWaitingTime / dataList.length;
 	}
 	
 	public PDVboard(ActionListener listener, OutpatientLog[] dataList) {
@@ -78,6 +87,7 @@ public class PDVboard extends VisualizationBoard {
 			//set count list
 			wait = ol.getWaiting_time();
 			if(wait > maxWaitingTime) maxWaitingTime = wait;
+			totalWaitingTime += wait;
 		}
 		isRepaintable = true;
 	}
@@ -139,12 +149,20 @@ public class PDVboard extends VisualizationBoard {
 			}
 		}
 		
-		//set feature list
+		//set feature list and max waiting number
 		if(featureValues == null)
 			featureValues = new HashMap<String, Boolean>();
 		else featureValues.clear();
 		for(String featureValueKey : countLists.keySet()){
 			featureValues.put(featureValueKey, true);
+		}
+		
+		int waitNumber = 0;
+		maxWaitingAmount = 0;
+		for(String k : total.keySet()){
+			waitNumber = total.get(k);
+			if(waitNumber > maxWaitingAmount)
+				maxWaitingAmount = waitNumber;
 		}
 	}
 	/**
@@ -255,10 +273,20 @@ public class PDVboard extends VisualizationBoard {
 
 	}
 
+	private static final int YSLASH_NUM = 11;
+	private float rectHeightUnit = (HEIGHT - RULER_WIDTH) / YSLASH_NUM;
+	private int ySlash = 1;
 	private int adjustSpeed = 3;
 	@Override
 	protected void beforePaint() {
 		// TODO Auto-generated method stub
+		//set y unit
+		if(maxWaitingAmount > YSLASH_NUM){
+			ySlash = maxWaitingAmount / YSLASH_NUM + 1;
+			rectHeightUnit = (float)(HEIGHT - RULER_WIDTH) / (ySlash * YSLASH_NUM);
+		}
+		
+		//auto adjust
 		if(!isReleased) return;
 		
 		if(offsetX > 5) offsetX -= (offsetX / adjustSpeed);
@@ -268,17 +296,17 @@ public class PDVboard extends VisualizationBoard {
 	}
 
 	private int rectWidth = 30;
-	private int rectHeightUnit = 20;
 	private int pointRadius = 3;
 	@Override
 	protected void onPaint(Graphics g) {
 		// TODO Auto-generated method stub
 		HashMap<String, Integer> map = null;
+		
 		int bottom = HEIGHT - RULER_WIDTH;
-		g.setColor(Color.GREEN);
 		int nPoints = maxWaitingTime / waitingTimeDivider + 2;
 		int[] xPoints = null;
 		int[] yPoints = null;
+		g.setColor(Color.GREEN);
 		for(String featureKey : countLists.keySet()){
 			if(!featureValues.get(featureKey)) continue;
 			map = (HashMap<String, Integer>)countLists.get(featureKey);
@@ -295,7 +323,7 @@ public class PDVboard extends VisualizationBoard {
 				Integer wait = Integer.parseInt(split[0]);
 				if(wait == null) continue;
 				i = wait / waitingTimeDivider;
-				yPoints[i] = bottom - map.get(waitStr) * rectHeightUnit;
+				yPoints[i] = (int)(bottom - map.get(waitStr) * rectHeightUnit);
 			}
 			g.drawPolyline(xPoints, yPoints, nPoints);
 			for (int k = 0; k < nPoints; k++) {
@@ -307,7 +335,6 @@ public class PDVboard extends VisualizationBoard {
 		paintRulers(g);
 		paintMouseAlign(g);
 	}
-	private int ySlash = 1;
 	private void paintRulers(Graphics g){
 		//draw axisX
 		g.drawLine(0, HEIGHT - RULER_WIDTH, WIDTH, HEIGHT - RULER_WIDTH);
@@ -327,10 +354,11 @@ public class PDVboard extends VisualizationBoard {
 	private int mouseX = 0, mouseY = 0;
 	private void paintMouseAlign(Graphics g){
 		if(!mouseAlignEnabled) return;
-		if(mouseY < HEIGHT - RULER_WIDTH && mouseX > RULER_WIDTH){
-			mouseY = (HEIGHT - RULER_WIDTH - mouseY + rectHeightUnit / 2) / rectHeightUnit;
-			mouseY = HEIGHT - RULER_WIDTH - rectHeightUnit * mouseY;
+		if(mouseY < HEIGHT - RULER_WIDTH && mouseX > RULER_WIDTH && rectHeightUnit != 0.0f){
+			mouseY = (int)((HEIGHT - RULER_WIDTH - mouseY + rectHeightUnit / 2) / rectHeightUnit);
+			mouseY = (int)(HEIGHT - RULER_WIDTH - rectHeightUnit * mouseY);
 			g.drawLine(RULER_WIDTH, mouseY, WIDTH, mouseY);
+			g.drawString("" + (int)(((HEIGHT - RULER_WIDTH) - mouseY) / rectHeightUnit), mouseX + 10, mouseY);
 		}
 		mouseAlignEnabled = false;
 	}

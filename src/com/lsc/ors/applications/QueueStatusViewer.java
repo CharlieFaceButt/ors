@@ -133,4 +133,10 @@ public class QueueStatusViewer extends VisualizationModelObject {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected void onTimeUnitChanged() {
+		// TODO Auto-generated method stub
+		
+	}
 }
