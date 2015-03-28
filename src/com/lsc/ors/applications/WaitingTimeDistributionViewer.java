@@ -58,7 +58,7 @@ public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 		
 		//add to the view
 		displayer.add(board);
-		timeBtns.disableTimeUnitChooser();
+//		timeBtns.disableTimeUnitChooser();
 		add(featureChooser);
 	}
 

@@ -106,6 +106,8 @@ public class StringSet {
 	}
 	public static final String TOTAL = "总计";
 	public static final int CMD_TOTAL = 51;
+	public static final String AVERAGE = "平均";
+	public static final int CMD_AVERAGE = 52;
 	
 	//action command
 	public static final String MOUSE_CLICK = "鼠标点击";

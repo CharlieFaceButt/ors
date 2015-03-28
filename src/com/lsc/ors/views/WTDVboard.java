@@ -28,7 +28,7 @@ public class WTDVboard extends VisualizationBoard {
 	 * 当前特征维度
 	 */
 	Integer featureType;
-	ArrayList<String> featureValues;
+	LinkedList<String> featureValues;
 	/**
 	 * 二维数据存储：等待人数=countLists（特征取值，等待时间）
 	 */
@@ -47,6 +47,7 @@ public class WTDVboard extends VisualizationBoard {
 	public void setData(OutpatientLog[] list, int type) {
 		// TODO Auto-generated method stub
 		setData(list, type, featureType);
+		isRepaintable = true;
 	}
 	public void setData(OutpatientLog[] list, int type, Integer featureType){
 		this.dataList = list;
@@ -59,6 +60,7 @@ public class WTDVboard extends VisualizationBoard {
 		maxWaitingTime = 0;
 		for(String featureKey: waitingTimeList.keySet()){
 			avp = waitingTimeList.get(featureKey);
+			if(avp.divide == 0) continue;
 			int time = (int)(avp.total / avp.divide);
 			if(maxWaitingTime < time){
 				maxWaitingTime = time;
@@ -66,16 +68,15 @@ public class WTDVboard extends VisualizationBoard {
 		}
 	}
 	private synchronized void setFeatureType(Integer fType){
-		//if feature type not change then don't do anything
-		if(featureType != null && featureType.equals(fType))
-			return;
 		//set feature type
 		featureType = fType;
 		if(featureType == null)
 			featureType = OutpatientLog.INDEX_DEPARTMENT;
 		ConsoleOutput.pop("PDVboard.setFeature", "" + OutpatientLog.KEYS[featureType]);
 		//initiate feature value list
-		featureValues = new ArrayList<String>();
+		if(featureValues == null)
+			featureValues = new LinkedList<String>();
+		featureValues.clear();
 	}
 	private void setTimeList(){
 		//remove old keys
@@ -83,8 +84,8 @@ public class WTDVboard extends VisualizationBoard {
 			waitingTimeList = new HashMap<String,AverageValuePair>();
 		else waitingTimeList.clear();
 		AverageValuePair totalAVP = new AverageValuePair(0,0);
-		waitingTimeList.put(StringSet.TOTAL, totalAVP);
-		featureValues.add(StringSet.TOTAL);
+		waitingTimeList.put(StringSet.AVERAGE, totalAVP);
+		featureValues.add(StringSet.AVERAGE);
 		
 		//initiate keys for all feature values
 		if(dataList == null) return;
@@ -205,6 +206,15 @@ public class WTDVboard extends VisualizationBoard {
 				break;
 			}
 		}
+		if(maxWaitingTime < maxSlashNum)
+			slashSpan = 1;
+		
+		//set rect width and rect gap
+		if(featureType == OutpatientLog.INDEX_DIAGNOSES){
+			rectWidth = 50;
+		} else{
+			rectWidth = 40;
+		}
 		
 		//auto adjust
 		if(!isReleased) return;
@@ -241,6 +251,7 @@ public class WTDVboard extends VisualizationBoard {
 	private int maxSlashNum = 20;
 	private int slashSpan = 10;
 	private void drawRulers(Graphics g){
+		g.setColor(Color.BLACK);
 		int bottom = HEIGHT - valueHeight;
 		//draw y axis
 		g.drawLine(RULER_WIDTH, 0, RULER_WIDTH, HEIGHT);
@@ -255,23 +266,22 @@ public class WTDVboard extends VisualizationBoard {
 		g.drawLine(0, bottom, WIDTH, bottom);
 		if(featureType == OutpatientLog.INDEX_RECEPTION || featureType == OutpatientLog.INDEX_REGISTRATION){
 			int x = 0;
-			g.drawString(StringSet.TOTAL, offsetX + RULER_WIDTH + rectGap + 5, bottom + RULER_WIDTH);
-			for(int j = 0 ; j < 1440 ; j += timeDivider){
-				x = offsetX + RULER_WIDTH + rectGap + (j + 1) * (rectWidth + rectGap);
+			g.drawString(StringSet.AVERAGE, offsetX + RULER_WIDTH + rectGap + 5, bottom + RULER_WIDTH);
+			for(int j = 0 ; j <= 1440 ; j += timeDivider){
+				x = offsetX + RULER_WIDTH + rectGap + (j / timeDivider + 1) * (rectWidth + rectGap);
 				g.drawLine(x, bottom, x, bottom + SLASH_LENGTH);
 				g.drawString("" + j / 60 + ":" + j % 60, x, HEIGHT);
 			}
 		} else{
-			int k = 0;
 			String drawKey = null;
 			for(String key : waitingTimeList.keySet()){
 				drawKey = null;
 				if(key.length() > 5){
 					drawKey = key.substring(0, 5);
-					drawKey += ("\n" + key.substring(5));
+					drawKey += "...";
 				}
-				g.drawString(drawKey, offsetX + RULER_WIDTH + rectGap + k * (rectWidth + rectGap) + 5, bottom + RULER_WIDTH);
-				k ++;
+				else drawKey = key;
+				g.drawString(drawKey, offsetX + RULER_WIDTH + rectGap + calculateKeyPos(key) * (rectWidth + rectGap) + 5, bottom + RULER_WIDTH);
 			}
 		}
 	}
@@ -287,7 +297,7 @@ public class WTDVboard extends VisualizationBoard {
 		switch (featureType) {
 		case OutpatientLog.INDEX_RECEPTION:
 		case OutpatientLog.INDEX_REGISTRATION:
-			if(featureKey == StringSet.TOTAL) return 0;
+			if(featureKey == StringSet.AVERAGE) return 0;
 			int minutes = decodeMinutesFromKeyStr(featureKey, timeDivider);
 			return minutes / timeDivider + 1;
 		default:
@@ -318,7 +328,19 @@ public class WTDVboard extends VisualizationBoard {
 	 * @param featureKey
 	 */
 	public void changeFeatureAndUpdate(int featureKey){
-		setFeatureType(featureType);
+		setFeatureType(featureKey);
 		setTimeList();
+		isRepaintable = true;
+		//set max waiting time
+		AverageValuePair avp = null;
+		maxWaitingTime = 0;
+		for(String feature: waitingTimeList.keySet()){
+			avp = waitingTimeList.get(feature);
+			if(avp.divide == 0) continue;
+			int time = (int)(avp.total / avp.divide);
+			if(maxWaitingTime < time){
+				maxWaitingTime = time;
+			}
+		}
 	}
 }
