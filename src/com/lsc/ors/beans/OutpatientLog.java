@@ -214,7 +214,12 @@ public class OutpatientLog implements BeanObject{
 		this.further_consultation = further_consultation;
 	}
 	
+
+	/**
 	@Override
+	 * patient_age和waitingtime是int转String<br>
+	 * registration_time 和 reception_tim格式是默认格式<br>
+	 */
 	public String get(int key){
 		switch (key) {
 		case 1:return department;
