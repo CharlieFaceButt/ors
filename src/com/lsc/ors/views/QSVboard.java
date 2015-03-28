@@ -14,9 +14,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import resource.StringSet;
+
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
-import com.lsc.ors.src.StringSet;
 
 public class QSVboard extends VisualizationBoard {
 

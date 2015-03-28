@@ -2,20 +2,20 @@ package com.lsc.ors.views;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicBorders.MarginBorder;
+import resource.StringSet;
 
+import com.lsc.ors.beans.AverageValueObject;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
-import com.lsc.ors.src.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 
 public class WTDVboard extends VisualizationBoard {
@@ -24,6 +24,7 @@ public class WTDVboard extends VisualizationBoard {
 	 * generated serial ID	
 	 */
 	private static final long serialVersionUID = 1224787845530459977L;
+	public int getID() {return (int)serialVersionUID;}
 	/**
 	 * 当前特征维度
 	 */
@@ -32,7 +33,7 @@ public class WTDVboard extends VisualizationBoard {
 	/**
 	 * 二维数据存储：等待人数=countLists（特征取值，等待时间）
 	 */
-	Map<String, AverageValuePair> waitingTimeList;
+	Map<String, AverageValueObject> waitingTimeList;
 	
 	private int maxWaitingTime;
 	
@@ -56,12 +57,12 @@ public class WTDVboard extends VisualizationBoard {
 		setTimeList();
 		
 		//set max waiting time
-		AverageValuePair avp = null;
+		AverageValueObject avo = null;
 		maxWaitingTime = 0;
 		for(String featureKey: waitingTimeList.keySet()){
-			avp = waitingTimeList.get(featureKey);
-			if(avp.divide == 0) continue;
-			int time = (int)(avp.total / avp.divide);
+			avo = waitingTimeList.get(featureKey);
+			if(avo.divide == 0) continue;
+			int time = (Integer)(avo.get(AverageValueObject.INDEX_AVERAGE));
 			if(maxWaitingTime < time){
 				maxWaitingTime = time;
 			}
@@ -81,9 +82,9 @@ public class WTDVboard extends VisualizationBoard {
 	private void setTimeList(){
 		//remove old keys
 		if(waitingTimeList == null)
-			waitingTimeList = new HashMap<String,AverageValuePair>();
+			waitingTimeList = new HashMap<String,AverageValueObject>();
 		else waitingTimeList.clear();
-		AverageValuePair totalAVP = new AverageValuePair(0,0);
+		AverageValueObject totalAVP = new AverageValueObject();
 		waitingTimeList.put(StringSet.AVERAGE, totalAVP);
 		featureValues.add(StringSet.AVERAGE);
 		
@@ -92,21 +93,19 @@ public class WTDVboard extends VisualizationBoard {
 		if(featureType != null){
 			OutpatientLog ol = null;
 			String featureKey = null;
-			AverageValuePair avp = null;
+			AverageValueObject avo = null;
 			for (int i = 0; i < dataList.length; i++) {
 				ol = dataList[i];
 				featureKey = ol.get(featureType);
 				featureKey = generateKeyValue(featureKey);
 				if(!waitingTimeList.containsKey(featureKey)){
-					waitingTimeList.put(featureKey, new AverageValuePair(0, 0));
+					waitingTimeList.put(featureKey, new AverageValueObject());
 					featureValues.add(featureKey);
 				}
-				avp = waitingTimeList.get(featureKey);
-				avp.total += ol.getWaiting_time();
-				avp.divide ++;
+				avo = waitingTimeList.get(featureKey);
+				avo.add(ol.getWaiting_time());
 				
-				totalAVP.total += ol.getWaiting_time();
-				totalAVP.divide ++;
+				totalAVP.add(ol.getWaiting_time());
 			}
 		}
 	}
@@ -174,7 +173,8 @@ public class WTDVboard extends VisualizationBoard {
 	@Override
 	protected void onMouseExit(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		hoverPos = -2;
+		al.actionPerformed(new ActionEvent(new AverageValueObject(), getID(), StringSet.MOUSE_MOVE));
 	}
 
 	@Override
@@ -183,10 +183,36 @@ public class WTDVboard extends VisualizationBoard {
 
 	}
 
+	private int alignX;
+	private int alignY;
+	private int hoverPos = -2;
 	@Override
 	protected void onMouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
+		alignX = e.getX(); 
+		alignY = e.getY();
+		hoverPos = (alignX - RULER_WIDTH - rectGap - offsetX) / (rectWidth + rectGap);
+		isRepaintable = true;
 
+		String key = null;
+		if(featureType == OutpatientLog.INDEX_RECEPTION || featureType == OutpatientLog.INDEX_REGISTRATION 
+				|| featureType == OutpatientLog.INDEX_PATIENT_AGE){
+			for(int i = 0 ; i < featureValues.size() ; i ++){
+				if(hoverPos == calculateKeyPos(featureValues.get(i))){
+					key = featureValues.get(i);
+				}
+			}
+			if(key == null){
+				al.actionPerformed(new ActionEvent(new AverageValueObject(), getID(), StringSet.MOUSE_MOVE));
+			} else{
+				al.actionPerformed(new ActionEvent(waitingTimeList.get(key), getID(), StringSet.MOUSE_MOVE));
+			}
+		} else if(hoverPos >= 0 && hoverPos < featureValues.size()){
+			key = featureValues.get(hoverPos);
+			al.actionPerformed(new ActionEvent(waitingTimeList.get(key), getID(), StringSet.MOUSE_MOVE));
+		} else{
+			al.actionPerformed(new ActionEvent(new AverageValueObject(), getID(), StringSet.MOUSE_MOVE));
+		}
 	}
 
 	@Override
@@ -234,19 +260,33 @@ public class WTDVboard extends VisualizationBoard {
 		Integer xPos = 0;
 		int bottom = HEIGHT - valueHeight;
 		int maxRectHeight = bottom - RULER_WIDTH;
-		AverageValuePair avp = null;
+		AverageValueObject avo = null;
 		int rectHeight = 0;
-		g.setColor(Color.BLUE);
 		for(String featureKey : waitingTimeList.keySet()){
 			//get position
 			xPos = calculateKeyPos(featureKey);
 			if(xPos == null) continue;
+			if(xPos == hoverPos){
+				g.setColor(Color.ORANGE);
+			} else{
+				g.setColor(Color.LIGHT_GRAY);
+			}
 			//draw rect on that position
-			avp = waitingTimeList.get(featureKey);
-			rectHeight = (int)((float)maxRectHeight * avp.total / (avp.divide * maxWaitingTime));
-			g.fillRect(offsetX + RULER_WIDTH + rectGap + xPos * (rectWidth + rectGap), bottom - rectHeight, rectWidth, rectHeight);
+			avo = waitingTimeList.get(featureKey);
+			int x = offsetX + RULER_WIDTH + rectGap + xPos * (rectWidth + rectGap);
+			if(avo.divide == 0){
+				g.fillRect(x, bottom, rectWidth, 9);
+				g.drawString("0", x + 5, bottom - 5);
+			} else{
+				rectHeight = (int)((float)maxRectHeight * avo.total / (avo.divide * maxWaitingTime));
+				g.fillRect(x, bottom - rectHeight, rectWidth, rectHeight);
+				g.drawString("" + avo.total / avo.divide, x + 5, bottom - rectHeight - 5);
+			}
 		}
 		drawRulers(g);
+		drawMouseAlign(g);
+	}
+	private void drawMouseAlign(Graphics g){
 	}
 	private int maxSlashNum = 20;
 	private int slashSpan = 10;
@@ -264,13 +304,21 @@ public class WTDVboard extends VisualizationBoard {
 		
 		//draw x axis
 		g.drawLine(0, bottom, WIDTH, bottom);
+		int x = 0;
 		if(featureType == OutpatientLog.INDEX_RECEPTION || featureType == OutpatientLog.INDEX_REGISTRATION){
-			int x = 0;
 			g.drawString(StringSet.AVERAGE, offsetX + RULER_WIDTH + rectGap + 5, bottom + RULER_WIDTH);
 			for(int j = 0 ; j <= 1440 ; j += timeDivider){
 				x = offsetX + RULER_WIDTH + rectGap + (j / timeDivider + 1) * (rectWidth + rectGap);
 				g.drawLine(x, bottom, x, bottom + SLASH_LENGTH);
 				g.drawString("" + j / 60 + ":" + j % 60, x, HEIGHT);
+			}
+		} else if(featureType == OutpatientLog.INDEX_PATIENT_AGE){
+			g.drawString(StringSet.AVERAGE, offsetX + RULER_WIDTH + rectGap + 5, bottom + RULER_WIDTH);
+			int maxX = (WIDTH - RULER_WIDTH - rectGap - offsetX) / (rectWidth + rectGap);
+			for(int j = 0 ; j / timeDivider <= maxX ; j += timeDivider){
+				x = offsetX + RULER_WIDTH + rectGap + (j / timeDivider + 1) * (rectWidth + rectGap);
+				g.drawLine(x, bottom, x, bottom + SLASH_LENGTH);
+				g.drawString("" + j / ageDivider, x, HEIGHT);
 			}
 		} else{
 			String drawKey = null;
@@ -295,6 +343,12 @@ public class WTDVboard extends VisualizationBoard {
 		if(featureKey == null)
 			return null;
 		switch (featureType) {
+		case OutpatientLog.INDEX_PATIENT_AGE:
+			if(featureKey == StringSet.AVERAGE) return 0;
+			String[] split = featureKey.split("-");
+			Integer age = Integer.parseInt(split[0]);
+			if(age == null) return null;
+			return age / ageDivider;
 		case OutpatientLog.INDEX_RECEPTION:
 		case OutpatientLog.INDEX_REGISTRATION:
 			if(featureKey == StringSet.AVERAGE) return 0;
@@ -310,20 +364,8 @@ public class WTDVboard extends VisualizationBoard {
 		}
 		return 0;
 	}
-	/**
-	 * 存储每一个要绘画的柱形所对应的（总等待时间，等待人数），方便计算平均值
-	 * @author charlieliu
-	 *
-	 */
-	class AverageValuePair{
-		public AverageValuePair(long total, long divide){
-			this.total = total;
-			this.divide = divide;
-		}
-		public long total;
-		public long divide;
-	}
-	/**
+	
+		/**
 	 * 设置特征值类型并更新绘画数据
 	 * @param featureKey
 	 */
@@ -332,12 +374,12 @@ public class WTDVboard extends VisualizationBoard {
 		setTimeList();
 		isRepaintable = true;
 		//set max waiting time
-		AverageValuePair avp = null;
+		AverageValueObject avo = null;
 		maxWaitingTime = 0;
 		for(String feature: waitingTimeList.keySet()){
-			avp = waitingTimeList.get(feature);
-			if(avp.divide == 0) continue;
-			int time = (int)(avp.total / avp.divide);
+			avo = waitingTimeList.get(feature);
+			if(avo.divide == 0) continue;
+			int time = (int)(avo.total / avo.divide);
 			if(maxWaitingTime < time){
 				maxWaitingTime = time;
 			}

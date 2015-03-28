@@ -13,11 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import resource.StringSet;
+
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.debug.ConsoleOutput;
-import com.lsc.ors.src.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 import com.lsc.ors.views.QSVboard;
 import com.lsc.ors.views.VisualizationBoard;
@@ -219,6 +220,10 @@ public abstract class VisualizationModelObject extends ModelObject {
 				if(e.getID() == board.getID())
 					onMouseClickOnBoard(e.getSource());
 				break;
+			case StringSet.CMD_MOUSE_MOVE:
+				if(e.getID() == board.getID())
+					onMouseMoveOnBoard(e.getSource());
+				break;
 			case StringSet.CMD_TIME_UNIT_DAY:
 			case StringSet.CMD_TIME_UNIT_WEEK:
 			case StringSet.CMD_TIME_UNIT_MONTH:
@@ -235,6 +240,7 @@ public abstract class VisualizationModelObject extends ModelObject {
 	
 	protected abstract void onMouseWheelOnBoard(MouseWheelEvent e);
 	protected abstract void onMouseClickOnBoard(Object source);
+	protected abstract void onMouseMoveOnBoard(Object source);
 	protected abstract void onTimeUnitChanged();
 
 }

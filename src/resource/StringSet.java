@@ -1,4 +1,4 @@
-package com.lsc.ors.src;
+package resource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -114,6 +114,8 @@ public class StringSet {
 	public static final int CMD_MOUSE_CLICK = 64;
 	public static final String MOUSE_WHEEL = " Û±Íπˆ¬÷";
 	public static final int CMD_MOUSE_WHEEL = 65;
+	public static final String MOUSE_MOVE = " Û±Í“∆∂Ø";
+	public static final int CMD_MOUSE_MOVE = 66;
 	public static final String COMBO_BOX_CHANGED = "comboBoxChanged";
 	public static final int CMD_COMBO_BOX_CHANGED = 66;
 	
@@ -157,6 +159,7 @@ public class StringSet {
 		
 		commandMap.put(MOUSE_CLICK, CMD_MOUSE_CLICK);
 		commandMap.put(MOUSE_WHEEL, CMD_MOUSE_WHEEL);
+		commandMap.put(MOUSE_MOVE, CMD_MOUSE_MOVE);
 		commandMap.put(COMBO_BOX_CHANGED, CMD_COMBO_BOX_CHANGED);
 		commandMap.put(VACANT_CONTENT, CMD_VACANT_CONTENT);
 		

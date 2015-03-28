@@ -9,8 +9,9 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JComboBox;
 
+import resource.StringSet;
+
 import com.lsc.ors.debug.ConsoleOutput;
-import com.lsc.ors.src.StringSet;
 
 public class TimeButtonGroup {
 	

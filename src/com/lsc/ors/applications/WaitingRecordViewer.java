@@ -13,12 +13,14 @@ import java.util.Date;
 
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
+
+import resource.StringSet;
+
 import com.lsc.ors.applications.listener.WRDModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.views.WRVboard;
 import com.lsc.ors.views.widgets.TimeButtonGroup;
-import com.lsc.ors.src.StringSet;
 
 /**
  * Reference of Model 1<br>
@@ -45,6 +47,7 @@ public class WaitingRecordViewer extends VisualizationModelObject{
 	public WaitingRecordViewer(WRDModelListener listener) {
 		super(listener);
 		// TODO Auto-generated constructor stub
+		setTitle(StringSet.VSL_WAITING_RECORD_DISTRIBUTION);
 		
 		//initialize views
 		board = new WRVboard(getDataByDate(currentDate), mocl);
@@ -120,6 +123,12 @@ public class WaitingRecordViewer extends VisualizationModelObject{
 
 	@Override
 	protected void onTimeUnitChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onMouseMoveOnBoard(Object source) {
 		// TODO Auto-generated method stub
 		
 	}

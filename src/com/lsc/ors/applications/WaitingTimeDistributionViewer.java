@@ -1,19 +1,24 @@
 package com.lsc.ors.applications;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
+import java.util.Calendar;
 
 import javax.swing.JComboBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import resource.StringSet;
+
 import com.lsc.ors.applications.listener.ModelListener;
+import com.lsc.ors.beans.AverageValueObject;
 import com.lsc.ors.beans.OutpatientLog;
-import com.lsc.ors.src.StringSet;
+import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.views.WTDVboard;
 
 public class WaitingTimeDistributionViewer extends VisualizationModelObject{
@@ -25,10 +30,14 @@ public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 	
 	//view
 	JComboBox featureChooser = null;
+	Label[] infoLabels;
 
+	private int LABEL_HEIGHT = 20;
 	public WaitingTimeDistributionViewer(ModelListener listener) {
 		super(listener);
 		// TODO Auto-generated constructor stub
+		setTitle(StringSet.VSL_WAITING_TIME_DISTRIBUTION);
+		
 		//initialize views
 		board = new WTDVboard(mocl, getDataByDate(currentDate));
 		board.setBackground(Color.WHITE);
@@ -52,6 +61,13 @@ public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 				}
 			}
 		});
+		String[] infoKeys = AverageValueObject.KEYS;
+		infoLabels = new Label[infoKeys.length];
+		for(int i = 0 ; i < infoKeys.length ; i ++){
+			infoLabels[i] = new Label(infoKeys[i] + ":\t" + StringSet.VACANT_CONTENT);
+			infoLabels[i].setBounds(MARGIN * 2,	MARGIN + i * (LABEL_HEIGHT + MARGIN), ANALYZER_WIDTH - 4 * MARGIN, LABEL_HEIGHT);
+			analyzer.add(infoLabels[i]);
+		}
 		
 		//bounds
 		featureChooser.setBounds(MARGIN + (BUTTON_WIDTH + MARGIN) * 4, timeBtns.getTop(), BUTTON_WIDTH, 20);
@@ -77,7 +93,8 @@ public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 	@Override
 	protected void onMouseWheelOnBoard(MouseWheelEvent e) {
 		// TODO Auto-generated method stub
-		
+		int roll = e.getWheelRotation();
+		increaseDate(Calendar.DAY_OF_YEAR, roll);
 	}
 
 	@Override
@@ -92,4 +109,27 @@ public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 		
 	}
 
+	@Override
+	protected void onMouseMoveOnBoard(Object source) {
+		// TODO Auto-generated method stub
+		AverageValueObject avo = (AverageValueObject)source;
+		ConsoleOutput.pop("WaitingTimeDistribution.onMouseMoveOnBoard", source.toString());
+		String[] infoKeys = AverageValueObject.KEYS;
+		if(avo.divide == 0){
+			for(int i = 0 ; i < infoKeys.length ; i ++){
+				infoLabels[i].setText(infoKeys[i] + ":\t" + StringSet.VACANT_CONTENT);
+			}
+		} else{
+			for (int j = 0; j < infoKeys.length; j++) {
+				infoLabels[j].setText(infoKeys[j] + ":\t" + avo.get(j));
+			}
+		}
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		// TODO Auto-generated method stub
+		super.paint(g);
+		g.drawLine(BOARD_WIDTH + 2 * MARGIN, 0, BOARD_WIDTH + 2 * MARGIN, HEIGHT);
+	}
 }

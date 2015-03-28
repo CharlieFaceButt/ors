@@ -14,8 +14,9 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import resource.StringSet;
+
 import com.lsc.ors.debug.ConsoleOutput;
-import com.lsc.ors.src.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 
 

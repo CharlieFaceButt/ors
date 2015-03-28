@@ -24,6 +24,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
+import resource.StringSet;
+
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.applications.listener.WRDModelListener;
@@ -32,7 +34,6 @@ import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.util.ExcelFileFilter;
-import com.lsc.ors.src.StringSet;
 
 /**
  * view of main program

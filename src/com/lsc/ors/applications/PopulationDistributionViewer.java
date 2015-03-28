@@ -19,10 +19,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
+
+import resource.StringSet;
+
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
-import com.lsc.ors.src.StringSet;
 import com.lsc.ors.views.PDVboard;
 
 public class PopulationDistributionViewer extends VisualizationModelObject {
@@ -37,6 +39,7 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 	public PopulationDistributionViewer(ModelListener listener) {
 		super(listener);
 		// TODO Auto-generated constructor stub
+		setTitle(StringSet.VSL_POPULATION_DISTRIBUTION);
 		
 		//initialize views
 		board = new PDVboard(mocl, getDataByDate(currentDate));
@@ -241,5 +244,11 @@ public class PopulationDistributionViewer extends VisualizationModelObject {
 	private void updateStatistics(){
 		outpatientAmount.setText("总看病人数:\t" + board.getTotalOutpatientNumber());
 		averageWaitingTime.setText("人均等待时间:\t" + ((PDVboard)board).getAverageWaitingTime());
+	}
+
+	@Override
+	protected void onMouseMoveOnBoard(Object source) {
+		// TODO Auto-generated method stub
+		
 	}
 }
