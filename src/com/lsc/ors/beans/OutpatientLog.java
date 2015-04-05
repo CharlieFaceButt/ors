@@ -2,7 +2,6 @@ package com.lsc.ors.beans;
 
 //import java.sql.Date;
 
-import java.awt.font.NumericShaper;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -251,7 +250,12 @@ public class OutpatientLog implements BeanObject{
 		}
 	}
 
-	@Override
+	/**
+	 * 从excel导入数据库时进行的数据转换
+	 * @param key
+	 * @param value
+	 * @return
+	 */
 	public String generateValueFromExcelCell(int key, Cell cell) {
 		// TODO Auto-generated method stub
 		if(cell == null) return null;
@@ -280,6 +284,23 @@ public class OutpatientLog implements BeanObject{
 		}
 		set(key, cell.getContents());
 		return cell.getContents();
+	}
+	
+	/**
+	 * 获得门诊记录的特征属性
+	 * @return
+	 */
+	public OutpatientLogCharacters generateCharacters(){
+		OutpatientLogCharacters olc = new OutpatientLogCharacters();
+		olc.set(OutpatientLogCharacters.INDEX_PATIENT_GENDER, patient_gender);
+		olc.set(OutpatientLogCharacters.INDEX_PATIENT_AGE, patient_age);
+		olc.set(OutpatientLogCharacters.INDEX_DIAGNOSES, diagnosis);
+		olc.set(OutpatientLogCharacters.INDEX_RECEPTION, reception_time);
+		olc.set(OutpatientLogCharacters.INDEX_REGISTRATION, registration_time);
+		olc.set(OutpatientLogCharacters.INDEX_DOCTOR, doctor_name);
+		olc.set(OutpatientLogCharacters.INDEX_WAIT, waiting_time);
+		olc.set(OutpatientLogCharacters.INDEX_FURTHER_CONSULTATION, further_consultation);
+		return olc;
 	}
 
 	@Override
