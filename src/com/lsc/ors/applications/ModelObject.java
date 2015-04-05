@@ -22,8 +22,8 @@ public abstract class ModelObject extends JFrame{
 	private static final long serialVersionUID = -2732432365752898831L;
 	
 	//data
-	Date firstDate = null;
-	Date lastDate = null;
+	protected Date firstDate = null;
+	protected Date lastDate = null;
 
 	protected ModelListener modelListener = null;
 

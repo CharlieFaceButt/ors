@@ -24,15 +24,22 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
-import resource.StringSet;
 
+import com.lsc.ors.applications.analysis.AttributeDescriptionViewer;
+import com.lsc.ors.applications.analysis.DoubleAttributeDescriptionViewer;
+import com.lsc.ors.applications.analysis.WaitingTimeAnalyzer;
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.applications.listener.WRDModelListener;
+import com.lsc.ors.applications.visualization.PopulationDistributionViewer;
+import com.lsc.ors.applications.visualization.QueueStatusViewer;
+import com.lsc.ors.applications.visualization.WaitingRecordViewer;
+import com.lsc.ors.applications.visualization.WaitingTimeDistributionViewer;
 import com.lsc.ors.db.DBOpeListener;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.util.ExcelFileFilter;
 
 /**
@@ -62,6 +69,8 @@ public class PlatformController {
 	 */
 	WaitingTimeDistributionViewer WTDModel = null;
 	
+	ModelObject model = null;
+	
 	int waitingRecordCount = 0;
 	
 	
@@ -84,6 +93,9 @@ public class PlatformController {
 	Button bt_WRQS = new Button(StringSet.VSL_WAITING_RECORD_QUEUE_STATUS);
 	Button bt_PD = new Button(StringSet.VSL_POPULATION_DISTRIBUTION);
 	Button bt_WTD = new Button(StringSet.VSL_WAITING_TIME_DISTRIBUTION);
+	Button bt_ANL_AD = new Button(StringSet.ANL_ATTRIBUTE_DESCRIPTION);
+	Button bt_ANL_DAD = new Button(StringSet.ANL_DOUBLE_ATTRIBUTES_DESCRIPTION);
+	Button bt_ANL_WT = new Button(StringSet.ANL_WAITING_TIME);
 	
 	//listener
 	MultipleActionListener mal = new MultipleActionListener();
@@ -248,13 +260,19 @@ public class PlatformController {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 //			System.out.println(e.getActionCommand());
+			if(waitingRecordCount <= 0){
+				addInfo("木有数据，无法生成视图");
+				JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
+				return;
+			}
+			
 			addInfo(e.getActionCommand());
 			Integer msg = StringSet.getInstance().getCommandIndex(e.getActionCommand());
 			switch(msg){
 			case StringSet.CMD_VISUALIZE:
 				funcPanel.removeAll();
-				GridLayout fl = new GridLayout(5, 1);
-				funcPanel.setLayout(fl);
+				GridLayout gl = new GridLayout(5, 1);
+				funcPanel.setLayout(gl);
 				funcPanel.add(bt_WRD, 0);bt_WRD.addActionListener(mal);
 				funcPanel.add(bt_WRQS, 1);bt_WRQS.addActionListener(mal);
 				funcPanel.add(bt_PD, 2);bt_PD.addActionListener(mal);
@@ -262,16 +280,18 @@ public class PlatformController {
 				frame.resize(600, 300);
 				break;
 			case StringSet.CMD_ANALYZE:
+				funcPanel.removeAll();
+				GridLayout gl2 = new GridLayout(5, 1);
+				funcPanel.setLayout(gl2);
+				funcPanel.add(bt_ANL_AD, 0);bt_ANL_AD.addActionListener(mal);
+				funcPanel.add(bt_ANL_DAD, 1);bt_ANL_DAD.addActionListener(mal);
+				funcPanel.add(bt_ANL_WT, 2);bt_ANL_WT.addActionListener(mal);
+				frame.resize(600, 301);
 				break;
 			case StringSet.CMD_RECOMMEND:
 				break;
 			//打开等待时间分布图
 			case StringSet.CMD_VSL_WAITING_RECORD_DISTRIBUTION:
-				if(waitingRecordCount <= 0){
-					addInfo("木有数据，无法生成视图");
-					JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
-					break;
-				}
 				if(WRDModel == null){
 					WRDModel = new WaitingRecordViewer(new WRDModelListener() {
 						@Override
@@ -294,11 +314,6 @@ public class PlatformController {
 				break;
 			//打开等待排队状态图
 			case StringSet.CMD_VSL_WAITING_RECORD_QUEUE_STATUS:
-				if(waitingRecordCount <= 0){
-					addInfo("木有数据，无法生成视图");
-					JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
-					break;
-				}
 				if(QSModel == null){
 					QSModel = new QueueStatusViewer(new QSModelListener() {
 						@Override
@@ -321,11 +336,6 @@ public class PlatformController {
 				break;
 			//打开等待人数分布图
 			case StringSet.CMD_VSL_POPULATION_DISTRIBUTION:
-				if(waitingRecordCount <= 0){
-					addInfo("木有数据，无法生成视图");
-					JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
-					break;
-				}
 				if(PDModel == null){
 					PDModel = new PopulationDistributionViewer(new ModelListener() {
 						@Override
@@ -348,11 +358,6 @@ public class PlatformController {
 				break;
 			//打开等待时间分布图
 			case StringSet.CMD_VSL_WAITING_TIME_DISTRIBUTION:
-				if(waitingRecordCount <= 0){
-					addInfo("木有数据，无法生成视图");
-					JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
-					break;
-				}
 				if(WTDModel == null){
 					WTDModel = new WaitingTimeDistributionViewer(new ModelListener() {
 						@Override
@@ -373,6 +378,15 @@ public class PlatformController {
 				}
 				WTDModel.show();
 				break;
+			case StringSet.CMD_ANL_ATTRIBUTE_DESCRIPTION:
+				new AttributeDescriptionViewer(getModelListener(StringSet.ANL_ATTRIBUTE_DESCRIPTION)).show();
+				break;
+			case StringSet.CMD_ANL_DOUBLE_ATTRIBUTES_DESCRIPTION:
+				new DoubleAttributeDescriptionViewer(getModelListener(StringSet.ANL_DOUBLE_ATTRIBUTES_DESCRIPTION)).show();
+				break;
+			case StringSet.CMD_ANL_WAITING_TIME:
+				new WaitingTimeAnalyzer(getModelListener(StringSet.ANL_WAITING_TIME)).show();
+				break;
 			case StringSet.CMD_IMPORT:
 				popImportDialog();
 				break;
@@ -385,6 +399,21 @@ public class PlatformController {
 			}
 			
 		}
+	}
+	
+	private ModelListener getModelListener(final String label){
+		return new ModelListener() {
+			@Override
+			public void onViewDestroy() {
+				// TODO Auto-generated method stub
+				addInfo("\"" + label + "\"停止");
+			}
+			@Override
+			public void onViewCreate() {
+				// TODO Auto-generated method stub
+				addInfo("\"" + label + "\"打开");
+			}
+		};
 	}
 	
 	/**

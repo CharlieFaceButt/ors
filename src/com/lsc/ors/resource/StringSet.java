@@ -1,4 +1,4 @@
-package resource;
+package com.lsc.ors.resource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +42,21 @@ public class StringSet {
 	 */
 	public static final String ANALYZE = "数据分析";
 	public static final int CMD_ANALYZE = 1;
+	/**
+	 * for analysis: waiting time analysis
+	 */
+	public static final String ANL_ATTRIBUTE_DESCRIPTION = "单属性概念描述";
+	public static final int CMD_ANL_ATTRIBUTE_DESCRIPTION = 9;
+	/**
+	 * for analysis: waiting time analysis
+	 */
+	public static final String ANL_DOUBLE_ATTRIBUTES_DESCRIPTION = "双属性概念描述";
+	public static final int CMD_ANL_DOUBLE_ATTRIBUTES_DESCRIPTION = 10;
+	/**
+	 * for analysis: waiting time analysis
+	 */
+	public static final String ANL_WAITING_TIME = "等待时间原因分析";
+	public static final int CMD_ANL_WAITING_TIME = 11;
 	
 	/**
 	 * for function: recommendation
@@ -138,6 +153,9 @@ public class StringSet {
 		commandMap.put(VSL_POPULATION_DISTRIBUTION, CMD_VSL_POPULATION_DISTRIBUTION);
 		commandMap.put(VSL_WAITING_RECORD_QUEUE_STATUS, CMD_VSL_WAITING_RECORD_QUEUE_STATUS);
 		commandMap.put(VSL_WAITING_RECORD_DISTRIBUTION, CMD_VSL_WAITING_RECORD_DISTRIBUTION);
+		commandMap.put(ANL_ATTRIBUTE_DESCRIPTION, CMD_ANL_ATTRIBUTE_DESCRIPTION);
+		commandMap.put(ANL_DOUBLE_ATTRIBUTES_DESCRIPTION, CMD_ANL_DOUBLE_ATTRIBUTES_DESCRIPTION);
+		commandMap.put(ANL_WAITING_TIME, CMD_ANL_WAITING_TIME);
 		
 		commandMap.put(MENUITEM_IMPORT, CMD_IMPORT);
 		commandMap.put(MENUITEM_EXPORT, CMD_EXPORT);

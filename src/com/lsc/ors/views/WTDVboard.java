@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import resource.StringSet;
 
 import com.lsc.ors.beans.AverageValueObject;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 
 public class WTDVboard extends VisualizationBoard {

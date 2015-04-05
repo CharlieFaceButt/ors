@@ -1,4 +1,4 @@
-package com.lsc.ors.applications;
+package com.lsc.ors.applications.visualization;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -13,12 +13,13 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import resource.StringSet;
 
+import com.lsc.ors.applications.ModelObject;
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 import com.lsc.ors.views.QSVboard;
 import com.lsc.ors.views.VisualizationBoard;

@@ -12,9 +12,9 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Date;
 
-import resource.StringSet;
 
 import com.lsc.ors.beans.OutpatientLog;
+import com.lsc.ors.resource.StringSet;
 
 public abstract class VisualizationBoard extends Canvas {
 

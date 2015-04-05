@@ -1,4 +1,4 @@
-package com.lsc.ors.applications;
+package com.lsc.ors.applications.visualization;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,12 +16,12 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import resource.StringSet;
 
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.views.QSVboard;
 import com.lsc.ors.views.widgets.TimeButtonGroup;
 

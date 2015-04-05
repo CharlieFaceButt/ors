@@ -11,10 +11,10 @@ import java.util.Map;
 
 import javax.swing.plaf.basic.BasicBorders.MarginBorder;
 
-import resource.StringSet;
 
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.util.TimeFormatter;
 
 public class PDVboard extends VisualizationBoard {

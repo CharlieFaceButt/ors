@@ -1,4 +1,4 @@
-package com.lsc.ors.applications;
+package com.lsc.ors.applications.visualization;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,12 +13,12 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import resource.StringSet;
 
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.AverageValueObject;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.views.WTDVboard;
 
 public class WaitingTimeDistributionViewer extends VisualizationModelObject{

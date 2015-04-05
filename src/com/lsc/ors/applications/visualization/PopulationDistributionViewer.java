@@ -1,4 +1,4 @@
-package com.lsc.ors.applications;
+package com.lsc.ors.applications.visualization;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -20,11 +20,11 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 
-import resource.StringSet;
 
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.views.PDVboard;
 
 public class PopulationDistributionViewer extends VisualizationModelObject {
