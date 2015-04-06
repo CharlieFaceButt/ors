@@ -15,11 +15,11 @@ import javax.swing.event.ChangeListener;
 
 
 import com.lsc.ors.applications.listener.ModelListener;
-import com.lsc.ors.beans.AverageValueObject;
+import com.lsc.ors.beans.MiningObject;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
-import com.lsc.ors.views.WTDVboard;
+import com.lsc.ors.views.visualization.WTDVboard;
 
 public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 
@@ -61,7 +61,7 @@ public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 				}
 			}
 		});
-		String[] infoKeys = AverageValueObject.KEYS;
+		String[] infoKeys = MiningObject.KEYS;
 		infoLabels = new Label[infoKeys.length];
 		for(int i = 0 ; i < infoKeys.length ; i ++){
 			infoLabels[i] = new Label(infoKeys[i] + ":\t" + StringSet.VACANT_CONTENT);
@@ -112,10 +112,10 @@ public class WaitingTimeDistributionViewer extends VisualizationModelObject{
 	@Override
 	protected void onMouseMoveOnBoard(Object source) {
 		// TODO Auto-generated method stub
-		AverageValueObject avo = (AverageValueObject)source;
+		MiningObject avo = (MiningObject)source;
 		ConsoleOutput.pop("WaitingTimeDistribution.onMouseMoveOnBoard", source.toString());
-		String[] infoKeys = AverageValueObject.KEYS;
-		if(avo.divide == 0){
+		String[] infoKeys = MiningObject.KEYS;
+		if(avo.count == 0){
 			for(int i = 0 ; i < infoKeys.length ; i ++){
 				infoLabels[i].setText(infoKeys[i] + ":\t" + StringSet.VACANT_CONTENT);
 			}

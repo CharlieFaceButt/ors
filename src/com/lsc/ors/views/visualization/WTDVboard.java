@@ -1,4 +1,4 @@
-package com.lsc.ors.views;
+package com.lsc.ors.views.visualization;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 
-import com.lsc.ors.beans.AverageValueObject;
+import com.lsc.ors.beans.MiningObject;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
@@ -33,7 +33,7 @@ public class WTDVboard extends VisualizationBoard {
 	/**
 	 * 二维数据存储：等待人数=countLists（特征取值，等待时间）
 	 */
-	Map<String, AverageValueObject> waitingTimeList;
+	Map<String, MiningObject> waitingTimeList;
 	
 	private int maxWaitingTime;
 	
@@ -57,12 +57,12 @@ public class WTDVboard extends VisualizationBoard {
 		setTimeList();
 		
 		//set max waiting time
-		AverageValueObject avo = null;
+		MiningObject avo = null;
 		maxWaitingTime = 0;
 		for(String featureKey: waitingTimeList.keySet()){
 			avo = waitingTimeList.get(featureKey);
-			if(avo.divide == 0) continue;
-			int time = (Integer)(avo.get(AverageValueObject.INDEX_AVERAGE));
+			if(avo.count == 0) continue;
+			int time = (Integer)(avo.get(MiningObject.INDEX_AVERAGE));
 			if(maxWaitingTime < time){
 				maxWaitingTime = time;
 			}
@@ -82,9 +82,9 @@ public class WTDVboard extends VisualizationBoard {
 	private void setTimeList(){
 		//remove old keys
 		if(waitingTimeList == null)
-			waitingTimeList = new HashMap<String,AverageValueObject>();
+			waitingTimeList = new HashMap<String,MiningObject>();
 		else waitingTimeList.clear();
-		AverageValueObject totalAVP = new AverageValueObject();
+		MiningObject totalAVP = new MiningObject();
 		waitingTimeList.put(StringSet.AVERAGE, totalAVP);
 		featureValues.add(StringSet.AVERAGE);
 		
@@ -93,13 +93,13 @@ public class WTDVboard extends VisualizationBoard {
 		if(featureType != null){
 			OutpatientLog ol = null;
 			String featureKey = null;
-			AverageValueObject avo = null;
+			MiningObject avo = null;
 			for (int i = 0; i < dataList.length; i++) {
 				ol = dataList[i];
 				featureKey = ol.get(featureType);
 				featureKey = generateKeyValue(featureKey);
 				if(!waitingTimeList.containsKey(featureKey)){
-					waitingTimeList.put(featureKey, new AverageValueObject());
+					waitingTimeList.put(featureKey, new MiningObject());
 					featureValues.add(featureKey);
 				}
 				avo = waitingTimeList.get(featureKey);
@@ -174,7 +174,7 @@ public class WTDVboard extends VisualizationBoard {
 	protected void onMouseExit(MouseEvent e) {
 		// TODO Auto-generated method stub
 		hoverPos = -2;
-		al.actionPerformed(new ActionEvent(new AverageValueObject(), getID(), StringSet.MOUSE_MOVE));
+		al.actionPerformed(new ActionEvent(new MiningObject(), getID(), StringSet.MOUSE_MOVE));
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public class WTDVboard extends VisualizationBoard {
 				}
 			}
 			if(key == null){
-				al.actionPerformed(new ActionEvent(new AverageValueObject(), getID(), StringSet.MOUSE_MOVE));
+				al.actionPerformed(new ActionEvent(new MiningObject(), getID(), StringSet.MOUSE_MOVE));
 			} else{
 				al.actionPerformed(new ActionEvent(waitingTimeList.get(key), getID(), StringSet.MOUSE_MOVE));
 			}
@@ -211,7 +211,7 @@ public class WTDVboard extends VisualizationBoard {
 			key = featureValues.get(hoverPos);
 			al.actionPerformed(new ActionEvent(waitingTimeList.get(key), getID(), StringSet.MOUSE_MOVE));
 		} else{
-			al.actionPerformed(new ActionEvent(new AverageValueObject(), getID(), StringSet.MOUSE_MOVE));
+			al.actionPerformed(new ActionEvent(new MiningObject(), getID(), StringSet.MOUSE_MOVE));
 		}
 	}
 
@@ -260,7 +260,7 @@ public class WTDVboard extends VisualizationBoard {
 		Integer xPos = 0;
 		int bottom = HEIGHT - valueHeight;
 		int maxRectHeight = bottom - RULER_WIDTH;
-		AverageValueObject avo = null;
+		MiningObject avo = null;
 		int rectHeight = 0;
 		for(String featureKey : waitingTimeList.keySet()){
 			//get position
@@ -274,13 +274,13 @@ public class WTDVboard extends VisualizationBoard {
 			//draw rect on that position
 			avo = waitingTimeList.get(featureKey);
 			int x = offsetX + RULER_WIDTH + rectGap + xPos * (rectWidth + rectGap);
-			if(avo.divide == 0){
+			if(avo.count == 0){
 				g.fillRect(x, bottom, rectWidth, 9);
 				g.drawString("0", x + 5, bottom - 5);
 			} else{
-				rectHeight = (int)((float)maxRectHeight * avo.total / (avo.divide * maxWaitingTime));
+				rectHeight = (int)((float)maxRectHeight * avo.sum / (avo.count * maxWaitingTime));
 				g.fillRect(x, bottom - rectHeight, rectWidth, rectHeight);
-				g.drawString("" + avo.total / avo.divide, x + 5, bottom - rectHeight - 5);
+				g.drawString("" + avo.sum / avo.count, x + 5, bottom - rectHeight - 5);
 			}
 		}
 		drawRulers(g);
@@ -374,12 +374,12 @@ public class WTDVboard extends VisualizationBoard {
 		setTimeList();
 		isRepaintable = true;
 		//set max waiting time
-		AverageValueObject avo = null;
+		MiningObject avo = null;
 		maxWaitingTime = 0;
 		for(String feature: waitingTimeList.keySet()){
 			avo = waitingTimeList.get(feature);
-			if(avo.divide == 0) continue;
-			int time = (int)(avo.total / avo.divide);
+			if(avo.count == 0) continue;
+			int time = (int)(avo.sum / avo.count);
 			if(maxWaitingTime < time){
 				maxWaitingTime = time;
 			}

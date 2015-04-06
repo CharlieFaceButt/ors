@@ -42,7 +42,8 @@ public class TimeButtonGroup {
 		nextYear = new Button(StringSet.NEXT_YEAR);
 		timeUnitChooser = new JComboBox(new String[]{
 				StringSet.TIME_UNIT_DAY,StringSet.TIME_UNIT_WEEK,
-				StringSet.TIME_UNIT_MONTH,StringSet.TIME_UNIT_YEAR});
+				StringSet.TIME_UNIT_MONTH,StringSet.TIME_UNIT_YEAR,
+				StringSet.TIME_UNIT_ALL});
 		
 		int lineOfButtonsY = top;
 		lastDay.setBounds(left, lineOfButtonsY, buttonWidth, buttonHeight);
@@ -87,6 +88,9 @@ public class TimeButtonGroup {
 						lastMonth.setEnabled(true);
 						nextMonth.setEnabled(true);
 					case StringSet.CMD_TIME_UNIT_YEAR:
+						lastYear.setEnabled(true);
+						nextYear.setEnabled(true);
+					case StringSet.CMD_TIME_UNIT_ALL:
 						listener.actionPerformed(new ActionEvent(timeUnitChooser, msg, s));
 						setButtonsDisable(msg);
 						break;
@@ -100,6 +104,9 @@ public class TimeButtonGroup {
 	}
 	private void setButtonsDisable(int msg){
 		switch (msg) {
+		case StringSet.CMD_TIME_UNIT_ALL:
+			lastYear.setEnabled(false);
+			nextYear.setEnabled(false);
 		case StringSet.CMD_TIME_UNIT_YEAR:
 			lastMonth.setEnabled(false);
 			nextMonth.setEnabled(false);

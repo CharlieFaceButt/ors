@@ -1,4 +1,4 @@
-package com.lsc.ors.views;
+package com.lsc.ors.views.analysis;
 
 import java.awt.Canvas;
 import java.awt.Cursor;
@@ -12,56 +12,46 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Date;
 
-
 import com.lsc.ors.beans.OutpatientLog;
+import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.resource.StringSet;
+import com.lsc.ors.util.DataExtractor;
 
-public abstract class VisualizationBoard extends Canvas {
+public abstract class AnalysisBoard extends Canvas{
 
 	/**
-	 * generated serial ID
+	 * generated serial id
 	 */
-	private static final long serialVersionUID = 2703670296950660542L;
+	private static final long serialVersionUID = -935687137278334166L;
 	public int getID(){
 		return (int)serialVersionUID;
 	}
 	
 	protected static final int WIDTH = 600;
 	protected static final int HEIGHT = 400;
-
-	/**
-	 * 判断是否需要重画
-	 */
-	boolean isRepaintable = false;
-	/**
-	 * 可能取值：<br>
-	 * StringSet.CMD_TIME_UNIT_DAY<br>
-	 * StringSet.CMD_TIME_UNIT_WEEK<br>
-	 * StringSet.CMD_TIME_UNIT_MONTH<br>
-	 * StringSet.CMD_TIME_UNIT_YEAR<br>
-	 */
-	protected int timeUnitType = StringSet.CMD_TIME_UNIT_DAY;
 	
+	protected static final int DIAGRAMTYPE_CHART = 0;
+	protected static final int DIAGRAMTYPE_PIE = 1;
+	protected static final int DIAGRAMTYPE_BAR = 2;
+	protected static final int DIAGRAMTYPE_PERCENTAGE = 3;
+	protected int diagramType;
+	
+	protected OutpatientLogCharacters[] dataList;
 	/**
 	 * 将响应传递给board的调用者
 	 */
 	protected ActionListener al = null;
-	
-	/**
-	 * visual data
-	 */
-	protected OutpatientLog[] dataList = null;
 	/**
 	 * mouse action listener
 	 */
 	private BoardMouseListener bml = new BoardMouseListener();
 	
-	public VisualizationBoard(ActionListener listener, OutpatientLog[] dataList) {
+	public AnalysisBoard(OutpatientLogCharacters[] logList, ActionListener listener) {
 		super();
-
-		setData(dataList);
+		this.dataList = logList;
 		al = listener;
 		
+		setBounds(0, 0, WIDTH, HEIGHT);
 		setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		
 		addMouseListener(bml);
@@ -70,23 +60,10 @@ public abstract class VisualizationBoard extends Canvas {
 		
 		new Thread(new AnimThread()).start();
 	}
-	/**
-	 * 
-	 * @return 可能取值:<br>
-	 * StringSet.CMD_TIME_UNIT_DAY<br>
-	 * StringSet.CMD_TIME_UNIT_WEEK<br>
-	 * StringSet.CMD_TIME_UNIT_MONTH<br>
-	 * StringSet.CMD_TIME_UNIT_YEAR<br>
-	 */
-	public int getTimeUnitType(){
-		return timeUnitType;
-	}
-
-	public void setData(OutpatientLog[] list){
-		setData(list, timeUnitType);
-		isRepaintable = true;
-	}
 	
+	
+
+	boolean isRepaintable = false;
 	class AnimThread implements Runnable{
 		@Override
 		public void run() {
@@ -94,8 +71,9 @@ public abstract class VisualizationBoard extends Canvas {
 			while(!Thread.currentThread().isInterrupted()){
 				try {
 					///debug
-					if(isRepaintable)
+					if(isRepaintable){
 						repaint();
+					}
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -105,7 +83,6 @@ public abstract class VisualizationBoard extends Canvas {
 		}
 	}
 	
-
 	protected int startX = 0, startY = 0;
 	protected int originalX = 0, originalY = 0;
 	protected boolean isReleased = true; 
@@ -166,7 +143,6 @@ public abstract class VisualizationBoard extends Canvas {
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			// TODO Auto-generated method stub
 			onMouseWheel(e);
-			al.actionPerformed(new ActionEvent(e, getID(), StringSet.MOUSE_WHEEL));
 		}
 		
 	}
@@ -205,11 +181,8 @@ public abstract class VisualizationBoard extends Canvas {
 		return dataList.length;
 	}
 
-	/**
-	 * Set the date of the displaying part of data set
-	 * @param date
-	 */
-	public abstract void setData(OutpatientLog[] list, int type);
+	public abstract void setData(OutpatientLogCharacters[] list);
+	public abstract void miningAllData();
 	protected abstract void onMouseClicked(MouseEvent e);
 	protected abstract void onMousePressed(MouseEvent e);
 	protected abstract void onMouseReleased(MouseEvent e);
@@ -219,4 +192,5 @@ public abstract class VisualizationBoard extends Canvas {
 	protected abstract void onMouseWheel(MouseWheelEvent e);
 	protected abstract void beforePaint();
 	protected abstract void onPaint(Graphics g);
+	
 }

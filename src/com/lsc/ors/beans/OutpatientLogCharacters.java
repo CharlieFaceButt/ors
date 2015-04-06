@@ -21,6 +21,14 @@ public class OutpatientLogCharacters implements BeanObject {
 		"patient_gender", "patient_age", "diagnosis", "reception_time", 
 		"registration_time", "waiting_time", "doctor_name", "further_consultation"
 	};
+	public static final int getIndex(String keyName){
+		int index = 0;
+		for(; index < KEYS.length ; index ++){
+			if(KEYS[index].equals(keyName))
+				return index;
+		}
+		return -1;
+	}
 
 //	private Integer index;
 //	private String department;
@@ -79,6 +87,19 @@ public class OutpatientLogCharacters implements BeanObject {
 		}
 	}
 
+	/**
+	 * 根据特征名获得特征值
+	 * @param key
+	 * @return
+	 */
+	public String get(String key) {
+		for (int i = 0; i < KEYS.length; i++) {
+			if(KEYS[i].equals(key)){
+				return get(i);
+			}
+		}
+		return null;
+	}
 	@Override
 	public String get(int key) {
 		// TODO Auto-generated method stub

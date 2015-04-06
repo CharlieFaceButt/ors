@@ -1,4 +1,4 @@
-package com.lsc.ors.views;
+package com.lsc.ors.views.visualization;
 
 import java.awt.Color;
 import java.awt.Graphics;

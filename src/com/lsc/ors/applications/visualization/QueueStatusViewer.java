@@ -22,7 +22,7 @@ import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
-import com.lsc.ors.views.QSVboard;
+import com.lsc.ors.views.visualization.QSVboard;
 import com.lsc.ors.views.widgets.TimeButtonGroup;
 
 /**

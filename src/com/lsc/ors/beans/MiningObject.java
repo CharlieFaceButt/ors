@@ -5,7 +5,7 @@ package com.lsc.ors.beans;
  * @author charlieliu
  *
  */
-public class AverageValueObject {
+public class MiningObject {
 
 	public static final String[] KEYS = new String[]{
 		"个数", "平均数", "最大值", "最小值"
@@ -14,22 +14,22 @@ public class AverageValueObject {
 	public static final int INDEX_AVERAGE = 1;
 	public static final int INDEX_MAX = 2;
 	public static final int INDEX_MIN = 3;
-	public AverageValueObject(){
-		this.total = 0;
-		this.divide = 0;
+	public MiningObject(){
+		this.sum = 0;
+		this.count = 0;
 		this.max = 0;
 		this.min = null;
 	}
-	public long total;
-	public long divide;
+	public long sum;
+	public long count;
 	public int max;
 	public Integer min;
 	public Object get(int index){
 		switch (index) {
 		case INDEX_AMOUNT:
-			return divide;
+			return count;
 		case INDEX_AVERAGE:
-			return (int)(total / divide);
+			return (int)(sum / count);
 		case INDEX_MAX:
 			return max;
 		case INDEX_MIN:
@@ -39,8 +39,8 @@ public class AverageValueObject {
 		}
 	}
 	public void add(int value){
-		total += value;
-		divide ++;
+		sum += value;
+		count ++;
 		if(value > max) max = value;
 		if(min == null || value < min) min = value;
 	}
@@ -48,7 +48,7 @@ public class AverageValueObject {
 	public String toString() {
 		// TODO Auto-generated method stub
 		String r = super.toString();
-		r += ("total: " + total + "; divide: " + divide);
+		r += ("sum: " + sum + "; divide: " + count);
 		return super.toString();
 	}
 }

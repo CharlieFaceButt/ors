@@ -25,7 +25,7 @@ import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
-import com.lsc.ors.views.PDVboard;
+import com.lsc.ors.views.visualization.PDVboard;
 
 public class PopulationDistributionViewer extends VisualizationModelObject {
 

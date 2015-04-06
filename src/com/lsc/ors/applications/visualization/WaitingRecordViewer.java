@@ -19,7 +19,7 @@ import com.lsc.ors.applications.listener.WRDModelListener;
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
-import com.lsc.ors.views.WRVboard;
+import com.lsc.ors.views.visualization.WRVboard;
 import com.lsc.ors.views.widgets.TimeButtonGroup;
 
 /**

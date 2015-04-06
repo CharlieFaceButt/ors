@@ -113,6 +113,8 @@ public class StringSet {
 	public static final int CMD_TIME_UNIT_MONTH = 25;
 	public static final String TIME_UNIT_YEAR = "时间单位（年）"; 
 	public static final int CMD_TIME_UNIT_YEAR = 26;
+	public static final String TIME_UNIT_ALL = "时间单位（全部）";
+	public static final int CMD_TIME_UNIT_ALL = 53;
 	public static final String SELECT_ALL = "全选";
 	public static final int CMD_SELECT_ALL = 50;
 	
@@ -174,6 +176,7 @@ public class StringSet {
 		commandMap.put(TIME_UNIT_WEEK, CMD_TIME_UNIT_WEEK);
 		commandMap.put(TIME_UNIT_MONTH, CMD_TIME_UNIT_MONTH);
 		commandMap.put(TIME_UNIT_YEAR, CMD_TIME_UNIT_YEAR);
+		commandMap.put(TIME_UNIT_ALL, CMD_TIME_UNIT_ALL);
 		
 		commandMap.put(MOUSE_CLICK, CMD_MOUSE_CLICK);
 		commandMap.put(MOUSE_WHEEL, CMD_MOUSE_WHEEL);
