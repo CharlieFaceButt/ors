@@ -1,9 +1,9 @@
 package com.lsc.ors.applications.analysis;
 
-import com.lsc.ors.applications.ModelObject;
 import com.lsc.ors.applications.listener.ModelListener;
+import com.lsc.ors.applications.visualization.WaitingTimeDistributionViewer;
 
-public class DoubleAttributeDescriptionViewer extends ModelObject {
+public class DoubleAttributeDescriptionViewer extends WaitingTimeDistributionViewer{
 
 	/**
 	 * generated serial id
