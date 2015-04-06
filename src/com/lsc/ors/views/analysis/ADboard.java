@@ -78,6 +78,7 @@ public class ADboard extends AnalysisBoard {
 	}
 	Map<String, Integer> characterValueCount = new HashMap<String, Integer>();
 	String[] sortedKeys = null;
+	int[] percentageList = new int[100];
 	private void updateView(OutpatientLogCharacters[] list, String character, int characterLayer, int diagramType){
 		this.dataList = list;
 		this.character = character;
@@ -85,43 +86,102 @@ public class ADboard extends AnalysisBoard {
 		this.diagramType = diagramType;
 		
 		characterValueCount.clear();
-		//get generalized character values
+		
 		OutpatientLogCharacters olc = null;
 		String crctr = null;
-		for (int i = 0; i < list.length; i++) {
-			olc = list[i];
-			crctr = olc.get(this.character);
-			crctr = generalization(crctr, this.character);
-			if(characterValueCount.get(crctr) == null){
-				characterValueCount.put(crctr, 0);
+		if(diagramType == DIAGRAMTYPE_PERCENTAGE){
+			if(hasPercentageDiagram()){
+				setMaxNumber();
+				for (int i = 0; i < percentageList.length; i++) {
+					percentageList[i] = 0;
+				}
+				Integer number = 0;
+				for (int j = 0; j < list.length; j++) {
+					olc = list[j];
+					crctr = olc.get(this.character);
+					number = extractNumber(crctr);
+					if(number == null) percentageList[99] ++;
+					else{
+						percentageList[number * 100 / maxNumber] ++;
+					}
+				}
 			}
-			int count = characterValueCount.get(crctr);
-			characterValueCount.put(crctr, count + 1);
+		} else{
+			for (int i = 0; i < list.length; i++) {
+				//get generalized character values
+				olc = list[i];
+				crctr = olc.get(this.character);
+				crctr = generalization(crctr, this.character);
+				if(characterValueCount.get(crctr) == null){
+					characterValueCount.put(crctr, 0);
+				}
+				int count = characterValueCount.get(crctr);
+				characterValueCount.put(crctr, count + 1);
+			}//sort character values by support count
+			sortedKeys = new String[characterValueCount.keySet().size()];
+			sortedKeys = characterValueCount.keySet().toArray(sortedKeys);
+			int[] countList = new int[sortedKeys.length];
+			for (int j = 0; j < sortedKeys.length; j++) {
+				countList[j] = characterValueCount.get(sortedKeys[j]);
+			}
+			int key = 0;
+			String kStr = null;
+			for (int k = 1; k < countList.length; k++) {
+				key = countList[k];
+				kStr = sortedKeys[k];
+				int l = k - 1;
+				while (l >= 0 && countList[l] < key) {
+					countList[l+1] = countList[l];
+					sortedKeys[l+1] = sortedKeys[l];
+					l --;
+				}
+				countList[l+1] = key;
+				sortedKeys[l+1] = kStr;
+			}
 		}
 		
-		//sort character values by support count
-		sortedKeys = new String[characterValueCount.keySet().size()];
-		sortedKeys = characterValueCount.keySet().toArray(sortedKeys);
-		int[] countList = new int[sortedKeys.length];
-		for (int j = 0; j < sortedKeys.length; j++) {
-			countList[j] = characterValueCount.get(sortedKeys[j]);
-		}
-		int key = 0;
-		String kStr = null;
-		for (int k = 1; k < countList.length; k++) {
-			key = countList[k];
-			kStr = sortedKeys[k];
-			int l = k - 1;
-			while (l >= 0 && countList[l] < key) {
-				countList[l+1] = countList[l];
-				sortedKeys[l+1] = sortedKeys[l];
-				l --;
-			}
-			countList[l+1] = key;
-			sortedKeys[l+1] = kStr;
-		}
+		
 		
 		isRepaintable = true;
+	}
+	private void setMaxNumber(){
+		if(character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_REGISTRATION]) || 
+				character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_RECEPTION])){
+			maxNumber = 24 * 60;
+		}
+		maxNumber = 0;
+		OutpatientLogCharacters olc = null;
+		String value = null;
+		Integer number = null;
+		for (int i = 0; i < dataList.length; i++) {
+			olc = dataList[i];
+			value = olc.get(character);
+			number = extractNumber(value);
+			if(number != null && number > maxNumber) 
+				maxNumber = number;
+		}
+		maxNumber ++;
+	}
+	private int maxNumber;
+	private Integer extractNumber(String oldKey){
+		if(oldKey == null){
+			ConsoleOutput.pop("ADboard.generalization", "key is null");
+			return null;
+		}
+		Integer newKey = null;
+		switch (OutpatientLogCharacters.getIndex(character)) {
+		case OutpatientLogCharacters.INDEX_PATIENT_AGE:
+		case OutpatientLogCharacters.INDEX_WAIT:
+			newKey = Integer.parseInt(oldKey);
+			break;
+		case OutpatientLogCharacters.INDEX_REGISTRATION:
+		case OutpatientLogCharacters.INDEX_RECEPTION:
+			Date date = TimeFormatter.deformat(oldKey, null);
+			newKey = getMinutesAmountFromDate(date);
+		default:
+			break;
+		}
+		return newKey;
 	}
 	int ageDivider = 10;
 	int waitingTimeDivider = 30;
@@ -274,10 +334,49 @@ public class ADboard extends AnalysisBoard {
 			}
 			break;
 		case DIAGRAMTYPE_BAR:
-			
+			if(character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_DIAGNOSES])){
+				return;
+			}
+			int rectHeight = (HEIGHT - RULER_WIDTH) / sortedKeys.length - 5;
+			int maxWidth = WIDTH - 6 * RULER_WIDTH;
+			int maxCount = characterValueCount.get(sortedKeys[0]);
+			for (int i = 0; i < sortedKeys.length; i++) {
+				count = characterValueCount.get(sortedKeys[i]);
+				int width = count * maxWidth / maxCount;
+				int y = 5 + i * (rectHeight + 5);
+				graphic.setColor(new Color((int)(Math.random() * 0xffffff)));
+				graphic.fillRect(0, y, width, rectHeight);
+				graphic.drawString(sortedKeys[i] + ":", width + 5, y + 10);
+				graphic.drawString("" + count, img.getWidth(null) - 2 * RULER_WIDTH, y + 10);
+			}
+			break;
+		case DIAGRAMTYPE_PERCENTAGE:
+			if(hasPercentageDiagram()){
+				count = 0;
+				int bottom = HEIGHT - RULER_WIDTH;
+				graphic.setColor(Color.GRAY);
+				int maxW = WIDTH - 2 * RULER_WIDTH;
+				int maxH = bottom - 2 * RULER_WIDTH;
+				for (int i = 0; i < percentageList.length; i++) {
+					count += percentageList[i];
+					graphic.fillOval(i * maxW / 100, bottom - RULER_WIDTH - count * maxH / dataList.length - 5, 5, 5);
+				}
+			}
+			break;
 		default:break;
 		}
 		g.drawImage(img, RULER_WIDTH + offsetX, RULER_WIDTH + offsetY, WIDTH - RULER_WIDTH - offsetX, HEIGHT - RULER_WIDTH - offsetY, null);
+		if(diagramType == DIAGRAMTYPE_PERCENTAGE){
+			int bottom = HEIGHT - RULER_WIDTH;
+			g.drawLine(RULER_WIDTH, 0, RULER_WIDTH, HEIGHT);
+			g.drawLine(0, bottom, WIDTH, bottom);
+		}
 	}
 
+	private boolean hasPercentageDiagram(){
+		return character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_PATIENT_AGE]) ||
+				character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_RECEPTION]) ||
+				character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_REGISTRATION]) ||
+				character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_WAIT]);
+	}
 }
