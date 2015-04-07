@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.util.FeatureKeyGenerator;
 import com.lsc.ors.util.TimeFormatter;
 
 public class ADboard extends AnalysisBoard {
@@ -28,7 +29,6 @@ public class ADboard extends AnalysisBoard {
 	
 	private String character;
 	private int characterLayer;
-	
 
 	public ADboard(OutpatientLogCharacters[] logList, ActionListener listener) {
 		super(logList, listener);
@@ -107,16 +107,22 @@ public class ADboard extends AnalysisBoard {
 				}
 			}
 		} else{
+			String[] split = null;
+			int count = 0;
 			for (int i = 0; i < list.length; i++) {
 				//get generalized character values
 				olc = list[i];
 				crctr = olc.get(this.character);
-				crctr = generalization(crctr, this.character);
-				if(characterValueCount.get(crctr) == null){
-					characterValueCount.put(crctr, 0);
+				crctr = FeatureKeyGenerator.generalization(crctr, this.character);
+				split = crctr.split(",");
+				for (int j = 0; j < split.length; j++) {
+					if(characterValueCount.get(crctr) == null){
+						characterValueCount.put(crctr, 0);
+					}
+					count = characterValueCount.get(crctr);
+					characterValueCount.put(crctr, count + 1);
 				}
-				int count = characterValueCount.get(crctr);
-				characterValueCount.put(crctr, count + 1);
+				
 			}//sort character values by support count
 			sortedKeys = new String[characterValueCount.keySet().size()];
 			sortedKeys = characterValueCount.keySet().toArray(sortedKeys);
@@ -139,8 +145,6 @@ public class ADboard extends AnalysisBoard {
 				sortedKeys[l+1] = kStr;
 			}
 		}
-		
-		
 		
 		isRepaintable = true;
 	}
@@ -177,59 +181,11 @@ public class ADboard extends AnalysisBoard {
 		case OutpatientLogCharacters.INDEX_REGISTRATION:
 		case OutpatientLogCharacters.INDEX_RECEPTION:
 			Date date = TimeFormatter.deformat(oldKey, null);
-			newKey = getMinutesAmountFromDate(date);
+			newKey = FeatureKeyGenerator.getMinutesAmountFromDate(date);
 		default:
 			break;
 		}
 		return newKey;
-	}
-	int ageDivider = 10;
-	int waitingTimeDivider = 30;
-	int registTimeDivider = 120;
-	private String generalization(String oldKey, String character){
-		if(oldKey == null){
-			ConsoleOutput.pop("ADboard.generalization", "key is null");
-			return "null";
-		}
-		String newKey = null;
-		switch (OutpatientLogCharacters.getIndex(character)) {
-		case OutpatientLogCharacters.INDEX_PATIENT_AGE:
-			Integer age = Integer.parseInt(oldKey);
-			if(age == null) 
-				return newKey;
-			newKey = generateKeyStrByDividingValue(age, ageDivider);
-			break;
-		case OutpatientLogCharacters.INDEX_REGISTRATION:
-		case OutpatientLogCharacters.INDEX_RECEPTION:
-			Date date = TimeFormatter.deformat(oldKey, null);
-			int minuteAmount = getMinutesAmountFromDate(date);
-			newKey = generateKeyStrByDividingMinutes(minuteAmount, registTimeDivider);
-			break;
-		case OutpatientLogCharacters.INDEX_WAIT:
-			Integer wait = Integer.parseInt(oldKey);
-			if(wait == null) return newKey;
-			newKey = generateKeyStrByDividingValue(wait, waitingTimeDivider);
-			break;
-		case OutpatientLogCharacters.INDEX_PATIENT_GENDER:
-		case OutpatientLogCharacters.INDEX_DOCTOR:
-		case OutpatientLogCharacters.INDEX_DIAGNOSES:
-		case OutpatientLogCharacters.INDEX_FURTHER_CONSULTATION:
-			newKey = oldKey; //有外部更改风险
-			break;
-		default:
-			break;
-		}
-		return newKey;
-	}
-	private String generateKeyStrByDividingValue(int value, int divider){
-		int quotient = value / divider;
-		return "" + (quotient * divider) + "-" + ((quotient + 1) * divider);
-	}
-	private String generateKeyStrByDividingMinutes(int value, int divider){
-		int quotient = value / divider;
-		int minutesAmount = quotient * divider;
-		return "" + (minutesAmount / 60) + ":" + (minutesAmount % 60) + "-" +
-				((minutesAmount + divider) / 60) + ":" +((minutesAmount +divider) % 60);
 	}
 
 	@Override

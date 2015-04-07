@@ -14,8 +14,10 @@ import java.util.Date;
 
 import com.lsc.ors.beans.OutpatientLog;
 import com.lsc.ors.beans.OutpatientLogCharacters;
+import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.util.DataExtractor;
+import com.lsc.ors.util.TimeFormatter;
 
 public abstract class AnalysisBoard extends Canvas{
 
@@ -60,7 +62,7 @@ public abstract class AnalysisBoard extends Canvas{
 		
 		new Thread(new AnimThread()).start();
 	}
-	
+
 	
 
 	boolean isRepaintable = false;
@@ -160,16 +162,6 @@ public abstract class AnalysisBoard extends Canvas{
 		}else{
 			onPaint(g);
 		}
-	}
-	
-	/**
-	 * 根据时间确定鼠标对准线的x坐标
-	 * @param date
-	 * @return
-	 */
-	public static final int getMinutesAmountFromDate(Date date){
-		if(date == null) return 0;
-		return date.getHours() * 60 + date.getMinutes();
 	}
 	
 	/**

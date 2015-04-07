@@ -120,7 +120,8 @@ public class OutpatientLogCharacters implements BeanObject {
 		case INDEX_WAIT:return "" + waiting_time;
 		case INDEX_DOCTOR:return doctor_name;
 		case INDEX_FURTHER_CONSULTATION:return further_consultation;
-		default:return null;
+		default:
+			return null;
 		}
 	}
 
