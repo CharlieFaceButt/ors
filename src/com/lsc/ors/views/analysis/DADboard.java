@@ -217,11 +217,17 @@ public class DADboard extends AnalysisBoard {
 			graphic.drawString(key, characterWidth + i * tdWidth, trHeight - 20);
 			graphic.drawString("" + associationMap[wtSplit.length][i], characterWidth + i * tdWidth, (wtSplit.length + 1) * trHeight);
 		}
+		int count = 0;
+		int N = dataList.length;
 		for (int i = 0; i < wtSplit.length; i++) {
 			graphic.drawString(wtSplit[i], 0, (i + 1) * trHeight);
 			graphic.drawString("" + associationMap[i][sortedKeys.length], characterWidth + sortedKeys.length * tdWidth, (i + 1) * trHeight);
 			for (int j = 0; j < sortedKeys.length; j++) {
-				graphic.drawString("" + associationMap[i][j], characterWidth + j * tdWidth, (i + 1) * trHeight);
+				count = associationMap[i][j];
+				graphic.drawString("" + count, characterWidth + j * tdWidth, (i + 1) * trHeight);
+				graphic.drawString(
+						"[" + ((float)(count * 1000 / N) / 10) + "%," + ((float)(count * 1000 / associationMap[wtSplit.length][j] ) / 10)+ "%]",
+						2 * characterWidth + j * tdWidth, (i + 1) * trHeight);
 			}
 		}
 		graphic.drawString(
