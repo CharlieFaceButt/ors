@@ -4,11 +4,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.lsc.ors.beans.FiveNumberObject;
 import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.debug.ConsoleOutput;
 
 public class DataMiner {
 
+	/**
+	 * 双属性关联分析
+	 * @param list
+	 * @param rightCharacterClasses
+	 * @param rightCharacterType
+	 * @param leftCharacterClasses
+	 * @param leftCharacterType
+	 * @return
+	 */
 	public static int[][] associationOf2Character(
 			OutpatientLogCharacters[] list,
 			String[] rightCharacterClasses, int rightCharacterType, 
@@ -142,5 +152,20 @@ public class DataMiner {
 			break;
 		}
 		return null;
+	}
+	
+	/**
+	 * 根据特征的五数概括分布
+	 * @param list
+	 * @param characterValues
+	 * @param characterType
+	 * @param targetDataType
+	 * @return
+	 */
+	public static FiveNumberObject[] getFiveNumberBoxes(
+			OutpatientLogCharacters[] list,
+			String[] characterValues, int characterType, int targetDataType){
+		FiveNumberObject[] result = new FiveNumberObject[characterValues.length];
+		return result;
 	}
 }

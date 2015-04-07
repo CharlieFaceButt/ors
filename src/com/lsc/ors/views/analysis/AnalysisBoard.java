@@ -51,6 +51,7 @@ public abstract class AnalysisBoard extends Canvas{
 	public AnalysisBoard(OutpatientLogCharacters[] logList, ActionListener listener) {
 		super();
 		this.dataList = logList;
+		diagramType = DIAGRAMTYPE_CHART;
 		al = listener;
 		
 		setBounds(0, 0, WIDTH, HEIGHT);
