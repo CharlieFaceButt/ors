@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.lsc.ors.beans.FiveNumberObject;
 import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.util.DataMiner;
 import com.lsc.ors.util.FeatureKeyGenerator;
@@ -28,6 +29,9 @@ public class DADboard extends AnalysisBoard {
 		"0-60,60-120,120-180,180-240,240-",
 		"0-30,30-60,60-90,90-120,120-150,150-180,180-210,210-240,240-",
 	};
+	protected static final int DIAGRAMTYPE_BOX = 1;
+	protected static final int DIAGRAMTYPE_DECRETE = 2;
+	protected static final int DIAGRAMTYPE_CURVE = 3;
 
 	private String character;
 	private int wtClass;
@@ -116,10 +120,25 @@ public class DADboard extends AnalysisBoard {
 			sortedKeys[l+1] = kStr;
 		}
 		
-		associationMap = DataMiner.associationOf2Character(
-				dataList,
-				WTKeys[wtClass].split(","), OutpatientLogCharacters.INDEX_WAIT,
-				sortedKeys, OutpatientLogCharacters.getIndex(character));
+		switch (diagramType) {
+		case DIAGRAMTYPE_CHART:
+			associationMap = DataMiner.associationOf2Character(
+					dataList,
+					WTKeys[wtClass].split(","), OutpatientLogCharacters.INDEX_WAIT,
+					sortedKeys, OutpatientLogCharacters.getIndex(character));
+			break;
+		case DIAGRAMTYPE_BOX:
+			boxList = DataMiner.getFiveNumberBoxesForWaitingTime(
+					dataList, sortedKeys, 
+					OutpatientLogCharacters.getIndex(character));
+			break;
+		case DIAGRAMTYPE_DECRETE:
+			break;
+		case DIAGRAMTYPE_CURVE:
+			break;
+		default:
+			break;
+		}
 		
 		isRepaintable = true;
 	}
@@ -189,6 +208,7 @@ public class DADboard extends AnalysisBoard {
 	}
 
 	int[][] associationMap;
+	FiveNumberObject[] boxList;
 	@Override
 	protected void onPaint(Graphics g) {
 		// TODO Auto-generated method stub

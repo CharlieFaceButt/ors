@@ -7,6 +7,7 @@ import java.util.Map;
 import com.lsc.ors.beans.FiveNumberObject;
 import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.debug.ConsoleOutput;
+import com.lsc.ors.util.structures.trees.AVLTree;
 
 public class DataMiner {
 
@@ -162,10 +163,50 @@ public class DataMiner {
 	 * @param targetDataType
 	 * @return
 	 */
-	public static FiveNumberObject[] getFiveNumberBoxes(
+	public static FiveNumberObject[] getFiveNumberBoxesForWaitingTime(
 			OutpatientLogCharacters[] list,
-			String[] characterValues, int characterType, int targetDataType){
+			String[] characterValues, int characterType){
 		FiveNumberObject[] result = new FiveNumberObject[characterValues.length];
+		Map<String, AVLTree<Integer>> resultMap = new HashMap<String, AVLTree<Integer>>();
+		Map<String, Integer> keyMap = new HashMap<String, Integer>();
+		for (int i = 0; i < characterValues.length; i++) {
+			resultMap.put(characterValues[i], new AVLTree<Integer>());
+			keyMap.put(characterValues[i], i);
+		}
+		
+		OutpatientLogCharacters olc = null;
+		String keyValue = null;
+		Integer cid = null;
+		AVLTree<Integer> tree = null;
+		for (int i = 0; i < list.length; i++) {
+			olc = list[i];
+			keyValue = olc.get(characterType);
+			cid = getClassIndex(keyMap, characterType, keyValue,
+					getDivider(characterValues, characterType),
+					getMaxIndex(characterValues, characterType));
+			tree = resultMap.get(characterValues[cid]);
+			if(tree == null){
+				tree = new AVLTree<Integer>();
+				resultMap.put(characterValues[cid], tree);
+			}
+			int number = olc.getWaiting_time();
+			tree.Insert(number, number);
+		}
+		
+		FiveNumberObject fno = null;
+		int count = 0;
+		for (int i = 0; i < characterValues.length; i++) {
+			tree = resultMap.get(characterValues[i]);
+			count = tree.getAmount();
+			fno = new FiveNumberObject();
+			fno.min = tree.get(1);
+			fno.quartile1 = tree.get(count / 4);
+			fno.median = tree.get(count / 2);
+			fno.quartile3 = tree.get(count / 3);
+			fno.max = tree.get(count);
+			result[i] = fno;
+		}
+		
 		return result;
 	}
 }

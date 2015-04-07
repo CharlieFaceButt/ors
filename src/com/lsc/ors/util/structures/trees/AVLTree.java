@@ -13,8 +13,13 @@ import com.lsc.ors.util.structures.nodes.BinaryTreeNode;
  */
 public class AVLTree<D> extends StandardBinaryTree<D> {
 
+	private int count = 0;
+	public int getCount(){
+		return count;
+	}
 	@Override
 	public D Insert(Integer key, D data) {
+		count ++;
 		if(root == null){
 			root = new AVLTreeNode<D>(
 					key, data, null, null, null);
@@ -80,5 +85,27 @@ public class AVLTree<D> extends StandardBinaryTree<D> {
 	public int getHeight() {
 		// TODO Auto-generated method stub
 		return ((AVLTreeNode<D>)root).getHeight();
+	}
+	
+	/**
+	 * 
+	 * @param index 从1开始计数
+	 * @return
+	 */
+	public D get(Integer index){
+		AVLTreeNode<D> node = (AVLTreeNode<D>)root;
+		while(node.left != null){
+			node = (AVLTreeNode<D>)node.left;
+		}
+		int i = 1;
+		while(i < index){
+			i ++;
+			if(node.right != null){
+				node = (AVLTreeNode<D>)node.right;
+			} else if(node.parent != null){
+				node = (AVLTreeNode<D>)node.parent;
+			} else break;
+		}
+		return node.getData();
 	}
 }

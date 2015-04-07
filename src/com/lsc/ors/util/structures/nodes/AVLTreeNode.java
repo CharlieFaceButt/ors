@@ -22,6 +22,11 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 	 */
 	private int height = 0;
 	
+	/**
+	 * record of the amount of left nodes
+	 */
+	private int leftCount = 0;
+	
 	public int getHeight() {
 		return height;
 	}
@@ -104,6 +109,14 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 
 	public void setBalance(int balance) {
 		this.balance = balance;
+	}
+	
+	public int getLeftCount() {
+		return leftCount;
+	}
+	
+	public void setLeftCount(int count) {
+		this.leftCount = count;
 	}
 	
 	public D Insert(Integer key, D data){
@@ -194,6 +207,5 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 		callRotation(balanceMode());
 		System.out.println("restore balance of " + key + "to " + balance);
 	}
-	
 	
 }
