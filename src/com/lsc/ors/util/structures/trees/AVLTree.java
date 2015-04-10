@@ -25,7 +25,11 @@ public class AVLTree<D> extends StandardBinaryTree<D> {
 					key, data, null, null, null);
 			return null;
 		}
-		return ((AVLTreeNode<D>)root).Insert(key, data); 
+		D oldData = ((AVLTreeNode<D>)root).Insert(key, data);
+		while(root.parent != null){
+			root = root.parent;
+		}
+		return oldData; 
 	};
 	
 	@SuppressWarnings("unchecked")
@@ -99,7 +103,8 @@ public class AVLTree<D> extends StandardBinaryTree<D> {
 		}
 		int i = 1;
 		while(i < index){
-			i ++;
+			i += node.getCount();
+			if(i > index) return node.getData();
 			if(node.right != null){
 				node = (AVLTreeNode<D>)node.right;
 			} else if(node.parent != null){

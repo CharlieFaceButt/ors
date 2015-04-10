@@ -23,9 +23,9 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 	private int height = 0;
 	
 	/**
-	 * record of the amount of left nodes
+	 * record of the amount of this node
 	 */
-	private int leftCount = 0;
+	private int count = 0;
 	
 	public int getHeight() {
 		return height;
@@ -36,6 +36,9 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 	 */
 	private int balance = 0;
 	
+	/**
+	 * 根据子节点更新balance和height
+	 */
 	public void update(){
 		int r = 0,l = 0;
 		if(right != null) r = ((AVLTreeNode<D>)right).getHeight();
@@ -49,6 +52,7 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 		super(key, data, left, right, parent);
 		// TODO Auto-generated constructor stub
 		this.height = 1;
+		this.count = 1;
 	}
 	
 	public void LeftRotate(){
@@ -111,12 +115,8 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 		this.balance = balance;
 	}
 	
-	public int getLeftCount() {
-		return leftCount;
-	}
-	
-	public void setLeftCount(int count) {
-		this.leftCount = count;
+	public int getCount() {
+		return count;
 	}
 	
 	public D Insert(Integer key, D data){
@@ -147,6 +147,7 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 			}
 		}
 		else{
+			count ++;
 			oldData = this.data;
 			this.data = data;
 			return oldData;
@@ -185,15 +186,11 @@ public class AVLTreeNode<D> extends BinaryTreeNode<D> {
 	 */
 	private int balanceMode(){
 		update();
-		int r = 0,l = 0;
-		if(right != null) r = ((AVLTreeNode<D>)right).getHeight();
-		if(left != null) l = ((AVLTreeNode<D>)left).getHeight();
-		int bl = r - l;
-		if(bl == 2){
+		if(balance == 2){
 			if(((AVLTreeNode<D>)right).getBalance() == -1) return RL;
 			else return RR;
 		}
-		else if(bl == -2){
+		else if(balance == -2){
 			if(((AVLTreeNode<D>)left).getBalance() == 1) return LR;
 			else return LL;
 		}
