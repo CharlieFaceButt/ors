@@ -148,7 +148,7 @@ public class ADboard extends AnalysisBoard {
 		
 		isRepaintable = true;
 	}
-	private void setMaxNumber(){
+	protected void setMaxNumber(){
 		if(character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_REGISTRATION]) || 
 				character.equals(OutpatientLogCharacters.KEYS[OutpatientLogCharacters.INDEX_RECEPTION])){
 			maxNumber = 24 * 60;

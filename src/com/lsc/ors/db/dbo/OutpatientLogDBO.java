@@ -25,6 +25,7 @@ import com.lsc.ors.db.DBOperator;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
+import com.lsc.ors.util.DataExtractor;
 import com.lsc.ors.util.TimeFormatter;
 
 /**
@@ -364,7 +365,6 @@ public class OutpatientLogDBO extends DBOperator{
 	/**
 	 * 在外部定义openConnection,closeConnection
 	 * @param values
-	 * @param listener
 	 */
 	private static void insertLog(OutpatientLog values){
 		String statement = "insert into " + table + "(";
@@ -411,12 +411,24 @@ public class OutpatientLogDBO extends DBOperator{
 					"insert failed cause no key name input");
 		} 
 		
+		//空缺值和噪声处理
+		for(int j = 0 ; j < keys.length ; j ++){
+			String vl = values.get(j);
+			if(vl == null || vl.equals("")){
+				if(DataExtractor.processMissingValue(j, values)){
+					return;
+				}
+			}
+			vl = DataExtractor.processNoise(j, vl);
+		}
+		
 		String valueStr = "";
 		//generate statement
 		for (int i = 0; i < keys.length; i++) {
 			String value = values.get(i);
-			if(value == null || value.equals(""))
-				continue;
+			//生成概念分层值
+			value = DataExtractor.generateConceptLayer(i,value);
+			//添加sql语句元素
 			statement += keys[i];
 			valueStr += "'" + value + "'";
 			if(i < keys.length - 1){
@@ -451,6 +463,14 @@ public class OutpatientLogDBO extends DBOperator{
 			e.printStackTrace();
 			return 0;
 		}
+	}
+	
+	public static int getAverageValue(int attrIndex){
+		return 0;
+	}
+	
+	public static String getConvergeValue(int attrIndex, String oldValue){
+		return oldValue;
 	}
 	
 	public static void truncate(DBOpeListener listener){

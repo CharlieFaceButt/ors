@@ -14,7 +14,7 @@ public class StringSet {
 	/**
 	 * for function: visualization
 	 */
-	public static final String VISUALIZE = "数据可视化";
+	public static final String VISUALIZE = "数据统计";
 	public static final int CMD_VISUALIZE = 0;
 	/**
 	 * for visualization: waiting record distribution
@@ -42,6 +42,13 @@ public class StringSet {
 	 */
 	public static final String ANALYZE = "数据分析";
 	public static final int CMD_ANALYZE = 1;
+	
+	public static final String WAITING_TIME_ANALYSIS = "排队等待时间分析";
+	public static final int CMD_WAITING_TIME_ANALTSIS = 12;
+	public static final String DOCTOR_ANALYSIS = "医生能力分析";
+	public static final int CMD_DOCTOR_ANALTSIS = 13;
+	public static final String OTHER_ANALYSIS = "其他分析";
+	public static final int CMD_OTHER_ANALTSIS = 14;
 	/**
 	 * for analysis: waiting time analysis
 	 */
@@ -57,6 +64,11 @@ public class StringSet {
 	 */
 	public static final String ANL_WAITING_TIME = "等待时间原因分析";
 	public static final int CMD_ANL_WAITING_TIME = 11;
+	
+	public static final String DCT_FEATURE = "医生特征分析";
+	public static final int CMD_DCT_FEATURE = 67;
+	public static final String DCT_COMPARISON = "医生特征比较";
+	public static final int CMD_DCT_COMPARISON = 68;
 	
 	/**
 	 * for function: recommendation
@@ -89,6 +101,8 @@ public class StringSet {
 	public static final int CMD_TRUNCATE = 22;
 
 	//button command
+	public static final String ST_SMR = "总体概况";
+	public static final int CMD_ST_SMR = 3;
 	public static final String NEXT_DAY = "之后一天";
 	public static final int CMD_NEXT_DAY = 18;
 	public static final String LAST_DAY = "之前一天";
@@ -148,7 +162,9 @@ public class StringSet {
 	private StringSet() {
 		System.out.println("commandMap initiated as a singleton");
 		commandMap.put(VISUALIZE, CMD_VISUALIZE);
-		commandMap.put(ANALYZE, CMD_ANALYZE);
+		commandMap.put(WAITING_TIME_ANALYSIS, CMD_WAITING_TIME_ANALTSIS);
+		commandMap.put(DOCTOR_ANALYSIS, CMD_DOCTOR_ANALTSIS);
+		commandMap.put(OTHER_ANALYSIS, CMD_OTHER_ANALTSIS);
 		commandMap.put(RECOMMEND, CMD_RECOMMEND);
 		
 		commandMap.put(VSL_WAITING_TIME_DISTRIBUTION, CMD_VSL_WAITING_TIME_DISTRIBUTION);
@@ -158,11 +174,14 @@ public class StringSet {
 		commandMap.put(ANL_ATTRIBUTE_DESCRIPTION, CMD_ANL_ATTRIBUTE_DESCRIPTION);
 		commandMap.put(ANL_DOUBLE_ATTRIBUTES_DESCRIPTION, CMD_ANL_DOUBLE_ATTRIBUTES_DESCRIPTION);
 		commandMap.put(ANL_WAITING_TIME, CMD_ANL_WAITING_TIME);
+		commandMap.put(DCT_FEATURE, CMD_DCT_FEATURE);
+		commandMap.put(DCT_COMPARISON, CMD_DCT_COMPARISON);
 		
 		commandMap.put(MENUITEM_IMPORT, CMD_IMPORT);
 		commandMap.put(MENUITEM_EXPORT, CMD_EXPORT);
 		commandMap.put(MENUITEM_TRUNCATE, CMD_TRUNCATE);
 		
+		commandMap.put(ST_SMR, CMD_ST_SMR);
 		commandMap.put(LAST_DAY, CMD_LAST_DAY);
 		commandMap.put(NEXT_DAY, CMD_NEXT_DAY);
 		commandMap.put(LAST_WEEK, CMD_LAST_WEEK);

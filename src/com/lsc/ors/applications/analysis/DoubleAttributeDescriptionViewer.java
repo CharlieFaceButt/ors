@@ -9,7 +9,7 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JComboBox;
 
 import com.lsc.ors.applications.listener.ModelListener;
-import com.lsc.ors.applications.visualization.WaitingTimeDistributionViewer;
+import com.lsc.ors.applications.waitingtime.WaitingTimeDistributionViewer;
 import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.views.analysis.ADboard;
 import com.lsc.ors.views.analysis.DADboard;

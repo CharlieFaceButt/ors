@@ -81,6 +81,12 @@ public class DataMiner {
 		result[rightCharacterClasses.length][leftCharacterClasses.length] = list.length;
 		return result;
 	}
+	/**
+	 * 
+	 * @param classes
+	 * @param type
+	 * @return
+	 */
 	private static int getDivider(String[] classes, int type){
 		String[] split = classes[0].split("-");
 		switch (type) {
@@ -100,6 +106,12 @@ public class DataMiner {
 			return 1;
 		}
 	}
+	/**
+	 * 
+	 * @param classes
+	 * @param type
+	 * @return
+	 */
 	private static int getMaxIndex(String[] classes, int type){
 		switch (type) {
 		case OutpatientLogCharacters.INDEX_RECEPTION:
@@ -115,6 +127,15 @@ public class DataMiner {
 			return classes.length - 1;
 		}
 	}
+	/**
+	 * 
+	 * @param keyMap
+	 * @param type
+	 * @param value
+	 * @param divider
+	 * @param maxIndex
+	 * @return
+	 */
 	private static Integer getClassIndex(Map<String, Integer> keyMap, int type, String value, int divider, int maxIndex){
 		if(value == null) return null;
 		switch (type) {
@@ -154,7 +175,6 @@ public class DataMiner {
 		}
 		return null;
 	}
-	
 	/**
 	 * 根据特征的五数概括分布
 	 * @param list
@@ -209,4 +229,21 @@ public class DataMiner {
 		
 		return result;
 	}
+
+	public static Object associationWithinDiagnosis(){
+		return null;
+	}
+	
+	public static Object getFeaturesOfAllDiagnosis(){
+		return null;
+	}
+	
+	public static Object getFeaturesOfDoctor(String doctorName){
+		return null;
+	}
+	
+	public static Object getFeaturesOfAllDoctor(){
+		return null;
+	}
+	
 }

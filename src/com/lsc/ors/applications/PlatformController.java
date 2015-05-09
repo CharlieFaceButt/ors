@@ -25,16 +25,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 
-import com.lsc.ors.applications.analysis.AttributeDescriptionViewer;
 import com.lsc.ors.applications.analysis.DoubleAttributeDescriptionViewer;
 import com.lsc.ors.applications.analysis.WaitingTimeAnalyzer;
+import com.lsc.ors.applications.doctor.DoctorFeatureViewer;
+import com.lsc.ors.applications.doctor.DoctorsComparisonViewer;
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.applications.listener.WRDModelListener;
-import com.lsc.ors.applications.visualization.PopulationDistributionViewer;
-import com.lsc.ors.applications.visualization.QueueStatusViewer;
-import com.lsc.ors.applications.visualization.WaitingRecordViewer;
-import com.lsc.ors.applications.visualization.WaitingTimeDistributionViewer;
+import com.lsc.ors.applications.statistics.AttributeDescriptionViewer;
+import com.lsc.ors.applications.waitingtime.PopulationDistributionViewer;
+import com.lsc.ors.applications.waitingtime.QueueStatusViewer;
+import com.lsc.ors.applications.waitingtime.WaitingRecordViewer;
+import com.lsc.ors.applications.waitingtime.WaitingTimeDistributionViewer;
 import com.lsc.ors.db.DBOpeListener;
 import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
@@ -81,11 +83,14 @@ public class PlatformController {
 	//for menu
 	Menu file = new Menu(StringSet.MENU_DATA);
 	MenuItem menuItemImport = new MenuItem(StringSet.MENUITEM_IMPORT);
-	MenuItem menuItemExport = new MenuItem(StringSet.MENUITEM_EXPORT);
+//	MenuItem menuItemExport = new MenuItem(StringSet.MENUITEM_EXPORT);
 	MenuItem menuItemTruncate = new MenuItem(StringSet.MENUITEM_TRUNCATE);
 	Menu func = new Menu(StringSet.MENU_FUNC);
 	MenuItem funcV = new MenuItem(StringSet.VISUALIZE);
-	MenuItem funcQ = new MenuItem(StringSet.ANALYZE);
+	Menu funcQ = new Menu(StringSet.ANALYZE);
+	MenuItem funcWTQ = new MenuItem(StringSet.WAITING_TIME_ANALYSIS);
+	MenuItem funcDQ = new MenuItem(StringSet.DOCTOR_ANALYSIS);
+	MenuItem funcOQ = new MenuItem(StringSet.OTHER_ANALYSIS);
 	MenuItem funcS = new MenuItem(StringSet.RECOMMEND);
 	
 	//for function
@@ -93,6 +98,7 @@ public class PlatformController {
 	Button bt_WRQS = new Button(StringSet.VSL_WAITING_RECORD_QUEUE_STATUS);
 	Button bt_PD = new Button(StringSet.VSL_POPULATION_DISTRIBUTION);
 	Button bt_WTD = new Button(StringSet.VSL_WAITING_TIME_DISTRIBUTION);
+	Button bt_SMR = new Button(StringSet.ST_SMR);
 	Button bt_ANL_AD = new Button(StringSet.ANL_ATTRIBUTE_DESCRIPTION);
 	Button bt_ANL_DAD = new Button(StringSet.ANL_DOUBLE_ATTRIBUTES_DESCRIPTION);
 	Button bt_ANL_WT = new Button(StringSet.ANL_WAITING_TIME);
@@ -111,15 +117,20 @@ public class PlatformController {
 		funcPanel.setBackground(Color.GRAY);
 		
 		//menu
-		file.add(menuItemImport);file.add(menuItemExport);file.add(menuItemTruncate);
+		file.add(menuItemImport);file.add(menuItemTruncate);
 		func.add(funcV);func.add(funcQ);func.add(funcS);
+		funcQ.add(funcWTQ);
+		funcQ.add(funcDQ);
+		funcQ.add(funcOQ);
+		
 		MenuBar mb = new MenuBar();
 		mb.add(file);mb.add(func);
 		menuItemImport.addActionListener(mal);
-		menuItemExport.addActionListener(mal);
 		menuItemTruncate.addActionListener(mal);
 		funcV.addActionListener(mal);
-		funcQ.addActionListener(mal);
+		funcWTQ.addActionListener(mal);
+		funcDQ.addActionListener(mal);
+		funcOQ.addActionListener(mal);
 		funcS.addActionListener(mal);
 		
 		//frame
@@ -272,21 +283,33 @@ public class PlatformController {
 			case StringSet.CMD_VISUALIZE:
 				funcPanel.removeAll();
 				GridLayout gl = new GridLayout(5, 1);
+				funcPanel.add(bt_SMR, 0);bt_SMR.addActionListener(mal);
+				funcPanel.add(bt_ANL_AD, 1);bt_ANL_AD.addActionListener(mal);
 				funcPanel.setLayout(gl);
+				frame.resize(600, 300);
+				break;
+			case StringSet.CMD_WAITING_TIME_ANALTSIS:
+				funcPanel.removeAll();
+				GridLayout gl2 = new GridLayout(5, 1);
+				funcPanel.setLayout(gl2);
 				funcPanel.add(bt_WRD, 0);bt_WRD.addActionListener(mal);
 				funcPanel.add(bt_WRQS, 1);bt_WRQS.addActionListener(mal);
 				funcPanel.add(bt_PD, 2);bt_PD.addActionListener(mal);
 				funcPanel.add(bt_WTD, 3);bt_WTD.addActionListener(mal);
-				frame.resize(600, 300);
+				funcPanel.add(bt_ANL_DAD, 4);bt_ANL_DAD.addActionListener(mal);
+				frame.resize(600, 350);
 				break;
-			case StringSet.CMD_ANALYZE:
+			case StringSet.CMD_DOCTOR_ANALTSIS:
 				funcPanel.removeAll();
-				GridLayout gl2 = new GridLayout(5, 1);
-				funcPanel.setLayout(gl2);
-				funcPanel.add(bt_ANL_AD, 0);bt_ANL_AD.addActionListener(mal);
-				funcPanel.add(bt_ANL_DAD, 1);bt_ANL_DAD.addActionListener(mal);
-				funcPanel.add(bt_ANL_WT, 2);bt_ANL_WT.addActionListener(mal);
-				frame.resize(600, 301);
+				GridLayout gl3 = new GridLayout(2, 1);
+				funcPanel.setLayout(gl3);
+				Button bt_DFV = new Button(StringSet.DCT_FEATURE);
+				Button bt_DCP = new Button(StringSet.DCT_COMPARISON);
+				funcPanel.add(bt_DFV, 0);bt_DFV.addActionListener(mal);
+				funcPanel.add(bt_DCP, 1);bt_DCP.addActionListener(mal);
+				frame.resize(600, 280);
+				break;
+			case StringSet.CMD_OTHER_ANALTSIS:
 				break;
 			case StringSet.CMD_RECOMMEND:
 				break;
@@ -387,6 +410,36 @@ public class PlatformController {
 			case StringSet.CMD_ANL_WAITING_TIME:
 				new WaitingTimeAnalyzer(getModelListener(StringSet.ANL_WAITING_TIME)).show();
 				break;
+			case StringSet.CMD_DCT_FEATURE:
+				new DoctorFeatureViewer(new ModelListener() {
+					@Override
+					public void onViewDestroy() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"停止");
+						WTDModel = null;
+					}
+					@Override
+					public void onViewCreate() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"打开");
+					}
+				}).show();
+				break;
+			case StringSet.CMD_DCT_COMPARISON:
+				new DoctorsComparisonViewer(new ModelListener() {
+						@Override
+						public void onViewDestroy() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"停止");
+							WTDModel = null;
+						}
+						@Override
+						public void onViewCreate() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"打开");
+						}
+					}).show();
+				break;
 			case StringSet.CMD_IMPORT:
 				popImportDialog();
 				break;
@@ -394,6 +447,8 @@ public class PlatformController {
 				break;
 			case StringSet.CMD_TRUNCATE:
 				popTruncateDialog();
+				break;
+			case StringSet.CMD_ST_SMR:
 				break;
 			default:break;
 			}
