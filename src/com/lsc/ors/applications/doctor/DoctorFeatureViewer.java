@@ -5,9 +5,6 @@ import java.awt.Label;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.JComboBox;
