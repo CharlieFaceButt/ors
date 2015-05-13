@@ -69,6 +69,14 @@ public class StringSet {
 	public static final int CMD_DCT_FEATURE = 67;
 	public static final String DCT_COMPARISON = "医生特征比较";
 	public static final int CMD_DCT_COMPARISON = 68;
+	public static final String DIAGNOSIS_INCIDENCE = "高发病症与罕见病症";
+	public static final int CMD_DIAGNOSIS_INCIDENCE = 69;
+	public static final String DIAGNOSIS_CONSULTATION_RATE = "高/低复诊率病症";
+	public static final int CMD_DIAGNOSIS_CONSULTATION_RATE = 71;
+	public static final String DIAGNOSIS_COMPLICATION = "高并发病症";
+	public static final int CMD_DIAGNOSIS_COMPLICATION = 72;
+	public static final String DIAGNOSIS_COMPARISON = "病症对比分析";
+	public static final int CMD_DIAGNOSIS_COMPARISON = 70;
 	
 	/**
 	 * for function: recommendation
@@ -176,6 +184,10 @@ public class StringSet {
 		commandMap.put(ANL_WAITING_TIME, CMD_ANL_WAITING_TIME);
 		commandMap.put(DCT_FEATURE, CMD_DCT_FEATURE);
 		commandMap.put(DCT_COMPARISON, CMD_DCT_COMPARISON);
+		commandMap.put(DIAGNOSIS_INCIDENCE, CMD_DIAGNOSIS_INCIDENCE);
+		commandMap.put(DIAGNOSIS_CONSULTATION_RATE, CMD_DIAGNOSIS_CONSULTATION_RATE);
+		commandMap.put(DIAGNOSIS_COMPLICATION, CMD_DIAGNOSIS_COMPLICATION);
+		commandMap.put(DIAGNOSIS_COMPARISON, CMD_DIAGNOSIS_COMPARISON);
 		
 		commandMap.put(MENUITEM_IMPORT, CMD_IMPORT);
 		commandMap.put(MENUITEM_EXPORT, CMD_EXPORT);

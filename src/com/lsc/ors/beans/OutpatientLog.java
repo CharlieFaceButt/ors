@@ -261,6 +261,11 @@ public class OutpatientLog implements BeanObject{
 		if(cell == null) return null;
 		
 		switch (key) {
+		case 10:
+			String content = cell.getContents();
+			if(content != null)
+				content.replaceAll("£¬", ",");
+			break;
 		case 11:
 		case 12:
 			if(cell.getType() != CellType.DATE) return null;

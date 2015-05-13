@@ -424,13 +424,14 @@ public class OutpatientLogDBO extends DBOperator{
 		
 		String valueStr = "";
 		//generate statement
-		for (int i = 0; i < keys.length; i++) {
+		for (int i = 1; i < keys.length; i++) {
 			String value = values.get(i);
 			//生成概念分层值
 			value = DataExtractor.generateConceptLayer(i,value);
 			//添加sql语句元素
 			statement += keys[i];
-			valueStr += "'" + value + "'";
+			if(value == null) valueStr += "null";
+			else valueStr += "'" + value + "'";
 			if(i < keys.length - 1){
 				statement += ",";
 				valueStr += ",";

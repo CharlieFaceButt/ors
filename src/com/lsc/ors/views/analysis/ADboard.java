@@ -116,11 +116,11 @@ public class ADboard extends AnalysisBoard {
 				crctr = FeatureKeyGenerator.generalization(crctr, this.character);
 				split = crctr.split(",");
 				for (int j = 0; j < split.length; j++) {
-					if(characterValueCount.get(crctr) == null){
-						characterValueCount.put(crctr, 0);
+					if(characterValueCount.get(split[j]) == null){
+						characterValueCount.put(split[j], 0);
 					}
-					count = characterValueCount.get(crctr);
-					characterValueCount.put(crctr, count + 1);
+					count = characterValueCount.get(split[j]);
+					characterValueCount.put(split[j], count + 1);
 				}
 				
 			}//sort character values by support count

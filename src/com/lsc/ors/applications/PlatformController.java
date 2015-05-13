@@ -32,6 +32,8 @@ import com.lsc.ors.applications.doctor.DoctorsComparisonViewer;
 import com.lsc.ors.applications.listener.ModelListener;
 import com.lsc.ors.applications.listener.QSModelListener;
 import com.lsc.ors.applications.listener.WRDModelListener;
+import com.lsc.ors.applications.others.DiagnosisComparisonViewer;
+import com.lsc.ors.applications.others.DiagnosisFeatureViewer;
 import com.lsc.ors.applications.statistics.AttributeDescriptionViewer;
 import com.lsc.ors.applications.waitingtime.PopulationDistributionViewer;
 import com.lsc.ors.applications.waitingtime.QueueStatusViewer;
@@ -42,6 +44,7 @@ import com.lsc.ors.db.dbo.OutpatientLogDBO;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
+import com.lsc.ors.resource.StringSet.CMD_FEATURE;
 import com.lsc.ors.util.ExcelFileFilter;
 
 /**
@@ -271,14 +274,16 @@ public class PlatformController {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 //			System.out.println(e.getActionCommand());
-			if(waitingRecordCount <= 0){
+			
+			addInfo(e.getActionCommand());
+			Integer msg = StringSet.getInstance().getCommandIndex(e.getActionCommand());
+
+			if(msg != StringSet.CMD_IMPORT && waitingRecordCount <= 0){
 				addInfo("木有数据，无法生成视图");
 				JOptionPane.showMessageDialog(null, "没有数据，请通过\"文件\"-->\"导入数据\"来加载数据");
 				return;
 			}
 			
-			addInfo(e.getActionCommand());
-			Integer msg = StringSet.getInstance().getCommandIndex(e.getActionCommand());
 			switch(msg){
 			case StringSet.CMD_VISUALIZE:
 				funcPanel.removeAll();
@@ -310,6 +315,18 @@ public class PlatformController {
 				frame.resize(600, 280);
 				break;
 			case StringSet.CMD_OTHER_ANALTSIS:
+				funcPanel.removeAll();
+				GridLayout gl4 = new GridLayout(4, 1);
+				funcPanel.setLayout(gl4);
+				Button bt_DGI = new Button(StringSet.DIAGNOSIS_INCIDENCE);
+				Button bt_DGCTR = new Button(StringSet.DIAGNOSIS_CONSULTATION_RATE);
+				Button bt_DGCC = new Button(StringSet.DIAGNOSIS_COMPLICATION);
+				Button bt_DGCP = new Button(StringSet.DIAGNOSIS_COMPARISON);
+				funcPanel.add(bt_DGI, 0);bt_DGI.addActionListener(mal);
+				funcPanel.add(bt_DGCTR, 0);bt_DGCTR.addActionListener(mal);
+				funcPanel.add(bt_DGCC, 0);bt_DGCC.addActionListener(mal);
+				funcPanel.add(bt_DGCP, 1);bt_DGCP.addActionListener(mal);
+				frame.resize(600, 270);
 				break;
 			case StringSet.CMD_RECOMMEND:
 				break;
@@ -386,18 +403,18 @@ public class PlatformController {
 						@Override
 						public void onViewDestroy() {
 							// TODO Auto-generated method stub
-							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"停止");
+							addInfo("\"" + StringSet.VSL_WAITING_TIME_DISTRIBUTION + "\"停止");
 							WTDModel = null;
 						}
 						@Override
 						public void onViewCreate() {
 							// TODO Auto-generated method stub
-							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"打开");
+							addInfo("\"" + StringSet.VSL_WAITING_TIME_DISTRIBUTION + "\"打开");
 						}
 					});
 				}
 				else{
-					addInfo("" + StringSet.VSL_POPULATION_DISTRIBUTION + "后台已经运行");
+					addInfo("" + StringSet.VSL_WAITING_TIME_DISTRIBUTION + "后台已经运行");
 				}
 				WTDModel.show();
 				break;
@@ -415,13 +432,13 @@ public class PlatformController {
 					@Override
 					public void onViewDestroy() {
 						// TODO Auto-generated method stub
-						addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"停止");
+						addInfo("\"" + StringSet.DCT_FEATURE + "\"停止");
 						WTDModel = null;
 					}
 					@Override
 					public void onViewCreate() {
 						// TODO Auto-generated method stub
-						addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"打开");
+						addInfo("\"" + StringSet.DCT_FEATURE + "\"打开");
 					}
 				}).show();
 				break;
@@ -430,19 +447,80 @@ public class PlatformController {
 						@Override
 						public void onViewDestroy() {
 							// TODO Auto-generated method stub
-							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"停止");
-							WTDModel = null;
+							addInfo("\"" + StringSet.DCT_COMPARISON + "\"停止");
 						}
 						@Override
 						public void onViewCreate() {
 							// TODO Auto-generated method stub
-							addInfo("\"" + StringSet.VSL_POPULATION_DISTRIBUTION + "\"打开");
+							addInfo("\"" + StringSet.DCT_COMPARISON + "\"打开");
+						}
+					}).show();
+				break;
+			case StringSet.CMD_DIAGNOSIS_INCIDENCE:
+				new DiagnosisFeatureViewer(new ModelListener() {
+					@Override
+					public void onViewDestroy() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.DIAGNOSIS_INCIDENCE + "\"停止");
+					}
+					@Override
+					public void onViewCreate() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.DIAGNOSIS_INCIDENCE + "\"打开");
+					}
+				}).show();
+				break;
+			case StringSet.CMD_DIAGNOSIS_CONSULTATION_RATE:
+				new DiagnosisFeatureViewer(new ModelListener() {
+					@Override
+					public void onViewDestroy() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.DIAGNOSIS_CONSULTATION_RATE + "\"停止");
+					}
+					@Override
+					public void onViewCreate() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.DIAGNOSIS_CONSULTATION_RATE + "\"打开");
+					}
+				}).show();
+				break;
+			case StringSet.CMD_DIAGNOSIS_COMPLICATION:
+				new DiagnosisFeatureViewer(new ModelListener() {
+					@Override
+					public void onViewDestroy() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.DIAGNOSIS_COMPLICATION + "\"停止");
+					}
+					@Override
+					public void onViewCreate() {
+						// TODO Auto-generated method stub
+						addInfo("\"" + StringSet.DIAGNOSIS_COMPLICATION + "\"打开");
+					}
+				}).show();
+				break;
+			case StringSet.CMD_DIAGNOSIS_COMPARISON:
+				new DiagnosisComparisonViewer(new ModelListener() {
+						@Override
+						public void onViewDestroy() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.DIAGNOSIS_COMPARISON + "\"停止");
+						}
+						@Override
+						public void onViewCreate() {
+							// TODO Auto-generated method stub
+							addInfo("\"" + StringSet.DIAGNOSIS_COMPARISON + "\"打开");
 						}
 					}).show();
 				break;
 			case StringSet.CMD_IMPORT:
-				popImportDialog();
-				break;
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						popImportDialog();
+					}
+				}).start();
+				break; 
 			case StringSet.CMD_EXPORT:
 				break;
 			case StringSet.CMD_TRUNCATE:

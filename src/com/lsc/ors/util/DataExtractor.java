@@ -72,7 +72,10 @@ public class DataExtractor {
 	 * @return
 	 */
 	private static String commaAlign(String oldValue){
-		oldValue.replace('£¬', ',');
+		if(oldValue != null){
+			oldValue.replaceAll("£¬", ",");
+			oldValue.replaceAll(";", ",");
+		}
 		return oldValue;
 	}
 }
