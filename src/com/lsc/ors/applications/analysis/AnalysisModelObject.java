@@ -52,14 +52,14 @@ public abstract class AnalysisModelObject extends ModelObject {
 	protected AnalysisBoard board;
 	DatePicker datePicker;
 	TimeButtonGroup timeBtns;
-	OutpatientLogCharacters[] dataList;
+	protected OutpatientLogCharacters[] dataList;
 
 	//listener
-	MultipleOnClickListener mocl = new MultipleOnClickListener();
+	protected MultipleOnClickListener mocl = new MultipleOnClickListener();
 	
 	//views
-	JPanel displayer = null;
-	JPanel analyzer = null;
+	protected JPanel displayer = null;
+	protected JPanel analyzer = null;
 	
 	public AnalysisModelObject(ModelListener listener) {
 		super(listener);

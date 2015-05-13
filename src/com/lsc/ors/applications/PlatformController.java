@@ -323,9 +323,9 @@ public class PlatformController {
 				Button bt_DGCC = new Button(StringSet.DIAGNOSIS_COMPLICATION);
 				Button bt_DGCP = new Button(StringSet.DIAGNOSIS_COMPARISON);
 				funcPanel.add(bt_DGI, 0);bt_DGI.addActionListener(mal);
-				funcPanel.add(bt_DGCTR, 0);bt_DGCTR.addActionListener(mal);
-				funcPanel.add(bt_DGCC, 0);bt_DGCC.addActionListener(mal);
-				funcPanel.add(bt_DGCP, 1);bt_DGCP.addActionListener(mal);
+				funcPanel.add(bt_DGCTR, 1);bt_DGCTR.addActionListener(mal);
+				funcPanel.add(bt_DGCC, 2);bt_DGCC.addActionListener(mal);
+				funcPanel.add(bt_DGCP, 3);bt_DGCP.addActionListener(mal);
 				frame.resize(600, 270);
 				break;
 			case StringSet.CMD_RECOMMEND:
@@ -468,7 +468,7 @@ public class PlatformController {
 						// TODO Auto-generated method stub
 						addInfo("\"" + StringSet.DIAGNOSIS_INCIDENCE + "\"打开");
 					}
-				}).show();
+				}, StringSet.CMD_DIAGNOSIS_INCIDENCE).show();
 				break;
 			case StringSet.CMD_DIAGNOSIS_CONSULTATION_RATE:
 				new DiagnosisFeatureViewer(new ModelListener() {
@@ -482,7 +482,7 @@ public class PlatformController {
 						// TODO Auto-generated method stub
 						addInfo("\"" + StringSet.DIAGNOSIS_CONSULTATION_RATE + "\"打开");
 					}
-				}).show();
+				}, StringSet.CMD_DIAGNOSIS_CONSULTATION_RATE).show();
 				break;
 			case StringSet.CMD_DIAGNOSIS_COMPLICATION:
 				new DiagnosisFeatureViewer(new ModelListener() {
@@ -496,7 +496,7 @@ public class PlatformController {
 						// TODO Auto-generated method stub
 						addInfo("\"" + StringSet.DIAGNOSIS_COMPLICATION + "\"打开");
 					}
-				}).show();
+				}, StringSet.CMD_DIAGNOSIS_COMPLICATION).show();
 				break;
 			case StringSet.CMD_DIAGNOSIS_COMPARISON:
 				new DiagnosisComparisonViewer(new ModelListener() {

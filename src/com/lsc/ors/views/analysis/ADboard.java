@@ -249,7 +249,11 @@ public class ADboard extends AnalysisBoard {
 	@Override
 	protected void onPaint(Graphics g) {
 		// TODO Auto-generated method stub
-		if(dataList == null) return;
+		if(dataList == null){
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, WIDTH, HEIGHT);
+			return;
+		}
 		
 		Image img = new BufferedImage(WIDTH - RULER_WIDTH - offsetX, HEIGHT - RULER_WIDTH - offsetY, BufferedImage.TYPE_INT_RGB);
 		Graphics graphic = img.getGraphics();
