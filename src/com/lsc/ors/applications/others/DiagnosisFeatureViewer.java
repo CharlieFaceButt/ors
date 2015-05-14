@@ -10,9 +10,7 @@ import javax.swing.JComboBox;
 
 import com.lsc.ors.applications.analysis.AnalysisModelObject;
 import com.lsc.ors.applications.listener.ModelListener;
-import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.resource.StringSet;
-import com.lsc.ors.views.analysis.DCTADboard;
 import com.lsc.ors.views.analysis.DGFboard;
 
 public class DiagnosisFeatureViewer extends AnalysisModelObject {
@@ -29,7 +27,7 @@ public class DiagnosisFeatureViewer extends AnalysisModelObject {
 		super(listener);
 		// TODO Auto-generated constructor stub
 		board = new DGFboard(dataList, mocl);
-		diagramTypeChooser = new JComboBox(new String[]{"频度表","柱状图"});
+		diagramTypeChooser = new JComboBox(new String[]{"频度表","图"});
 		modelChooser = new JComboBox(new String[]{
 				StringSet.DIAGNOSIS_INCIDENCE,
 				StringSet.DIAGNOSIS_CONSULTATION_RATE,

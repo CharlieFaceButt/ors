@@ -163,6 +163,7 @@ public abstract class AnalysisModelObject extends ModelObject {
 			case StringSet.CMD_TIME_UNIT_WEEK:
 			case StringSet.CMD_TIME_UNIT_MONTH:
 			case StringSet.CMD_TIME_UNIT_YEAR:
+				timeUnitType = msg;
 				setDataByDateRange(currentDate, msg);
 				board.setData(dataList);
 				break;

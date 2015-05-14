@@ -10,10 +10,6 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.SimpleFormatter;
-
-import jxl.write.NumberFormat;
-
 import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
@@ -147,7 +143,8 @@ public class DGFboard extends AnalysisBoard {
 	@Override
 	protected void onMouseExit(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		mouseAlign = false;
+		isRepaintable = true;
 	}
 
 	@Override
@@ -156,15 +153,26 @@ public class DGFboard extends AnalysisBoard {
 
 	}
 
+	private boolean mouseAlign = false;
+	private int alignX = 0;
+	private int alignY = 0;
 	@Override
 	protected void onMouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		mouseAlign = true;
+		isRepaintable = true;
+		alignX = e.getX();
+		alignY = e.getY();
 	}
 
+	private float multiple = 1.0f;
 	@Override
 	protected void onMouseWheel(MouseWheelEvent e) {
 		// TODO Auto-generated method stub
+		int rotation = e.getWheelRotation();
+		if(multiple > 0.1f)
+			multiple += rotation * 0.1f;
+		isRepaintable = true;
 	}
 
 
@@ -179,9 +187,8 @@ public class DGFboard extends AnalysisBoard {
 		if(offsetX > 5) offsetX -= (offsetX / adjustSpeed);
 		else if(offsetX > 0) offsetX--;
 		
-		if(offsetY > 5 || offsetY < -5) offsetY -= (offsetY / adjustSpeed);
+		if(offsetY > 5) offsetY -= (offsetY / adjustSpeed);
 		else if(offsetY > 0) offsetY--;
-		else if(offsetY < 0) offsetY ++;
 		
 		if(offsetX <= 0 && offsetY == 0) 
 			isRepaintable = false;
@@ -219,7 +226,6 @@ public class DGFboard extends AnalysisBoard {
 		}//ͼ
 		else{
 			drawDiagram(graphic);
-			drawAlign(graphic);
 		}
 
 		g.drawImage(img,
@@ -284,13 +290,21 @@ public class DGFboard extends AnalysisBoard {
 		xItemWidth -= xItemGap;
 		DecimalFormat dFormat = new DecimalFormat("0.00##");
 		int maxHeight = HEIGHT - 2 * RULER_WIDTH;
+		int alignXIndex = 0;
+		int alignYIndex = 0;
 		
 		DiagnosisFeature dgFeature = null;
+		DiagnosisFeature alignFeature = null;
 		switch (modelFlag) {
 		case StringSet.CMD_DIAGNOSIS_INCIDENCE:
 			g.drawString("" + dFormat.format(maxIncidenceRate), 0, 2 * RULER_WIDTH);
 			g.drawLine(0, RULER_WIDTH, WIDTH - 2 * RULER_WIDTH - offsetX, RULER_WIDTH);
 			
+			//align index
+			alignXIndex = (alignX - offsetX - RULER_WIDTH * 3 / 2) / (xItemWidth + xItemGap);
+			int icdIndex = 0;
+			
+			//draw bars
 			int incidentHeight = 0;
 			for (String diagnosis : miningMap.keySet()) {
 				g.setColor(Color.BLACK);
@@ -301,9 +315,28 @@ public class DGFboard extends AnalysisBoard {
 				g.setColor(Color.BLUE);
 				g.fillRect(x, HEIGHT - RULER_WIDTH - incidentHeight, xItemWidth, incidentHeight);
 				x += (xItemWidth + xItemGap);
+				
+				if(icdIndex == alignXIndex){
+					alignFeature = dgFeature;
+				}
+				icdIndex ++;
+			}
+			
+			//draw aligns
+			if(mouseAlign && alignFeature != null &&
+					alignY - RULER_WIDTH + alignFeature.incidence * maxHeight / 
+					((int)(maxIncidenceRate * diagnoseAmount)) > maxHeight){
+				g.setColor(new Color(0f, 0f, 0f, 0.4f));
+				g.fillRect(alignX - offsetX - RULER_WIDTH, alignY - RULER_WIDTH - 20, 50, 20);
+				g.setColor(Color.WHITE);
+				g.drawString("" + alignFeature.incidence + " / " + diagnoseAmount, 
+						alignX - offsetX - RULER_WIDTH + 5, alignY - RULER_WIDTH - 5);
 			}
 			break;
 		case StringSet.CMD_DIAGNOSIS_CONSULTATION_RATE:
+			//align index
+			alignXIndex = (alignX - offsetX - RULER_WIDTH * 3 / 2) / (xItemWidth + xItemGap);
+			int cstIndex = 0;
 			
 			int cstHeight = 0;
 			for(String diagnosis : miningMap.keySet()){
@@ -315,40 +348,80 @@ public class DGFboard extends AnalysisBoard {
 				g.setColor(Color.YELLOW);
 				g.fillRect(x, HEIGHT - RULER_WIDTH - cstHeight, xItemWidth, cstHeight);
 				x += (xItemWidth + xItemGap);
+
+				if(cstIndex == alignXIndex){
+					alignFeature = dgFeature;
+				}
+				cstIndex ++;
 			}
 			g.setColor(Color.BLACK);
 			g.drawString("100%", 0, 2 * RULER_WIDTH);
 			g.drawLine(0, RULER_WIDTH, WIDTH - 2 * RULER_WIDTH - offsetX, RULER_WIDTH);
+
+			//draw aligns
+			if(mouseAlign && alignFeature != null &&
+					alignY - RULER_WIDTH + alignFeature.incidence * maxHeight / 
+					((int)(maxIncidenceRate * diagnoseAmount)) > maxHeight){
+				g.setColor(new Color(0f, 0f, 0f, 0.4f));
+				g.fillRect(alignX - offsetX - RULER_WIDTH, alignY - RULER_WIDTH - 20, 50, 20);
+				g.setColor(Color.WHITE);
+				g.drawString("" + alignFeature.consultation + " / " + alignFeature.incidence, 
+						alignX - offsetX - RULER_WIDTH + 5, alignY - RULER_WIDTH - 5);
+			}
 			break;
 		case StringSet.CMD_DIAGNOSIS_COMPLICATION:
 			xItemWidth = (WIDTH - 2 * RULER_WIDTH - x) / miningMap.size();
 			int itemHeight = (HEIGHT - 2 * RULER_WIDTH) / miningMap.size();
 			if(itemHeight < xItemWidth) xItemWidth = itemHeight;
 			else itemHeight = xItemWidth;
+			xItemWidth = (int)(xItemWidth * multiple);
+			itemHeight = (int)(itemHeight * multiple);
 			Integer cpc = 0;
 			int y = RULER_WIDTH;
 			int leftMargin = 5 * RULER_WIDTH;
+			
+			//align index
+			alignXIndex = (alignX - offsetX - RULER_WIDTH - leftMargin) / xItemWidth;
+			alignYIndex = (alignY - offsetY - RULER_WIDTH * 2) / itemHeight;
+			String alignDiagnosis = null;
+			String alignComplication = null;
+			
 			for(String dignosis : miningMap.keySet()){
+				//align X index
+				if(alignYIndex == 0) alignDiagnosis = dignosis;
+				alignYIndex --;
+				
+				//draw title
 				g.setColor(Color.BLACK);
 				g.drawString(dignosis, 5, y + itemHeight / 2);
 				
+				//draw a line of blocks
 				dgFeature = miningMap.get(dignosis);
 				x = leftMargin;
 				for(String complication : miningMap.keySet()){
 					cpc = dgFeature.complicationMap.get(complication);
 					if(cpc == null) cpc = 0;
 					
-					int red = 255;
-					if(maxComplication != 0) 
-						red -= 255 * cpc / maxComplication;
-					int green = 255;
-					int blue = 255;
+					int blue = 150;
+					int green = 150;
+					int red = 150;
+					if(maxComplication != 0) {
+						blue -= 150 * cpc / maxComplication;
+						green += 100 * cpc / maxComplication;
+						red += 100 * cpc / maxComplication;
+					}
 					if(cpc == 0){
 						g.setColor(Color.GRAY);
 					}else{
 						g.setColor(new Color(red,green,blue));
 					}
 					g.fillRect(x, y, xItemWidth, itemHeight);
+					
+					//align Y index
+					if(alignYIndex == 0){
+						if(alignXIndex == 0) alignComplication = complication;
+						alignXIndex --;
+					}
 					
 					x += xItemWidth;
 				}
@@ -358,16 +431,29 @@ public class DGFboard extends AnalysisBoard {
 			int N = miningMap.size();
 			for (int i = 1; i < N; i++) {
 				g.drawLine(leftMargin + i * xItemWidth, RULER_WIDTH,
-						leftMargin + i * xItemWidth, HEIGHT - RULER_WIDTH);
+						leftMargin + i * xItemWidth, RULER_WIDTH + itemHeight * N);
 				g.drawLine(leftMargin, RULER_WIDTH + i * itemHeight, 
 						leftMargin + itemHeight * N, RULER_WIDTH + i * itemHeight);
+			}
+
+			//draw aligns
+			if(mouseAlign){
+				alignFeature = miningMap.get(alignDiagnosis);
+				if(alignFeature == null) break;
+				Integer cpcCount = alignFeature.complicationMap.get(alignComplication);
+				if(cpcCount == null) cpcCount = 0;
+				String text = "" + alignDiagnosis + " + " + alignComplication;
+				g.setColor(new Color(0f, 0f, 0f, 0.4f));
+				g.fillRect(alignX - offsetX - RULER_WIDTH, alignY - RULER_WIDTH - 40, 12 * text.length(), 40);
+				g.setColor(Color.WHITE);
+				g.drawString(text, 
+						alignX - offsetX - RULER_WIDTH + 5, alignY - RULER_WIDTH - 25);
+				g.drawString("" + cpcCount + " / " + alignFeature.incidence,
+						alignX - offsetX - RULER_WIDTH + 5, alignY - RULER_WIDTH - 5);
 			}
 			break;
 		default:
 			break;
 		}
-	}
-	private void drawAlign(Graphics g){
-		
 	}
 }
