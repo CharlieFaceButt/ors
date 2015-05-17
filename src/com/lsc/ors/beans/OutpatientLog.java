@@ -277,6 +277,12 @@ public class OutpatientLog implements BeanObject{
 			set(key, d);
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			return format.format(d);
+		case 16:
+			String mrn = cell.getContents();
+			if(mrn.length() > 16){
+				mrn = mrn.substring(0, 16);
+			}
+			set(key, mrn);
 		case 17:
 			String fc = cell.getContents();
 			if(!fc.equals("¡Ì")){

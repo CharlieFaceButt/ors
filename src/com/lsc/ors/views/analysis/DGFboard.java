@@ -403,15 +403,15 @@ public class DGFboard extends AnalysisBoard {
 					if(cpc == null) cpc = 0;
 					
 					int blue = 150;
-					int green = 150;
+					int green = 255;
 					int red = 150;
 					if(maxComplication != 0) {
 						blue -= 150 * cpc / maxComplication;
-						green += 100 * cpc / maxComplication;
-						red += 100 * cpc / maxComplication;
+						red -= 150 * cpc / maxComplication;
+						green -= 100 * cpc / maxComplication;
 					}
 					if(cpc == 0){
-						g.setColor(Color.GRAY);
+						g.setColor(new Color(200,210,200));
 					}else{
 						g.setColor(new Color(red,green,blue));
 					}

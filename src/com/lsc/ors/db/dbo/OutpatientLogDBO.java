@@ -20,12 +20,14 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 import com.lsc.ors.beans.OutpatientLog;
+import com.lsc.ors.beans.OutpatientLogCharacters;
 import com.lsc.ors.db.DBOpeListener;
 import com.lsc.ors.db.DBOperator;
 import com.lsc.ors.db.listener.OutpatientLogDBOpeListener;
 import com.lsc.ors.debug.ConsoleOutput;
 import com.lsc.ors.resource.StringSet;
 import com.lsc.ors.util.DataExtractor;
+import com.lsc.ors.util.FeatureKeyGenerator;
 import com.lsc.ors.util.TimeFormatter;
 
 /**
@@ -428,6 +430,10 @@ public class OutpatientLogDBO extends DBOperator{
 			String value = values.get(i);
 			//生成概念分层值
 			value = DataExtractor.generateConceptLayer(i,value);
+			//逗号处理
+			if(i == OutpatientLog.INDEX_DIAGNOSES){
+				value = FeatureKeyGenerator.generalization(value, OutpatientLogCharacters.INDEX_DIAGNOSES);
+			}
 			//添加sql语句元素
 			statement += keys[i];
 			if(value == null) valueStr += "null";

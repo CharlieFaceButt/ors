@@ -15,10 +15,10 @@ public class FeatureKeyGenerator {
 		return generalization(oldKey, OutpatientLogCharacters.getIndex(character));
 	}
 	public static String generalization(String oldKey, int characterIndex){
-		if(oldKey == null){
-			ConsoleOutput.pop("ADboard.generalization", "key is null");
-			return "null";
-		}
+//		if(oldKey == null){
+//			ConsoleOutput.pop("FeatureKeyGenerater.generalization", "key is null");
+//			return "null";
+//		}
 		String newKey = null;
 		switch (characterIndex) {
 		case OutpatientLogCharacters.INDEX_PATIENT_AGE:
@@ -44,8 +44,11 @@ public class FeatureKeyGenerator {
 			newKey = oldKey; //有外部更改风险
 			break;
 		case OutpatientLogCharacters.INDEX_DIAGNOSES:
+			if(oldKey == null){
+				return oldKey;
+			}
 			if(oldKey.length() > 6){
-				ConsoleOutput.pop("FeatureKeyGenerator", "key:" + oldKey);
+				ConsoleOutput.pop("FeatureKeyGenerator.generalization", "key:" + oldKey);
 			}
 			oldKey = doReplacement(oldKey, "，", ",");
 			oldKey = doReplacement(oldKey, "；", ",");

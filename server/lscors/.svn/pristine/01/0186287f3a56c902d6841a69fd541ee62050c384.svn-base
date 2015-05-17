@@ -1,0 +1,17 @@
+<?php
+function echart_start(){
+	echo "
+	<script src = \"../js/build/dist/echarts.js\"></script>
+	<script type = \"text/javascript\">
+		//路径配置
+		require.config({
+			paths:{
+				echarts: 'http://echarts.baidu.com/build/dist'
+			}
+		});";
+}
+function echart_end(){
+	echo "
+	</script>";
+}
+?>
