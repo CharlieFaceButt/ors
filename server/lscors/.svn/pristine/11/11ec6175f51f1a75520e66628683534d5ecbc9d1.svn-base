@@ -1,0 +1,68 @@
+<?php
+
+function draw_statistics_gender($dom){
+	$genders = get_attribute_description(INDEX_PATIENT_GENDER);
+	diagram_pie(
+		$dom,
+		"性别比例","",
+		"'男','女'",
+		"{value:".$genders['male'].",name:'男'},{value:".$genders['female'].",name:'女'}");
+}
+
+function draw_statistics_age($dom){
+	$ages = get_attribute_description(INDEX_PATIENT_AGE);
+	$values = "".$ages["10s"].",".$ages["20s"].","
+	.$ages["30s"].",".$ages["40s"].","
+	.$ages["50s"].",".$ages["60s"].","
+	.$ages["70s"].",".$ages["else"];
+	diagram_bar(
+		$dom,"年龄分布","",
+		"年龄","'<10','10-20','20-30','30-40','40-50','50-60','60-70','>70'",
+		"人数",$values);
+}
+
+function draw_statistics_diagnosis($dom){
+	$diagnosis = get_attribute_description(INDEX_DIAGNOSIS);
+	$keys = getKeys($diagnosis);
+	$values = getValues($diagnosis);
+	diagram_bar(
+		$dom,"病症分布","",
+		"病症",$keys,
+		"人数",$values);
+}
+
+function draw_statistics_wait($dom){
+	$wt = get_attribute_description(INDEX_WAIT);
+	$keys = getKeys($wt);
+	$values = getValues($wt);
+	diagram_bar($dom,"等待时间分布","",
+		"时长",$keys,
+		"人数",$values);
+}
+
+function getKeys($diagnosis){
+	$keys = "";
+	$key_index = 0;
+	foreach($diagnosis as $x=>$x_value){
+		$keys .= ("'".$x."'");
+		$key_index ++;
+		if($key_index < count($diagnosis)){
+			$keys .= ",";
+		}
+	}
+	return $keys;
+}
+
+function getValues($diagnosis){
+	$values = "";
+	$value_index = 0;
+	foreach($diagnosis as $x=>$x_value){
+		$values .= ("".$x_value);
+		$value_index ++;
+		if($value_index < count($diagnosis)){
+			$values .= ",";
+		}
+	}
+	return $values;
+}
+?>

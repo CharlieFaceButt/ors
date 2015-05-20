@@ -64,59 +64,6 @@ function diagram_bar(
     </script>";
 }
 
-function diagram_horizontal_bar(
-        $dom, $title, $subtext,
-        $category_name, $categories, 
-        $value_name, $values){
-    echart_start();
-    echo "
-    require(
-        ['echarts','echarts/chart/bar'],
-        function(ec){
-            var myChart = ec.init(document.getElementById('".$dom."'));
-            option = {
-                title:{
-                    text:'".$title."',
-                    subtext:'".$subtext."'
-                },
-                tooltip:{
-                    show: true
-                },
-                legend:{
-                    data:['".$title."']
-                },
-                toolbox:{
-                    show:true,
-                    feature:{
-                        mark:{show:true},
-                        dataView:{show:true,readOnly:false},
-                        magicType:{show:true,type:['line','bar']},
-                        restore:{show:true},
-                        saveAsImage:{show:true}
-                    }
-                },
-                calculable:true,
-                yAxis:[{
-                    type: 'category',
-                    data: [".$categories."],
-                    name: '".$category_name."'
-                }],
-                xAxis:[{
-                    type: 'value',
-                    name: '".$value_name."'
-                }],
-                series:[{
-                    name: '".$title."',
-                    type: 'bar',
-                    data: [".$values."]
-                }]
-            };
-            myChart.setOption(option);
-        }
-    );
-    </script>";
-}
-
 function diagram_pie(
 		$dom, $title, $subtitle,
 		$categories, $values){
@@ -206,7 +153,7 @@ function diagram_line(
                         feature:{
                             mark:{show:true},
                             dataView:{show:true,readOnly:false},
-                            magicType:{show:true,type:['line','bar']},
+                            magicType:{show:true,type:['line','bar','stack','tiled']},
                             restore:{show:true},
                             saveAsImage:{show:true}
                         }

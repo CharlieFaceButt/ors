@@ -1,0 +1,13 @@
+<?php
+include 'components/echart_diagrams.php';
+include 'db/outpatient_log_dbo.php';
+
+function draw_statistics_gender($dom){
+	$genders = get_attribute_description(INDEX_PATIENT_GENDER);
+	diagram_pie(
+		$dom,
+		"性别比例","",
+		"'男','女'",
+		"{value:".$genders['male'].",name:'男'},{value:".$genders['female'].",name:'女'}");
+}
+?>

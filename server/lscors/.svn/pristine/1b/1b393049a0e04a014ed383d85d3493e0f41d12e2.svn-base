@@ -8,7 +8,7 @@ function echart_start(){
                 'echarts' : 'js/echarts',
                 'echarts/chart/pie' : 'js/echarts',
                 'echarts/chart/bar' : 'js/echarts',
-                'echarts/chart/line' : 'js/echarts'
+                'echarts/chart/line' : 'js/echarts',
             }
         });";
 }
@@ -61,59 +61,6 @@ function diagram_bar(
 			myChart.setOption(option);
 		}
 	);
-    </script>";
-}
-
-function diagram_horizontal_bar(
-        $dom, $title, $subtext,
-        $category_name, $categories, 
-        $value_name, $values){
-    echart_start();
-    echo "
-    require(
-        ['echarts','echarts/chart/bar'],
-        function(ec){
-            var myChart = ec.init(document.getElementById('".$dom."'));
-            option = {
-                title:{
-                    text:'".$title."',
-                    subtext:'".$subtext."'
-                },
-                tooltip:{
-                    show: true
-                },
-                legend:{
-                    data:['".$title."']
-                },
-                toolbox:{
-                    show:true,
-                    feature:{
-                        mark:{show:true},
-                        dataView:{show:true,readOnly:false},
-                        magicType:{show:true,type:['line','bar']},
-                        restore:{show:true},
-                        saveAsImage:{show:true}
-                    }
-                },
-                calculable:true,
-                yAxis:[{
-                    type: 'category',
-                    data: [".$categories."],
-                    name: '".$category_name."'
-                }],
-                xAxis:[{
-                    type: 'value',
-                    name: '".$value_name."'
-                }],
-                series:[{
-                    name: '".$title."',
-                    type: 'bar',
-                    data: [".$values."]
-                }]
-            };
-            myChart.setOption(option);
-        }
-    );
     </script>";
 }
 
@@ -193,7 +140,7 @@ function diagram_line(
                     title:{
                         text:'".$title."',
                         subtext:'".$subtitle."',
-                        x:'left'
+                        x:'center'
                     },
                     tooltip:{
                         trigger:'axis'
@@ -206,7 +153,7 @@ function diagram_line(
                         feature:{
                             mark:{show:true},
                             dataView:{show:true,readOnly:false},
-                            magicType:{show:true,type:['line','bar']},
+                            magicType:{show:true,type:['line','bar','stack','tiled']},
                             restore:{show:true},
                             saveAsImage:{show:true}
                         }

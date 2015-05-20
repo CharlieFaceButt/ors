@@ -1,0 +1,23 @@
+<?php
+
+function draw_statistics_gender($dom){
+	$genders = get_attribute_description(INDEX_PATIENT_GENDER);
+	diagram_pie(
+		$dom,
+		"性别比例","",
+		"'男','女'",
+		"{value:".$genders['male'].",name:'男'},{value:".$genders['female'].",name:'女'}");
+}
+
+function draw_statistics_age($dom){
+	$ages = get_attribute_description(INDEX_PATIENT_AGE);
+	$values = "".$ages["10s"].",".$ages["20s"].","
+	.$ages["30s"].",".$ages["40s"].","
+	.$ages["50s"].",".$ages["60s"].","
+	.$ages["70s"].",".$ages["else"];
+	diagram_bar(
+		$dom,"年龄分布","",
+		"年龄","'<10','10-20','20-30','30-40','40-50','50-60','60-70','>70'",
+		"人数",$values);
+}
+?>

@@ -1,0 +1,46 @@
+<?php
+$table = "outpatient_log";
+$server_name = SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT;
+$user_name = SAE_MYSQL_USER;
+$password = SAE_MYSQL_PASS;
+$database = "app_lscors";
+
+function get_total_count(){
+
+	// $mysql = new SaeMysql();
+	// // $sql = generate_sql();
+	// $sql = "select count(*) from ".$table;
+	// $data = $mysql->getData($sql);
+
+	// $count = intval($_REQUEST['count(*)']);
+
+	// $mysql->closeDb();
+	$conn = mysql_connect($server_name,$user,$password);
+	if(!conn){
+		echo "找不到数据库";
+	}
+	else echo "10";
+	mysql_close();
+
+	// echo $count;
+}
+
+// $row = mysql_fetch_row($result);
+
+// echo "";
+
+// for($i = 0 ; $i < mysql_num_fields($result) ; $i ++){
+// 	mysql_field_name($result, $i);
+// }
+
+// while($row = mysql_fetch_row($result)){
+// 	for($i = 0 ; $i < mysql_num_fields($result) ; $i ++){
+// 		$row[$i];
+// 	}
+// }
+
+// mysql_free_result($result);
+
+// mysql_close($conn);
+
+?>

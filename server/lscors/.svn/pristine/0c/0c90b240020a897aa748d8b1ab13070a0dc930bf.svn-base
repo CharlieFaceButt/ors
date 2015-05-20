@@ -1,0 +1,64 @@
+<?php
+$user = SAE_MYSQL_USER;
+$psd = SAE_MYSQL_PASS;
+$host = SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT;
+
+define("INDEX_PATIENT_GENDER", 4);
+define("INDEX_PATIENT_AGE", 5);
+define("INDEX_DIAGNOSIS", 10);
+define("INDEX_RECEPTION", 11);
+define("INDEX_REGISTRATION", 12);
+define("INDEX_WAIT", 13);
+define("INDEX_DOCTOR", 14);
+define("INDEX_CONSULTATION", 17);
+
+function get_total_count(){
+	$mysql = new SaeMysql();
+	$sql = "select count(*) from outpatient_log";
+	$data = $mysql->getLine($sql);
+	echo $data["count(*)"];
+	$mysql->closeDb();
+}
+
+function get_first_date(){
+	$mysql = new SaeMysql();
+	$sql = "select min(registration_time) from outpatient_log";
+	$data = $mysql->getLine($sql);
+	echo $data["min(registration_time)"];
+	$mysql->closeDb();
+}
+
+function get_last_date(){
+	$mysql = new SaeMysql();
+	$sql = "select max(registration_time) from outpatient_log";
+	$data = $mysql->getLine($sql);
+	echo $data["min(registration_time)"];
+	$mysql->closeDb();
+}
+
+function get_attribute_description($index){
+	$mysql = new SaeMysql();
+	$sql = "";
+	$data = NULL;
+	switch($index){
+		case INDEX_PATIENT_GENDER:
+			$gender = array{"male"=>0,"female"=>0};
+			$sql = "select count(*) from outpatient_log where patient_gender = '男'";
+			$data = $mysql->getLine($sql);
+			$gender['male'] = $data["count(*)"];
+			$sql = "select count(*) from outpatient_log where patient_gender = '女'";
+			$data = $mysql->getLine($sql);
+			$gender['female'] = $data["count(*)"];
+			return $gender;
+		case INDEX_PATIENT_AGE:
+		case INDEX_DIAGNOSIS:
+		case INDEX_REGISTRATION:
+		case INDEX_RECEPTION:
+		case INDEX_DOCTOR:
+		case INDEX_WAIT:
+		case INDEX_CONSULTATION:
+		default:break;
+	}
+	$mysql->closeDb();
+}
+?>

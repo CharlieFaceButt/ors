@@ -130,11 +130,11 @@ include 'components/echart_diagrams.php';
 					 <div class="about-header">
 					    <h3>复诊率与非复诊确诊率</h3>
 					 </div>
-					<div class="about-info" style="height:400px">
+					<div class="about-info">
 						<a href="record_scheme.php">左边饼图描述确诊病人群的复诊比例，右边饼图描述所有非复诊人群的确诊比例</a>
-						<div id="s_a_d_consultation" style="height:400px"></div>
-						<?php 
-						draw_statistics_consultation('s_a_d_consultation');?>
+						内容
+						<div id="s_a_d_consultation" height:400px;width:400px;float:left></div>
+						<?php draw_statistics_consultation('s_a_d_consultation')?>
 					</div>
 				</div>
 			</div>

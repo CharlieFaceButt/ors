@@ -98,11 +98,11 @@ function diagram_horizontal_bar(
                 calculable:true,
                 yAxis:[{
                     type: 'category',
-                    data: [".$categories."],
+                    data: [".$categories."]
                     name: '".$category_name."'
                 }],
                 xAxis:[{
-                    type: 'value',
+                    type: 'value'
                     name: '".$value_name."'
                 }],
                 series:[{

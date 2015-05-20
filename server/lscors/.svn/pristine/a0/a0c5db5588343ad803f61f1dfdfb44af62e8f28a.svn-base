@@ -62,7 +62,7 @@ include 'components/echart_diagrams.php';
 					    <h3>性别比例</h3>
 					 </div>
 					<div class="about-info">
-						<a href="record_scheme.php">当前科室门诊挂号记录中的男女人数比，鼠标移动到饼图上查看人数</a>
+						<a href="">当前科室门诊挂号记录中的男女人数比，鼠标移动到饼图上查看人数</a>
 						<div id="s_a_d_gender" style="height:400px;align:center">
 						<?php
 							include 'components/statistics.php';
@@ -75,7 +75,7 @@ include 'components/echart_diagrams.php';
 					    <h3>年龄分布</h3>
 					 </div>
 					<div class="about-info">
-						<a href="record_scheme.php">当前科室门诊挂号记录人数按年龄段分布，横轴为年龄，纵轴为人数</a>
+						<a href="">当前科室门诊挂号记录人数按年龄段分布，横轴为年龄，纵轴为人数</a>
 						<div id="s_a_d_age" style="height:400px;align:center">
 							<?php draw_statistics_age('s_a_d_age');?>
 					</div>
@@ -86,7 +86,7 @@ include 'components/echart_diagrams.php';
 					    <h3>病症分布</h3>
 					 </div>
 					<div class="about-info">
-						<a href="record_scheme.php">当前科室门诊挂号记录人数按照病症进行分布，同一个人可能被诊断多种病症也可能没有病症，图中横轴为病症，纵轴为人数</a>
+						<a href="">当前科室门诊挂号记录人数按照病症进行分布，同一个人可能被诊断多种病症也可能没有病症，图中横轴为病症，纵轴为人数</a>
 						<div id="s_a_d_diagnosis" style="height:400px;align:center">
 							<?php draw_statistics_diagnosis('s_a_d_diagnosis');?>
 					</div>
@@ -97,7 +97,7 @@ include 'components/echart_diagrams.php';
 					    <h3>等待时间分布</h3>
 					 </div>
 					<div class="about-info">
-						<a href="record_scheme.php">当前科室门诊挂号记录中人数按照等待时间进行分布，横轴为等待时间的区间，纵轴为等待时间落在区间中的人数</a>
+						<a href="record_scheme.php">描述</a>
 						<div id="s_a_d_wait" style="height:400px;align:center">
 							<?php draw_statistics_wait('s_a_d_wait');?>
 					</div>
@@ -108,9 +108,8 @@ include 'components/echart_diagrams.php';
 					    <h3>看病人数趋势</h3>
 					 </div>
 					<div class="about-info">
-						<a href="record_scheme.php">当前科室门诊接诊量随时间变化的图，横轴为日期，纵轴为不同时间点门诊接诊量</a>
-						<div id="s_a_d_trend" style="height:400px;align:center">
-							<?php draw_statistics_trend('s_a_d_trend');?>
+						<a href="record_scheme.php">描述</a>
+						内容
 					</div>
 				</div>
 
@@ -119,10 +118,8 @@ include 'components/echart_diagrams.php';
 					    <h3>医生接诊数量</h3>
 					 </div>
 					<div class="about-info">
-						<a href="record_scheme.php">当前科室门诊记录中人数按接诊医生分布，横轴为接诊量，纵轴为医生</a>
+						<a href="record_scheme.php">描述</a>
 						内容
-						<div id="s_a_d_doctor" style="height:600px;align:center">
-							<?php draw_statistics_doctor('s_a_d_doctor');?>
 					</div>
 				</div>
 
@@ -130,11 +127,9 @@ include 'components/echart_diagrams.php';
 					 <div class="about-header">
 					    <h3>复诊率与非复诊确诊率</h3>
 					 </div>
-					<div class="about-info" style="height:400px">
-						<a href="record_scheme.php">左边饼图描述确诊病人群的复诊比例，右边饼图描述所有非复诊人群的确诊比例</a>
-						<div id="s_a_d_consultation" style="height:400px"></div>
-						<?php 
-						draw_statistics_consultation('s_a_d_consultation');?>
+					<div class="about-info">
+						<a href="record_scheme.php">描述</a>
+						内容
 					</div>
 				</div>
 			</div>

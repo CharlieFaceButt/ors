@@ -1,0 +1,54 @@
+<?php
+function get_total_count(){
+
+	// $link = mysql_connect(SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT,SAE_MYSQL_USER,SAE_MYSQL_PASS);
+	$mysql = new SaeMysql();
+	// if($link){
+		// mysql_select_db(SAE_MYSQL_DB,$link);
+
+		$sql = "select count(*) from outpatient_log";
+
+		$data = $mysql->getLine($sql);
+
+		var_dump($result);
+		echo $result;
+
+		// $mysql->closeDb();
+		// echo $data;
+		// $conn = mysql_connect($server_name,$user,$password);
+		// if(!conn){
+		// 	echo "找不到数据库";
+		// }
+		// else echo "10";
+		// mysql_close();
+		// $result = mysql_query($sql);
+		// if(is_resource($result)){
+		// 	while($row = mysql_fetch_row($result)){
+		// 		echo $row[0];
+		// 	}
+		// } else{
+		// 	echo 'no data';
+		// }
+	// }
+	// mysql_close($link);
+}
+
+// $row = mysql_fetch_row($result);
+
+// echo "";
+
+// for($i = 0 ; $i < mysql_num_fields($result) ; $i ++){
+// 	mysql_field_name($result, $i);
+// }
+
+// while($row = mysql_fetch_row($result)){
+// 	for($i = 0 ; $i < mysql_num_fields($result) ; $i ++){
+// 		$row[$i];
+// 	}
+// }
+
+// mysql_free_result($result);
+
+// mysql_close($conn);
+
+?>

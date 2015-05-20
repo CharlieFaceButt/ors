@@ -1,0 +1,20 @@
+<?php
+$user = SAE_MYSQL_USER;
+$psd = SAE_MYSQL_PASS;
+$host = SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT;
+
+function get_total_count(){
+	$mysql = new SaeMysql();
+	$sql = "select count(*) from outpatient_log";
+	$data = $mysql->getLine($sql);
+	echo $data["count(*)"];
+}
+
+function get_first_date(){
+	$mysql = new SaeMysql();
+	$sql = "select min(registration_time) from outpatient_log";
+	$data = $mysql->getLine($sql);
+	echo $data["min(registration_time)"];
+}
+
+?>
