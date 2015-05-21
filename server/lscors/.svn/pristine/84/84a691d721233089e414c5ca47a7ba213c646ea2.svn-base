@@ -35,45 +35,39 @@
             $().UItoTop({ easingType: 'easeOutQuart' });
     });
     </script>
-<?php include 'components/statistics.php';?>
-<?php include 'db/outpatient_log_dbo.php';?>
-<?php include 'components/echart_diagrams.php';?>
 </head>
 
 <body>
 
+<!-- prasent -->
+    <div class="prasent">
+        <div class="container">
+            <p><font color="white">进入大数据时代，大数据分析也逐步应用于各行各业，为行业人士发掘感兴趣的知识模式以带来商业利润和策略支持。作为近年惠民政策的重点之一，医疗领域的大数据分析应用也开始走入人们的生活，提供了更加便捷，更加利民的服务。近年来医指通逐步发展为国内公认的医疗电子平台，全国各地医院陆续部署了此系统，实现全国数据联网，于是我们便有了数据分析的基础。但在了解过其现有系统的大致情况后，发现其数据分析处理这一方面仍存在较大空白，基于现有医指通系统只能看作是一个数据库管理系统，并不能满足一个智能辅助的数据仓库系统要求。</font></p>
+            <p><font color="white">本文以数据分析和挖掘为出发点，以软件工程方法，针对部分门诊数据进行了需求分析，并自顶向下进行系统和功能模块设计，然后讲述如何实现可视化浏览界面，接着增加智能导诊辅助系统面向群众的借口，使用浏览器/服务器（B/S）体系结构搭建跨平台应用。论文中重点阐述将系统设计实现分为数据录入、数据统计和数据分析三大功能模块的软件工程过程，以及实现过程中的关键技术理论。该系统应用，通过一些可靠的数据挖掘技术来实现医疗数据的分析，进而生成医疗知识指导，用以辅助医院和看病群众进行门诊流程相关决策。</font></p>
+            <p><font color="white">现有医疗系统以医指通作为数据库平台，实现了全国医疗数据的逐步统一，但仍然存在许多不足：</font></p>
+            <p><font color="white">1.历史数据未能得以充分利用，缺乏数据分析</font></p>
+            <p><font color="white">2.仍然有很多医院未使用相同的数据格式来存储数据</font></p>
+            <p><font color="white">3.门诊数据虽涉及个人隐私以及版权问题无法对众公开，但数据的相关分析却应该公开</font></p>
+            <p><font color="white">显而易见，一个数据仓库为基础的数据分析系统将有效解决这些问题，与此同时也能帮助相关各方发现一些有趣的知识。</font></p> 
+        </div>
+    </div>
+<!-- prasent -->
 <!-- header -->
     <div class="banner">
         <div class="container">
             <div class="header"> 
                 <div class="logo">
-                    <h1><a href="index.php"><font color="white">智能导诊辅助系统</font></a></h1>
+                    <h1><a href="index.html"><font color="white">智能导诊辅助系统</font></a></h1>
                     <font color="white">——科室门诊记录分析</font>
                 </div>
-                <div class="testmonial-grid">
-                    <p>当前涉及的科室名称：<?php get_all_departments()?></p>
-                    <p>记录共有<?php 
+                <div style="height:300px">
+                    <p class="gravida-1">当前涉及的科室名称：<?php get_all_departments()?></p>
+                    <p class="gravida-1">记录共有<?php 
                     get_total_count();?>个，每个记录涉及18个属性，其中<a href="record_scheme.php">重要分析性属性</a>共有8个。数据的时间从<?php get_first_date()?>到<?php get_last_date()?></p>
                 </div>
-                <p><font color="#ffa">进入大数据时代，大数据分析也逐步应用于各行各业，为行业人士发掘感兴趣的知识模式以带来商业利润和策略支持。作为近年惠民政策的重点之一，医疗领域的大数据分析应用也开始走入人们的生活，提供了更加便捷，更加利民的服务。近年来医指通逐步发展为国内公认的医疗电子平台，全国各地医院陆续部署了此系统，实现全国数据联网，于是我们便有了数据分析的基础。但在了解过其现有系统的大致情况后，发现其数据分析处理这一方面仍存在较大空白，基于现有医指通系统只能看作是一个数据库管理系统，并不能满足一个智能辅助的数据仓库系统要求。</font></p>
-                <p><font color="#ffa">本文以数据分析和挖掘为出发点，以软件工程方法，针对部分门诊数据进行了需求分析，并自顶向下进行系统和功能模块设计，然后讲述如何实现可视化浏览界面，接着增加智能导诊辅助系统面向群众的借口，使用浏览器/服务器（B/S）体系结构搭建跨平台应用。论文中重点阐述将系统设计实现分为数据录入、数据统计和数据分析三大功能模块的软件工程过程，以及实现过程中的关键技术理论。该系统应用，通过一些可靠的数据挖掘技术来实现医疗数据的分析，进而生成医疗知识指导，用以辅助医院和看病群众进行门诊流程相关决策。</font></p>
-                <p><font color="#ffa">现有医疗系统以医指通作为数据库平台，实现了全国医疗数据的逐步统一，但仍然存在许多不足：</font></p>
-                <p><font color="#ffa">1.历史数据未能得以充分利用，缺乏数据分析</font></p>
-                <p><font color="#ffa">2.仍然有很多医院未使用相同的数据格式来存储数据</font></p>
-                <p><font color="#ffa">3.门诊数据虽涉及个人隐私以及版权问题无法对众公开，但数据的相关分析却应该公开</font></p>
-                <p><font color="#ffa">显而易见，一个数据仓库为基础的数据分析系统将有效解决这些问题，与此同时也能帮助相关各方发现一些有趣的知识。</font></p> 
-        
             </div>
         </div> 
     </div>
-
-<!-- prasent -->
-    <div class="prasent">
-        <div class="container">
-            </div>
-    </div>
-<!-- prasent -->
-        
 <!-- header -->
 <!-- gravida -->
     <div class="gravida">
@@ -128,41 +122,36 @@
 <!-- donec -->
     <div class="donec">
         <div class="container">
-            <div class="header"> 
-                <div class="logo">
-                    <h1 style="align:center"><font color="white">总体概况</font></h1>
-                    <font color="white" style="align:center">——基本统计信息</font>
-                </div>
-            </div>
             <div class="donec-top">
                 <div class="col-md-6 donec-left">
                     <h3>年平均看病人数</h3>
-                    <h1><?php get_average_patient_amount_per_year();?>人</h1>
+                    <p></p>
                 </div>
                 <div class="col-md-6 donec-right">
                     <h3>医生总人数</h3>
-                    <h1><?php get_doctor_amount();?></h1>
+                    <p>blublu</p>
                 </div>
             </div>
             <div class="donec-top">
                 <div class="col-md-6 donec-left">
                     <h3>常见病症</h3>
-                    <h1><?php get_common_diagnosis();?></h1>
+                    <p>blublu</p>
                 </div>
                 <div class="col-md-6 donec-right">
-                    <h3>挂号高峰时间段(24小时制)</h3>
-                    <h1><?php get_peak_flow_of_registration();?></h1>
+                    <h3>挂号高峰时间段</h3>
+                    <p>blublu</p>
                 </div>
             </div>
             <div class="donec-top">
                 <div class="col-md-6 donec-left">
                     <h3>平均年龄和方差</h3>
-                    <h1><?php get_average_age_and_deviation();?></h1>
+                    <p>blublu</p>
                 </div>
                 <div class="col-md-6 donec-right">
                     <h3>等待时间和方差</h3>
-                    <h1><?php get_average_wait_and_deviation();?></h1>
+                    <p>blublu</p>
                 </div>
+                <div class="clearfix"></div>
             </div>
         </div>
     </div>
@@ -175,5 +164,4 @@
         </div>
     </div>
 <!-- footer -->
-
 </body>

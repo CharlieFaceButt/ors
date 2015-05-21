@@ -6,74 +6,7 @@ function get_all_departments(){
 	echo $text;
 }
 
-/**
-*	获得年平均挂号量
-*/
-function get_average_patient_amount_per_year(){
-	$counts = get_patient_amounts_of_years();
-	$average = 0;
-	foreach ($counts as $key => $value) {
-		$average += ($value / count($counts));
-	}
-	echo $average;
-}
-
-/**
-*	获得每个科室的医生数量，字符串现实
-*/
-function get_doctor_amount(){
-	$doctors = get_doctor_amount_from_outpatient();
-	foreach ($doctors as $key => $value) {
-		echo $key.":".$value."人\t";
-	}
-}
-
-/**
-*	获得常见病症5个
-*/
-function get_common_diagnosis(){
-	$diagnosis = get_attribute_description(INDEX_DIAGNOSIS);
-	$i = 0;
-	foreach ($diagnosis as $key => $value) {
-		echo "".$key;
-		$i ++;
-		if($i > 5) break;
-		else echo ",";
-	}
-}
-
-/**
-*	获得看病高峰时段
-*/
-function get_peak_flow_of_registration(){
-	$peaks = get_peak_flow(INDEX_REGISTRATION);
-	$i = 0;
-	foreach ($peaks as $key => $value) {
-		echo "".$key;
-		$i ++;
-		if($i < count($peaks) && $i < 2)
-			echo ",";
-		else break;
-	}
-}
-
-/**
-*	获得平均年龄和年龄方差
-*/
-function get_average_age_and_deviation(){
-	$age = get_average_and_deviation(INDEX_PATIENT_AGE);
-	echo "平均年龄：".$age["average"].";\t方差：".$age["deviation"];
-}
-
-/**
-*	获得平均年龄和年龄方差
-*/
-function get_average_wait_and_deviation(){
-	$wait = get_average_and_deviation(INDEX_WAIT);
-	echo "平均时间：".$wait["average"].";\t方差：".$wait["deviation"];
-}
-
-//数据统计功能显示接口
+//数据统计
 function draw_statistics_gender($dom){
 	$genders = get_attribute_description(INDEX_PATIENT_GENDER);
 	diagram_pie(

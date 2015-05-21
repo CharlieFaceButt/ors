@@ -47,7 +47,7 @@
         <div class="container">
             <div class="header"> 
                 <div class="logo">
-                    <h1><a href="index.php"><font color="white">智能导诊辅助系统</font></a></h1>
+                    <h1><a href="index.html"><font color="white">智能导诊辅助系统</font></a></h1>
                     <font color="white">——科室门诊记录分析</font>
                 </div>
                 <div class="testmonial-grid">
@@ -130,8 +130,8 @@
         <div class="container">
             <div class="header"> 
                 <div class="logo">
-                    <h1 style="align:center"><font color="white">总体概况</font></h1>
-                    <font color="white" style="align:center">——基本统计信息</font>
+                    <h1 style="text_align:center"><a href="index.html"><font color="white">总体概况</font></a></h1>
+                    <font color="white" style="text_align:center">——基本统计信息</font>
                 </div>
             </div>
             <div class="donec-top">

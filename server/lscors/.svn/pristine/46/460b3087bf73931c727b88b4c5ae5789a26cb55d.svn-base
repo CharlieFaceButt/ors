@@ -48,9 +48,7 @@ function get_last_date(){
 	return $data["max(registration_time)"];
 }
 
-/**
-*	获得所有科室名称
-*/
+
 function get_all_departments_from_outpatient(){
 	$departments = array();
 	$mysql = new SaeMysql();
@@ -78,27 +76,6 @@ function get_all_departments_from_outpatient(){
 	return $text;
 }
 
-/**
-*	获得每一年门诊挂号量
-*/
-function get_patient_amounts_of_years(){
-	$start_year = 2010;
-	$end_year = 2013;
-	$mysql = new SaeMysql();
-	$counts = array();
-	for($i = $start_year ; $i < $end_year ; $i ++){
-		$s_time = mktime(0,0,0,12,1,$i);
-		$e_time = mktime(0,0,0,12,1,$i + 1);
-		$sql = "select count(*) from outpatient_log where registration_time > \""
-		.date("Y-m-d h:i:s", $s_time)."\" and registration_time < \"".date("Y-m-d h:i:s", $e_time)."\"";
-		$data = $mysql->getLine($sql);
-		$counts["".$i."/12-".($i + 1)."/12"] = $data["count(*)"];
-	}
-	return $counts;
-}
-/**
-*	获得每个科室的医生数量
-*/
 function get_doctor_amount_from_outpatient(){
 	$mysql = new SaeMysql();
 	$sql = "select count(*),department from outpatient_log group by department";
@@ -109,109 +86,12 @@ function get_doctor_amount_from_outpatient(){
 	}
 	$amountList = array();
 	foreach ($departments as $dKey => $dValue) {
-		$sql = "select count(*),doctor_name from outpatient_log where department = '".$dKey."' group by doctor_name";
+		$sql = "select count(*),doctor from outpatient_log where department = '".$dKey."' group by doctor_name";
 		$data = $mysql->getData($sql);
 		$amountList[$dKey] = count($data);
 	}
 	$mysql->closeDb();
 	return $amountList;
-}
-
-/**
-*	获得高峰挂号时间段
-*/
-function get_peak_flow($index){
-	$mysql = new SaeMysql();
-	$sql = NUll;
-	$data = NULL;
-	switch ($index) {
-		case INDEX_REGISTRATION:
-			$time_ranges = array();
-			#obtain 10000 data at a time
-			for($i = 0 ; $i < TOTAL_COUNT ; $i += 10000){
-				$sql = "select (registration_time) from outpatient_log limit "
-						.$i.",".($i + 10000);
-				$data = $mysql->getData($sql);
-				foreach ($data as $ele_id => $element) {
-					$range = getTimeRange($element["registration_time"],60);
-					$count = 0;
-					if($time_ranges[$range] != NULL)
-						$count = $time_ranges[$range];
-					$count ++;
-					$time_ranges[$range] = $count;
-				}
-			}
-			arsort($time_ranges);
-			return $time_ranges;
-		case INDEX_RECEPTION:
-			break;
-		default:
-			# code...
-			break;
-	}
-}
-function getTimeRange($time, $divider){
-	$str = date("Y-m-d H:i:s", $time);
-	$split = explode(" ", $str);
-	$split = explode(":", $split[1]);
-	$minutes = intval($split[0]) * 60 + intval($split[1]);
-	$index = floor($minutes / $divider);
-	return "".$index.":00-".($index + 1).":00";
-}
-
-function get_average_and_deviation($index){
-	$word = NULL;
-	switch ($index) {
-		case INDEX_PATIENT_AGE:
-			$word = "patient_age";
-			break;
-		case INDEX_WAIT:
-			$word = "waiting_time";
-			break;
-		default:
-			# code...
-			break;
-	}
-
-	$mysql = new SaeMysql();
-	$avgs = array();
-	$deviations = array();
-	#obtain 10000 data at a time
-	$buffer = 10000;
-	for($i = 0 ; $i < TOTAL_COUNT ; $i += $buffer){
-		$sql = "select (".$word.") from outpatient_log limit "
-				.$i.",".($i + $buffer);
-		$data = $mysql->getData($sql);
-		$sum = 0;
-		//calculate current average
-		foreach ($data as $ele_id => $element) {
-			$sum += $element[$word];
-		}
-		$current_avg = floor($sum / $buffer);
-		$avgs["".$i] = $current_avg;
-		//current deviation
-		$dev_fraction = 0;
-			foreach ($data as $ele_id => $element) {
-			$dev_fraction += pow(($element[$word] - $current_avg),2);
-		}
-		$deviations["".$i] = sqrt($dev_fraction) / $buffer;
-	}
-
-	$result = array();
-	$avg = 0;
-	$deviation = 0;
-	//set average
-	foreach ($avgs as $key => $value) {
-		$avg += $value;
-	}
-	$result["average"] = $avg / count($avgs);
-	//set deviation
-	foreach ($deviations as $key => $value) {
-		$deviation += pow($value, 2);
-	}
-	$result["deviation"] = sqrt($deviation);
-	$mysql->closeDb();
-	return $result;
 }
 
 function get_attribute_description($index){

@@ -23,6 +23,11 @@ body a{
 	-o-transition:0.5s all;
 	-ms-transition:0.5s all;
 }
+.col-md-6 h1{
+	color: #ff5;
+	margin-top: 40px;
+	text-align: center;
+}
 .logo {
 	border-bottom: 1px solid #0F2856;
 	padding: 0 0 3em;
@@ -1057,7 +1062,8 @@ ul.comment-list .desc {
 .head-nav ul li a:hover {
 	background: none; 
 	color: #d80112;
-}.head-nav ul li a {
+}
+.head-nav ul li a {
 	font-size: 0.875em;
 	margin: 0.8em 1.3em;
 }

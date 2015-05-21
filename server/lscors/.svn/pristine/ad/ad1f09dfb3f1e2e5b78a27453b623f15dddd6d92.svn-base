@@ -89,8 +89,8 @@ function get_patient_amounts_of_years(){
 	for($i = $start_year ; $i < $end_year ; $i ++){
 		$s_time = mktime(0,0,0,12,1,$i);
 		$e_time = mktime(0,0,0,12,1,$i + 1);
-		$sql = "select count(*) from outpatient_log where registration_time > \""
-		.date("Y-m-d h:i:s", $s_time)."\" and registration_time < \"".date("Y-m-d h:i:s", $e_time)."\"";
+		$sql = "select count(*) from outpatient_log where registration_time > "
+		.date("Y-m-d h:i:s", $s_time)." and registration_time < ".date("Y-m-d h:i:s", $e_time);
 		$data = $mysql->getLine($sql);
 		$counts["".$i."/12-".($i + 1)."/12"] = $data["count(*)"];
 	}
@@ -109,7 +109,7 @@ function get_doctor_amount_from_outpatient(){
 	}
 	$amountList = array();
 	foreach ($departments as $dKey => $dValue) {
-		$sql = "select count(*),doctor_name from outpatient_log where department = '".$dKey."' group by doctor_name";
+		$sql = "select count(*),doctor from outpatient_log where department = '".$dKey."' group by doctor_name";
 		$data = $mysql->getData($sql);
 		$amountList[$dKey] = count($data);
 	}
@@ -117,9 +117,6 @@ function get_doctor_amount_from_outpatient(){
 	return $amountList;
 }
 
-/**
-*	获得高峰挂号时间段
-*/
 function get_peak_flow($index){
 	$mysql = new SaeMysql();
 	$sql = NUll;
@@ -142,7 +139,7 @@ function get_peak_flow($index){
 				}
 			}
 			arsort($time_ranges);
-			return $time_ranges;
+			break;
 		case INDEX_RECEPTION:
 			break;
 		default:
@@ -173,7 +170,6 @@ function get_average_and_deviation($index){
 			break;
 	}
 
-	$mysql = new SaeMysql();
 	$avgs = array();
 	$deviations = array();
 	#obtain 10000 data at a time
@@ -210,8 +206,6 @@ function get_average_and_deviation($index){
 		$deviation += pow($value, 2);
 	}
 	$result["deviation"] = sqrt($deviation);
-	$mysql->closeDb();
-	return $result;
 }
 
 function get_attribute_description($index){

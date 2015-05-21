@@ -173,7 +173,6 @@ function get_average_and_deviation($index){
 			break;
 	}
 
-	$mysql = new SaeMysql();
 	$avgs = array();
 	$deviations = array();
 	#obtain 10000 data at a time
@@ -210,8 +209,6 @@ function get_average_and_deviation($index){
 		$deviation += pow($value, 2);
 	}
 	$result["deviation"] = sqrt($deviation);
-	$mysql->closeDb();
-	return $result;
 }
 
 function get_attribute_description($index){

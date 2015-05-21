@@ -47,14 +47,15 @@ function get_common_diagnosis(){
 */
 function get_peak_flow_of_registration(){
 	$peaks = get_peak_flow(INDEX_REGISTRATION);
-	$i = 0;
-	foreach ($peaks as $key => $value) {
-		echo "".$key;
-		$i ++;
-		if($i < count($peaks) && $i < 2)
-			echo ",";
-		else break;
-	}
+	echo $peaks;
+	// $i = 0;
+	// foreach ($peaks as $key => $value) {
+	// 	echo "".$key;
+	// 	$i ++;
+	// 	if($i < count($peaks) && $i < 2)
+	// 		echo ",";
+	// 	else break;
+	// }
 }
 
 /**

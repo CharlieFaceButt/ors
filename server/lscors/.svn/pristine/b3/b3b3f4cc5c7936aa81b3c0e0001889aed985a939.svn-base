@@ -13,9 +13,9 @@ function get_average_patient_amount_per_year(){
 	$counts = get_patient_amounts_of_years();
 	$average = 0;
 	foreach ($counts as $key => $value) {
-		$average += ($value / count($counts));
+		$average += $value;
 	}
-	echo $average;
+	echo $average / count($counts);
 }
 
 /**
@@ -42,35 +42,16 @@ function get_common_diagnosis(){
 	}
 }
 
-/**
-*	获得看病高峰时段
-*/
 function get_peak_flow_of_registration(){
 	$peaks = get_peak_flow(INDEX_REGISTRATION);
 	$i = 0;
 	foreach ($peaks as $key => $value) {
 		echo "".$key;
 		$i ++;
-		if($i < count($peaks) && $i < 2)
+		if($i < count($peaks))
 			echo ",";
 		else break;
 	}
-}
-
-/**
-*	获得平均年龄和年龄方差
-*/
-function get_average_age_and_deviation(){
-	$age = get_average_and_deviation(INDEX_PATIENT_AGE);
-	echo "平均年龄：".$age["average"].";\t方差：".$age["deviation"];
-}
-
-/**
-*	获得平均年龄和年龄方差
-*/
-function get_average_wait_and_deviation(){
-	$wait = get_average_and_deviation(INDEX_WAIT);
-	echo "平均时间：".$wait["average"].";\t方差：".$wait["deviation"];
 }
 
 //数据统计功能显示接口
